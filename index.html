@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agentic AI Evaluation Pack</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --bg-2: #0c1a2d;
+      --panel: rgba(11, 20, 34, 0.82);
+      --panel-strong: rgba(14, 27, 44, 0.96);
+      --line: rgba(172, 202, 255, 0.14);
+      --text: #eaf1ff;
+      --muted: #9fb4d1;
+      --accent: #78c6ff;
+      --accent-2: #8cffd1;
+      --warn: #ffd27a;
+      --danger: #ff8f97;
+      --shadow: 0 22px 70px rgba(0, 0, 0, 0.38);
+      --radius: 22px;
+      --radius-sm: 14px;
+      --max: 1360px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(120, 198, 255, 0.18), transparent 30%),
+        radial-gradient(circle at top right, rgba(140, 255, 209, 0.12), transparent 28%),
+        linear-gradient(180deg, #050b14 0%, var(--bg) 48%, #050913 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.85), transparent 90%);
+      opacity: 0.24;
+    }
+
+    a { color: inherit; }
+    .shell {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 48px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 1.35fr 0.85fr;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .hero-main, .hero-side, .panel, .card, .case, .file-card {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(11, 20, 34, 0.92), rgba(8, 15, 26, 0.88));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .hero-main {
+      border-radius: 30px;
+      padding: 30px;
+      min-height: 250px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-main::after {
+      content: "";
+      position: absolute;
+      inset: auto -120px -120px auto;
+      width: 290px;
+      height: 290px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(120, 198, 255, 0.24), transparent 68%);
+      filter: blur(12px);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid rgba(120, 198, 255, 0.24);
+      background: rgba(120, 198, 255, 0.08);
+      color: #bfe7ff;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+    h1 {
+      font-size: clamp(34px, 4vw, 58px);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      max-width: 12ch;
+    }
+
+    .lead {
+      margin-top: 14px;
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--muted);
+      max-width: 72ch;
+    }
+
+    .hero-meta {
+      margin-top: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.03);
+      font-size: 13px;
+      color: #d9e6ff;
+    }
+
+    .hero-side {
+      border-radius: 30px;
+      padding: 22px;
+      display: grid;
+      gap: 14px;
+      grid-template-rows: auto auto 1fr;
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric {
+      border-radius: 18px;
+      padding: 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .metric .label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .metric .value {
+      display: block;
+      margin-top: 8px;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .metric .sub {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .topbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: end;
+      margin: 24px 0 14px;
+    }
+
+    .topbar h2 {
+      font-size: 24px;
+      letter-spacing: -0.03em;
+    }
+
+    .topbar p {
+      margin-top: 7px;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 64ch;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .input, .select, .button {
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      padding: 12px 14px;
+      font: inherit;
+      min-height: 46px;
+    }
+
+    .input {
+      min-width: min(360px, 72vw);
+    }
+
+    .button {
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+    }
+
+    .button:hover { transform: translateY(-1px); border-color: rgba(120, 198, 255, 0.34); }
+    .button.primary {
+      background: linear-gradient(135deg, rgba(120, 198, 255, 0.25), rgba(140, 255, 209, 0.18));
+      border-color: rgba(120, 198, 255, 0.28);
+    }
+
+    .grid-files {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin: 14px 0 20px;
+    }
+
+    .file-card {
+      border-radius: 24px;
+      padding: 18px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .file-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      opacity: 0.88;
+    }
+
+    .file-card h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .file-card p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .file-meta {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #d9e6ff;
+    }
+
+    .panel {
+      border-radius: 28px;
+      padding: 20px;
+      margin-top: 18px;
+    }
+
+    .panel-head {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .panel-head h3 {
+      font-size: 22px;
+      letter-spacing: -0.03em;
+    }
+
+    .panel-head .note {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      border-radius: 18px;
+      padding: 16px;
+      min-height: 112px;
+    }
+
+    .card .k {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .card .v {
+      margin-top: 10px;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    .card .s {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .dataset {
+      margin-top: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .dataset-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: baseline;
+    }
+
+    .dataset-header h4 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .dataset-header .path {
+      color: var(--muted);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .cases {
+      display: grid;
+      gap: 12px;
+    }
+
+    details.case {
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    details.case summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 16px 18px;
+      display: grid;
+      grid-template-columns: 110px 1fr auto;
+      gap: 14px;
+      align-items: center;
+    }
+
+    details.case summary::-webkit-details-marker { display: none; }
+
+    .case-id {
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .case-title {
+      color: #e6efff;
+      font-size: 14px;
+      line-height: 1.55;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+
+    .case-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .badge {
+      border-radius: 999px;
+      padding: 6px 9px;
+      font-size: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+    }
+
+    .case-body {
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding: 16px 18px 18px;
+      display: grid;
+      gap: 14px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .case-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 12px;
+    }
+
+    .subpanel {
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.12);
+      padding: 14px;
+    }
+
+    .subpanel h5 {
+      margin: 0 0 10px;
+      font-size: 13px;
+      color: #dce8ff;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .subpanel p, .subpanel li, .subpanel td {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #dbe6fb;
+    }
+
+    .subpanel ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .kv {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+    }
+
+    .kv div {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px dashed rgba(255,255,255,0.08);
+    }
+
+    .kv div:last-child { border-bottom: 0; }
+    .kv dt { color: var(--muted); font-size: 13px; }
+    .kv dd { margin: 0; font-size: 13px; }
+
+    .raw {
+      max-height: 290px;
+      overflow: auto;
+      margin: 0;
+      padding: 14px;
+      border-radius: 14px;
+      background: #050a12;
+      color: #d9e9ff;
+      border: 1px solid rgba(255,255,255,0.08);
+      font-size: 12px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .video-shell {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .video-frame {
+      border-radius: 22px;
+      overflow: hidden;
+      background: #02050a;
+      border: 1px solid rgba(255,255,255,0.08);
+      min-height: 280px;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      max-height: 560px;
+      display: block;
+      background: #000;
+    }
+
+    .aside {
+      display: grid;
+      gap: 12px;
+    }
+
+    .aside .subpanel { min-height: 100%; }
+
+    .empty {
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px dashed rgba(255,255,255,0.14);
+      color: var(--muted);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .status {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 1120px) {
+      .hero, .video-shell, .case-grid, .grid-files, .summary-grid { grid-template-columns: 1fr; }
+      .input { min-width: 100%; }
+      details.case summary { grid-template-columns: 1fr; }
+      .case-badges { justify-content: flex-start; }
+    }
+
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 20px, var(--max)); padding-top: 14px; }
+      .hero-main, .hero-side, .panel { border-radius: 22px; padding: 18px; }
+      .topbar, .panel-head, .dataset-header { align-items: flex-start; }
+      .mini-grid { grid-template-columns: 1fr; }
+      .kv div { grid-template-columns: 1fr; gap: 4px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div class="hero-main">
+        <div class="eyebrow">Static GitHub Pages Viewer</div>
+        <h1>Agentic AI evaluation assets in one page.</h1>
+        <p class="lead">
+          This page reads the two JSON files and the screen recording directly from the repository so you can publish them on GitHub Pages without a backend. It gives you a clean summary, a browsable test-case list, and the recording in a single static layout.
+        </p>
+        <div class="hero-meta">
+          <span class="pill">Source: <strong>&nbsp;_Screens/question.json</strong></span>
+          <span class="pill">Source: <strong>&nbsp;AgenticAIV2/Evaluation/question.json</strong></span>
+          <span class="pill">Media: <strong>&nbsp;Recording 2026-04-22 105020.mp4</strong></span>
+        </div>
+      </div>
+
+      <div class="hero-side">
+        <div class="mini-grid" id="heroMetrics"></div>
+        <div class="status" id="loadStatus">Loading local data from the repository...</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="topbar">
+        <div>
+          <h2>Repository assets</h2>
+          <p>Quick access to the three files you mentioned, with relative links that will keep working on GitHub Pages.</p>
+        </div>
+        <div class="toolbar">
+          <a class="button primary" href="#recording">Jump to recording</a>
+          <a class="button" href="#datasets">Jump to JSON browser</a>
+        </div>
+      </div>
+
+      <div class="grid-files">
+        <article class="file-card">
+          <h3>_Screens/question.json</h3>
+          <p>Primary question set stored in the _Screens folder. The page will parse this file and render each case as a readable card.</p>
+          <div class="file-meta">
+            <span class="tag">JSON</span>
+            <span class="tag">Local path</span>
+            <span class="tag">Browseable</span>
+          </div>
+        </article>
+
+        <article class="file-card">
+          <h3>AgenticAIV2/Evaluation/question.json</h3>
+          <p>Evaluation copy of the same schema. The page compares it side by side so you can check both sources in one place.</p>
+          <div class="file-meta">
+            <span class="tag">JSON</span>
+            <span class="tag">Evaluation</span>
+            <span class="tag">Comparison</span>
+          </div>
+        </article>
+
+        <article class="file-card">
+          <h3>Recording 2026-04-22 105020.mp4</h3>
+          <p>Embedded video player for the screen recording. The filename is kept as-is and loaded with an encoded relative path.</p>
+          <div class="file-meta">
+            <span class="tag">MP4</span>
+            <span class="tag">Embedded player</span>
+            <span class="tag">GitHub Pages ready</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" id="datasets">
+      <div class="panel-head">
+        <div>
+          <h3>Dataset summary</h3>
+          <div class="note">Parsed from both JSON files once the page loads.</div>
+        </div>
+        <div class="toolbar">
+          <input id="searchBox" class="input" type="search" placeholder="Search by TC id, tool, team, or prompt text" />
+          <select id="datasetSelect" class="select">
+            <option value="all">All datasets</option>
+            <option value="primary">_Screens/question.json only</option>
+            <option value="evaluation">AgenticAIV2/Evaluation/question.json only</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="summary-grid" id="summaryGrid"></div>
+
+      <div class="dataset" id="datasetPanels"></div>
+    </section>
+
+    <section class="panel" id="recording">
+      <div class="panel-head">
+        <div>
+          <h3>Screen recording</h3>
+          <div class="note">The player points to the MP4 in the _Screens folder.</div>
+        </div>
+        <div class="toolbar">
+          <a class="button" href="_Screens/Recording%202026-04-22%20105020.mp4" target="_blank" rel="noreferrer">Open MP4</a>
+        </div>
+      </div>
+
+      <div class="video-shell">
+        <div class="video-frame">
+          <video id="screenVideo" controls playsinline preload="metadata"></video>
+        </div>
+        <div class="aside">
+          <div class="subpanel">
+            <h5>What is shown</h5>
+            <div class="kv">
+              <div><dt>File</dt><dd>Recording 2026-04-22 105020.mp4</dd></div>
+              <div><dt>Use case</dt><dd>Preview the recording directly inside the page.</dd></div>
+              <div><dt>Hosting</dt><dd>Works as long as the MP4 is published with the repo.</dd></div>
+            </div>
+          </div>
+          <div class="subpanel">
+            <h5>Tip</h5>
+            <p>You can keep the same relative paths when publishing to GitHub Pages. If you move the HTML file, just update the paths near the top of the script.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const sources = {
+      primary: {
+        label: '_Screens/question.json',
+        path: '_Screens/question.json'
+      },
+      evaluation: {
+        label: 'AgenticAIV2/Evaluation/question.json',
+        path: 'AgenticAIV2/Evaluation/question.json'
+      }
+    };
+
+    const state = {
+      primary: [],
+      evaluation: [],
+      filteredPrimary: [],
+      filteredEvaluation: []
+    };
+
+    const loadStatus = document.getElementById('loadStatus');
+    const heroMetrics = document.getElementById('heroMetrics');
+    const summaryGrid = document.getElementById('summaryGrid');
+    const datasetPanels = document.getElementById('datasetPanels');
+    const searchBox = document.getElementById('searchBox');
+    const datasetSelect = document.getElementById('datasetSelect');
+    const screenVideo = document.getElementById('screenVideo');
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function excerpt(text, maxLength = 180) {
+      const normalized = String(text || '').replace(/\s+/g, ' ').trim();
+      if (normalized.length <= maxLength) return normalized;
+      return normalized.slice(0, maxLength - 1).trimEnd() + '…';
+    }
+
+    function unique(values) {
+      return [...new Set(values.filter(Boolean))];
+    }
+
+    function analyzeDataset(items) {
+      const toolUsage = new Map();
+      const teams = new Map();
+      let strictCount = 0;
+      let emailRequiredCount = 0;
+
+      for (const item of items) {
+        const tools = item?.policy?.tools;
+        if (tools?.strict) strictCount += 1;
+        if (item?.channels?.email?.required) emailRequiredCount += 1;
+
+        for (const tool of tools?.required || []) {
+          toolUsage.set(tool, (toolUsage.get(tool) || 0) + 1);
+        }
+
+        for (const target of item?.channels?.email?.to || []) {
+          teams.set(target, (teams.get(target) || 0) + 1);
+        }
+      }
+
+      return {
+        count: items.length,
+        strictCount,
+        emailRequiredCount,
+        uniqueTools: unique(items.flatMap((item) => [
+          ...(item?.policy?.tools?.allowed || []),
+          ...(item?.policy?.tools?.required || [])
+        ])),
+        uniqueTargets: unique(items.flatMap((item) => item?.channels?.email?.to || [])),
+        topTool: [...toolUsage.entries()].sort((a, b) => b[1] - a[1])[0] || ['', 0],
+        teamSummary: [...teams.entries()].sort((a, b) => b[1] - a[1])
+      };
+    }
+
+    function matchesQuery(item, query) {
+      if (!query) return true;
+      const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
+      const haystack = [
+        item?.id,
+        item?.request?.prompt,
+        item?.request?.lang,
+        JSON.stringify(item?.policy?.tools?.allowed || []),
+        JSON.stringify(item?.policy?.tools?.required || []),
+        JSON.stringify(item?.channels?.email?.to || [])
+      ].join(' ').toLowerCase();
+
+      return tokens.every((token) => haystack.includes(token));
+    }
+
+    function renderHeroMetrics(primaryStats, evaluationStats) {
+      heroMetrics.innerHTML = [
+        {
+          label: 'Cases in primary JSON',
+          value: primaryStats.count,
+          sub: `${primaryStats.strictCount} strict policies`
+        },
+        {
+          label: 'Cases in evaluation JSON',
+          value: evaluationStats.count,
+          sub: `${evaluationStats.strictCount} strict policies`
+        },
+        {
+          label: 'Unique tools',
+          value: unique([...primaryStats.uniqueTools, ...evaluationStats.uniqueTools]).length,
+          sub: primaryStats.topTool[0] ? `Most common: ${primaryStats.topTool[0]}` : 'No tool data'
+        },
+        {
+          label: 'Email targets',
+          value: unique([...primaryStats.uniqueTargets, ...evaluationStats.uniqueTargets]).length,
+          sub: 'Recipients used across the dataset'
+        }
+      ].map((metric) => `
+        <article class="metric">
+          <span class="label">${escapeHtml(metric.label)}</span>
+          <span class="value">${escapeHtml(metric.value)}</span>
+          <span class="sub">${escapeHtml(metric.sub)}</span>
+        </article>
+      `).join('');
+    }
+
+    function renderSummaryGrid(primaryStats, evaluationStats) {
+      const sharedIds = state.primary
+        .map((item) => item.id)
+        .filter((id) => state.evaluation.some((other) => other.id === id));
+
+      summaryGrid.innerHTML = [
+        {
+          label: 'Shared test case IDs',
+          value: sharedIds.length,
+          sub: sharedIds.length ? sharedIds.slice(0, 5).join(', ') + (sharedIds.length > 5 ? '…' : '') : 'No overlap detected'
+        },
+        {
+          label: 'Primary email targets',
+          value: primaryStats.uniqueTargets.length,
+          sub: primaryStats.uniqueTargets.join(', ') || 'None'
+        },
+        {
+          label: 'Evaluation email targets',
+          value: evaluationStats.uniqueTargets.length,
+          sub: evaluationStats.uniqueTargets.join(', ') || 'None'
+        },
+        {
+          label: 'Most used required tool',
+          value: primaryStats.topTool[0] || 'N/A',
+          sub: primaryStats.topTool[1] ? `${primaryStats.topTool[1]} required references in primary JSON` : 'No required tools'
+        }
+      ].map((card) => `
+        <article class="card">
+          <div class="k">${escapeHtml(card.label)}</div>
+          <div class="v">${escapeHtml(card.value)}</div>
+          <div class="s">${escapeHtml(card.sub)}</div>
+        </article>
+      `).join('');
+    }
+
+    function renderCase(item) {
+      const allowedTools = item?.policy?.tools?.allowed || [];
+      const requiredTools = item?.policy?.tools?.required || [];
+      const recipientList = item?.channels?.email?.to || [];
+      const prompt = item?.request?.prompt || '';
+      const shortPrompt = excerpt(prompt, 210);
+
+      return `
+        <details class="case">
+          <summary>
+            <div class="case-id">${escapeHtml(item.id || 'N/A')}</div>
+            <div class="case-title">${escapeHtml(shortPrompt)}</div>
+            <div class="case-badges">
+              <span class="badge">${escapeHtml(item?.request?.lang || 'n/a')}</span>
+              <span class="badge">Allowed ${allowedTools.length}</span>
+              <span class="badge">Required ${requiredTools.length}</span>
+              <span class="badge">Email ${recipientList.length}</span>
+            </div>
+          </summary>
+          <div class="case-body">
+            <div class="case-grid">
+              <div class="subpanel">
+                <h5>Request</h5>
+                <p>${escapeHtml(prompt).replace(/\n/g, '<br>')}</p>
+              </div>
+              <div class="subpanel">
+                <h5>Policy & Channels</h5>
+                <dl class="kv">
+                  <div><dt>Language</dt><dd>${escapeHtml(item?.request?.lang || 'n/a')}</dd></div>
+                  <div><dt>Strict policy</dt><dd>${item?.policy?.tools?.strict ? 'Yes' : 'No'}</dd></div>
+                  <div><dt>Allowed tools</dt><dd>${escapeHtml(allowedTools.join(', ') || 'None')}</dd></div>
+                  <div><dt>Required tools</dt><dd>${escapeHtml(requiredTools.join(', ') || 'None')}</dd></div>
+                  <div><dt>Email recipients</dt><dd>${escapeHtml(recipientList.join(', ') || 'None')}</dd></div>
+                </dl>
+              </div>
+            </div>
+            <div class="subpanel">
+              <h5>Raw JSON</h5>
+              <pre class="raw">${escapeHtml(JSON.stringify(item, null, 2))}</pre>
+            </div>
+          </div>
+        </details>
+      `;
+    }
+
+    function renderDatasets() {
+      const query = searchBox.value.trim();
+      const selected = datasetSelect.value;
+
+      const renderSet = (key, items) => {
+        const filtered = items.filter((item) => matchesQuery(item, query));
+        const source = sources[key];
+        const statusLine = filtered.length
+          ? `${filtered.length} / ${items.length} cases match the current filter.`
+          : 'No cases matched the current filter.';
+
+        return `
+          <section class="subpanel">
+            <div class="dataset-header">
+              <h4>${escapeHtml(source.label)}</h4>
+              <div class="path">${escapeHtml(source.path)}</div>
+            </div>
+            <p style="margin: 0 0 12px; color: var(--muted);">${escapeHtml(statusLine)}</p>
+            <div class="cases">
+              ${filtered.length ? filtered.map(renderCase).join('') : '<div class="empty">No items to show for this filter.</div>'}
+            </div>
+          </section>
+        `;
+      };
+
+      if (selected === 'primary') {
+        datasetPanels.innerHTML = renderSet('primary', state.primary);
+        return;
+      }
+
+      if (selected === 'evaluation') {
+        datasetPanels.innerHTML = renderSet('evaluation', state.evaluation);
+        return;
+      }
+
+      datasetPanels.innerHTML = [
+        renderSet('primary', state.primary),
+        renderSet('evaluation', state.evaluation)
+      ].join('');
+    }
+
+    async function loadJson(path) {
+      const response = await fetch(encodeURI(path), { cache: 'no-store' });
+      if (!response.ok) {
+        throw new Error(`Failed to load ${path}: ${response.status}`);
+      }
+      return response.json();
+    }
+
+    async function boot() {
+      try {
+        screenVideo.src = encodeURI('_Screens/Recording 2026-04-22 105020.mp4');
+
+        const [primary, evaluation] = await Promise.all([
+          loadJson(sources.primary.path),
+          loadJson(sources.evaluation.path)
+        ]);
+
+        state.primary = Array.isArray(primary) ? primary : [];
+        state.evaluation = Array.isArray(evaluation) ? evaluation : [];
+
+        const primaryStats = analyzeDataset(state.primary);
+        const evaluationStats = analyzeDataset(state.evaluation);
+
+        renderHeroMetrics(primaryStats, evaluationStats);
+        renderSummaryGrid(primaryStats, evaluationStats);
+        renderDatasets();
+
+        loadStatus.textContent = `Loaded ${primaryStats.count} primary cases and ${evaluationStats.count} evaluation cases from the repository.`;
+      } catch (error) {
+        console.error(error);
+        loadStatus.textContent = `Unable to load local files: ${error.message}. The page still opens, but the JSON/video must be served from the same repository path.`;
+        heroMetrics.innerHTML = `
+          <article class="metric">
+            <span class="label">Load status</span>
+            <span class="value">Error</span>
+            <span class="sub">Check file paths or GitHub Pages publishing.</span>
+          </article>
+          <article class="metric">
+            <span class="label">JSON browser</span>
+            <span class="value">Offline</span>
+            <span class="sub">Open the page through a web server.</span>
+          </article>
+        `;
+        summaryGrid.innerHTML = `
+          <div class="empty">Failed to load one or more assets. Verify that <strong>_Screens/question.json</strong>, <strong>AgenticAIV2/Evaluation/question.json</strong>, and the MP4 exist in the published repository.</div>
+        `;
+      }
+    }
+
+    searchBox.addEventListener('input', renderDatasets);
+    datasetSelect.addEventListener('change', renderDatasets);
+
+    boot();
+  </script>
+</body>
+</html>
