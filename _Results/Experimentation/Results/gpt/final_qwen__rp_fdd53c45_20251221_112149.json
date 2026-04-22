@@ -1,0 +1,933 @@
+[
+  {
+    "TestCaseId": "TC-001",
+    "RunId": "bee66228584f48bfa2eba213d3aacad9",
+    "Tools": {
+      "WtrStep": 0,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": true,
+      "ReplanCount": 0,
+      "InvokedCount": 3,
+      "WrongInvocations": 0,
+      "UsedSet": [
+        "mssql_mcp.qry_customers",
+        "mssql_mcp.qry_customer_with_loans",
+        "mail_mcp.send_email"
+      ],
+      "Violations": []
+    },
+    "PlanValidity": {
+      "Score": 0,
+      "IsValid": false,
+      "RequiredAllSucceeded": false,
+      "InvalidSteps": []
+    },
+    "Accuracy": {
+      "Coverage": 0,
+      "Passed": false,
+      "Missing": [],
+      "ForbiddenHit": []
+    },
+    "Channels": {
+      "Passed": true,
+      "EmailAllowed": false,
+      "EmailRequired": false,
+      "EmailSatisfied": false
+    },
+    "OverallScore": 0,
+    "OverallPassed": false,
+    "FinalComplianceScore": 0,
+    "WtrScore": 0,
+    "ChannelScore": 0,
+    "Replanning": {
+      "PlanHistoryCount": 1,
+      "ReplanCount": 0,
+      "Replanned": false
+    },
+    "Passed": false
+  },
+  {
+    "TestCaseId": "TC-002",
+    "RunId": "b91ab59080664d58b2b95eb334bc045d",
+    "Tools": {
+      "WtrStep": 0,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": true,
+      "ReplanCount": 0,
+      "InvokedCount": 4,
+      "WrongInvocations": 0,
+      "UsedSet": [
+        "mssql_mcp.qry_customers",
+        "mssql_mcp.qry_customer_with_loans",
+        "mssql_mcp.qry_loan_overview",
+        "mail_mcp.send_email"
+      ],
+      "Violations": []
+    },
+    "PlanValidity": {
+      "Score": 0,
+      "IsValid": false,
+      "RequiredAllSucceeded": false,
+      "InvalidSteps": []
+    },
+    "Accuracy": {
+      "Coverage": 0,
+      "Passed": false,
+      "Missing": [],
+      "ForbiddenHit": []
+    },
+    "Channels": {
+      "Passed": true,
+      "EmailAllowed": false,
+      "EmailRequired": false,
+      "EmailSatisfied": false
+    },
+    "OverallScore": 0,
+    "OverallPassed": false,
+    "FinalComplianceScore": 0,
+    "WtrScore": 0,
+    "ChannelScore": 0,
+    "Replanning": {
+      "PlanHistoryCount": 1,
+      "ReplanCount": 0,
+      "Replanned": false
+    },
+    "Passed": false
+  },
+  {
+    "TestCaseId": "TC-003",
+    "RunId": "8b1616d9d1b749ffb6bd08692cd210e5",
+    "Tools": {
+      "WtrStep": 0,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": true,
+      "ReplanCount": 1,
+      "InvokedCount": 4,
+      "WrongInvocations": 0,
+      "UsedSet": [
+        "mssql_mcp.qry_customers",
+        "mssql_mcp.qry_customer_with_loans",
+        "mssql_mcp.qry_payment_schedule_by_loan",
+        "mail_mcp.send_email"
+      ],
+      "Violations": []
+    },
+    "PlanValidity": {
+      "Score": 0,
+      "IsValid": false,
+      "RequiredAllSucceeded": false,
+      "InvalidSteps": []
+    },
+    "Accuracy": {
+      "Coverage": 0,
+      "Passed": false,
+      "Missing": [],
+      "ForbiddenHit": []
+    },
+    "Channels": {
+      "Passed": true,
+      "EmailAllowed": false,
+      "EmailRequired": false,
+      "EmailSatisfied": false
+    },
+    "OverallScore": 0,
+    "OverallPassed": false,
+    "FinalComplianceScore": 0,
+    "WtrScore": 0,
+    "ChannelScore": 0,
+    "Replanning": {
+      "PlanHistoryCount": 2,
+      "ReplanCount": 1,
+      "Replanned": true
+    },
+    "Passed": false
+  },
+  {
+    "TestCaseId": "TC-004",
+    "RunId": "ec79c01b61a44909b3e60b618b604fbc",
+    "Tools": {
+      "WtrStep": 0,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": true,
+      "ReplanCount": 0,
+      "InvokedCount": 2,
+      "WrongInvocations": 0,
+      "UsedSet": [
+        "mssql_mcp.qry_product_portfolio_summary",
+        "mail_mcp.send_email"
+      ],
+      "Violations": []
+    },
+    "PlanValidity": {
+      "Score": 0,
+      "IsValid": false,
+      "RequiredAllSucceeded": false,
+      "InvalidSteps": []
+    },
+    "Accuracy": {
+      "Coverage": 0,
+      "Passed": false,
+      "Missing": [],
+      "ForbiddenHit": []
+    },
+    "Channels": {
+      "Passed": true,
+      "EmailAllowed": false,
+      "EmailRequired": false,
+      "EmailSatisfied": false
+    },
+    "OverallScore": 0,
+    "OverallPassed": false,
+    "FinalComplianceScore": 0,
+    "WtrScore": 0,
+    "ChannelScore": 0,
+    "Replanning": {
+      "PlanHistoryCount": 1,
+      "ReplanCount": 0,
+      "Replanned": false
+    },
+    "Passed": false
+  },
+  {
+    "TestCaseId": "TC-005",
+    "RunId": "55682b0659864328b4150f6cb94803f1",
+    "Tools": {
+      "WtrStep": 0.3333333333333333,
+      "RequiredCoverage": 0.6666666666666666,
+      "ForbiddenUsed": false,
+      "FinalCompliance": false,
+      "ReplanCount": 0,
+      "InvokedCount": 3,
+      "WrongInvocations": 1,
+      "UsedSet": [
+        "mssql_mcp.qry_payments_by_date",
+        "mssql_mcp.qry_loan_balance_asof",
+        "mail_mcp.send_email"
+      ],
+      "Violations": [
+        {
+          "StepId": "loan-balance",
+          "ToolFullName": "mssql_mcp.qry_loan_balance_asof",
+          "Reason": "tool_not_allowed"
+        }
+      ]
+    },
+    "PlanValidity": {
+      "Score": 0,
+      "IsValid": false,
+      "RequiredAllSucceeded": false,
+      "InvalidSteps": []
+    },
+    "Accuracy": {
+      "Coverage": 0,
+      "Passed": false,
+      "Missing": [],
+      "ForbiddenHit": []
+    },
+    "Channels": {
+      "Passed": true,
+      "EmailAllowed": false,
+      "EmailRequired": false,
+      "EmailSatisfied": false
+    },
+    "OverallScore": 0,
+    "OverallPassed": false,
+    "FinalComplianceScore": 0,
+    "WtrScore": 0,
+    "ChannelScore": 0,
+    "Replanning": {
+      "PlanHistoryCount": 1,
+      "ReplanCount": 0,
+      "Replanned": false
+    },
+    "Passed": false
+  },
+  {
+    "TestCaseId": "TC-006",
+    "RunId": "96dd5982f63e423ab451843a1658cde4",
+    "Tools": {
+      "WtrStep": 0,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": true,
+      "ReplanCount": 3,
+      "InvokedCount": 5,
+      "WrongInvocations": 0,
+      "UsedSet": [
+        "mssql_mcp.qry_loans",
+        "mssql_mcp.qry_loan_balance_asof",
+        "mail_mcp.send_email"
+      ],
+      "Violations": []
+    },
+    "PlanValidity": {
+      "Score": 0,
+      "IsValid": false,
+      "RequiredAllSucceeded": false,
+      "InvalidSteps": []
+    },
+    "Accuracy": {
+      "Coverage": 0,
+      "Passed": false,
+      "Missing": [],
+      "ForbiddenHit": []
+    },
+    "Channels": {
+      "Passed": true,
+      "EmailAllowed": false,
+      "EmailRequired": false,
+      "EmailSatisfied": false
+    },
+    "OverallScore": 0,
+    "OverallPassed": false,
+    "FinalComplianceScore": 0,
+    "WtrScore": 0,
+    "ChannelScore": 0,
+    "Replanning": {
+      "PlanHistoryCount": 4,
+      "ReplanCount": 3,
+      "Replanned": true
+    },
+    "Passed": false
+  },
+  {
+    "TestCaseId": "TC-007",
+    "RunId": "332b5b5b698f44edb25c79a091388974",
+    "Tools": {
+      "WtrStep": 0,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": true,
+      "ReplanCount": 0,
+      "InvokedCount": 2,
+      "WrongInvocations": 0,
+      "UsedSet": [
+        "mssql_mcp.qry_upcoming_due",
+        "mail_mcp.send_email"
+      ],
+      "Violations": []
+    },
+    "PlanValidity": {
+      "Score": 0,
+      "IsValid": false,
+      "RequiredAllSucceeded": false,
+      "InvalidSteps": []
+    },
+    "Accuracy": {
+      "Coverage": 0,
+      "Passed": false,
+      "Missing": [],
+      "ForbiddenHit": []
+    },
+    "Channels": {
+      "Passed": true,
+      "EmailAllowed": false,
+      "EmailRequired": false,
+      "EmailSatisfied": false
+    },
+    "OverallScore": 0,
+    "OverallPassed": false,
+    "FinalComplianceScore": 0,
+    "WtrScore": 0,
+    "ChannelScore": 0,
+    "Replanning": {
+      "PlanHistoryCount": 1,
+      "ReplanCount": 0,
+      "Replanned": false
+    },
+    "Passed": false
+  },
+  {
+    "TestCaseId": "TC-008",
+    "RunId": "20623ec80995451781720847f6b94dc6",
+    "Tools": {
+      "WtrStep": 0,
+      "RequiredCoverage": 0.6666666666666666,
+      "ForbiddenUsed": false,
+      "FinalCompliance": true,
+      "ReplanCount": 0,
+      "InvokedCount": 2,
+      "WrongInvocations": 0,
+      "UsedSet": [
+        "mssql_mcp.qry_collector_queue",
+        "mail_mcp.send_email"
+      ],
+      "Violations": []
+    },
+    "PlanValidity": {
+      "Score": 0,
+      "IsValid": false,
+      "RequiredAllSucceeded": false,
+      "InvalidSteps": []
+    },
+    "Accuracy": {
+      "Coverage": 0,
+      "Passed": false,
+      "Missing": [],
+      "ForbiddenHit": []
+    },
+    "Channels": {
+      "Passed": true,
+      "EmailAllowed": false,
+      "EmailRequired": false,
+      "EmailSatisfied": false
+    },
+    "OverallScore": 0,
+    "OverallPassed": false,
+    "FinalComplianceScore": 0,
+    "WtrScore": 0,
+    "ChannelScore": 0,
+    "Replanning": {
+      "PlanHistoryCount": 1,
+      "ReplanCount": 0,
+      "Replanned": false
+    },
+    "Passed": false
+  },
+  {
+    "TestCaseId": "TC-009",
+    "RunId": "dc43732574bd45fea42291872b2242c2",
+    "Tools": {
+      "WtrStep": 0,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": true,
+      "ReplanCount": 0,
+      "InvokedCount": 4,
+      "WrongInvocations": 0,
+      "UsedSet": [
+        "mssql_mcp.qry_prepayment_history",
+        "mssql_mcp.qry_loan_overview",
+        "mssql_mcp.qry_payments_by_loan",
+        "mail_mcp.send_email"
+      ],
+      "Violations": []
+    },
+    "PlanValidity": {
+      "Score": 0,
+      "IsValid": false,
+      "RequiredAllSucceeded": false,
+      "InvalidSteps": []
+    },
+    "Accuracy": {
+      "Coverage": 0,
+      "Passed": false,
+      "Missing": [],
+      "ForbiddenHit": []
+    },
+    "Channels": {
+      "Passed": true,
+      "EmailAllowed": false,
+      "EmailRequired": false,
+      "EmailSatisfied": false
+    },
+    "OverallScore": 0,
+    "OverallPassed": false,
+    "FinalComplianceScore": 0,
+    "WtrScore": 0,
+    "ChannelScore": 0,
+    "Replanning": {
+      "PlanHistoryCount": 1,
+      "ReplanCount": 0,
+      "Replanned": false
+    },
+    "Passed": false
+  },
+  {
+    "TestCaseId": "TC-010",
+    "RunId": "2faa8ccc99264482a5cc4dcc1d975ffc",
+    "Tools": {
+      "WtrStep": 0,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": true,
+      "ReplanCount": 0,
+      "InvokedCount": 2,
+      "WrongInvocations": 0,
+      "UsedSet": [
+        "mssql_mcp.qry_delinquency_aging",
+        "mail_mcp.send_email"
+      ],
+      "Violations": []
+    },
+    "PlanValidity": {
+      "Score": 0,
+      "IsValid": false,
+      "RequiredAllSucceeded": false,
+      "InvalidSteps": []
+    },
+    "Accuracy": {
+      "Coverage": 0,
+      "Passed": false,
+      "Missing": [],
+      "ForbiddenHit": []
+    },
+    "Channels": {
+      "Passed": true,
+      "EmailAllowed": false,
+      "EmailRequired": false,
+      "EmailSatisfied": false
+    },
+    "OverallScore": 0,
+    "OverallPassed": false,
+    "FinalComplianceScore": 0,
+    "WtrScore": 0,
+    "ChannelScore": 0,
+    "Replanning": {
+      "PlanHistoryCount": 1,
+      "ReplanCount": 0,
+      "Replanned": false
+    },
+    "Passed": false
+  },
+  {
+    "TestCaseId": "TC-011",
+    "RunId": "f3354add3f24458eb591c3c8f74df904",
+    "Tools": {
+      "WtrStep": 0,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": true,
+      "ReplanCount": 0,
+      "InvokedCount": 3,
+      "WrongInvocations": 0,
+      "UsedSet": [
+        "mssql_mcp.qry_product_portfolio_summary",
+        "mssql_mcp.qry_loans",
+        "mail_mcp.send_email"
+      ],
+      "Violations": []
+    },
+    "PlanValidity": {
+      "Score": 0,
+      "IsValid": false,
+      "RequiredAllSucceeded": false,
+      "InvalidSteps": []
+    },
+    "Accuracy": {
+      "Coverage": 0,
+      "Passed": false,
+      "Missing": [],
+      "ForbiddenHit": []
+    },
+    "Channels": {
+      "Passed": true,
+      "EmailAllowed": false,
+      "EmailRequired": false,
+      "EmailSatisfied": false
+    },
+    "OverallScore": 0,
+    "OverallPassed": false,
+    "FinalComplianceScore": 0,
+    "WtrScore": 0,
+    "ChannelScore": 0,
+    "Replanning": {
+      "PlanHistoryCount": 1,
+      "ReplanCount": 0,
+      "Replanned": false
+    },
+    "Passed": false
+  },
+  {
+    "TestCaseId": "TC-012",
+    "RunId": "b80d4955ee454e7d8edc82c9bf8d2782",
+    "Tools": {
+      "WtrStep": 0.6,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": false,
+      "ReplanCount": 0,
+      "InvokedCount": 5,
+      "WrongInvocations": 3,
+      "UsedSet": [
+        "mssql_mcp.qry_collector_queue",
+        "mssql_mcp.qry_loan_balance_asof",
+        "mail_mcp.send_email"
+      ],
+      "Violations": [
+        {
+          "StepId": "get-loan-balance-1",
+          "ToolFullName": "mssql_mcp.qry_loan_balance_asof",
+          "Reason": "tool_not_allowed"
+        },
+        {
+          "StepId": "get-loan-balance-2",
+          "ToolFullName": "mssql_mcp.qry_loan_balance_asof",
+          "Reason": "tool_not_allowed"
+        },
+        {
+          "StepId": "get-loan-balance-3",
+          "ToolFullName": "mssql_mcp.qry_loan_balance_asof",
+          "Reason": "tool_not_allowed"
+        }
+      ]
+    },
+    "PlanValidity": {
+      "Score": 0,
+      "IsValid": false,
+      "RequiredAllSucceeded": false,
+      "InvalidSteps": []
+    },
+    "Accuracy": {
+      "Coverage": 0,
+      "Passed": false,
+      "Missing": [],
+      "ForbiddenHit": []
+    },
+    "Channels": {
+      "Passed": true,
+      "EmailAllowed": false,
+      "EmailRequired": false,
+      "EmailSatisfied": false
+    },
+    "OverallScore": 0,
+    "OverallPassed": false,
+    "FinalComplianceScore": 0,
+    "WtrScore": 0,
+    "ChannelScore": 0,
+    "Replanning": {
+      "PlanHistoryCount": 1,
+      "ReplanCount": 0,
+      "Replanned": false
+    },
+    "Passed": false
+  },
+  {
+    "TestCaseId": "TC-013",
+    "RunId": "3f1e83d43c4b4d6897057211310c23bd",
+    "Tools": {
+      "WtrStep": 0,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": true,
+      "ReplanCount": 0,
+      "InvokedCount": 2,
+      "WrongInvocations": 0,
+      "UsedSet": [
+        "mssql_mcp.qry_loan_applications",
+        "mail_mcp.send_email"
+      ],
+      "Violations": []
+    },
+    "PlanValidity": {
+      "Score": 0,
+      "IsValid": false,
+      "RequiredAllSucceeded": false,
+      "InvalidSteps": []
+    },
+    "Accuracy": {
+      "Coverage": 0,
+      "Passed": false,
+      "Missing": [],
+      "ForbiddenHit": []
+    },
+    "Channels": {
+      "Passed": true,
+      "EmailAllowed": false,
+      "EmailRequired": false,
+      "EmailSatisfied": false
+    },
+    "OverallScore": 0,
+    "OverallPassed": false,
+    "FinalComplianceScore": 0,
+    "WtrScore": 0,
+    "ChannelScore": 0,
+    "Replanning": {
+      "PlanHistoryCount": 1,
+      "ReplanCount": 0,
+      "Replanned": false
+    },
+    "Passed": false
+  },
+  {
+    "TestCaseId": "TC-014",
+    "RunId": "673f6d7fa22743a38937d6986a6ce1af",
+    "Tools": {
+      "WtrStep": 0,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": true,
+      "ReplanCount": 0,
+      "InvokedCount": 3,
+      "WrongInvocations": 0,
+      "UsedSet": [
+        "mssql_mcp.qry_loans",
+        "mssql_mcp.qry_loan_balance_asof",
+        "mail_mcp.send_email"
+      ],
+      "Violations": []
+    },
+    "PlanValidity": {
+      "Score": 0,
+      "IsValid": false,
+      "RequiredAllSucceeded": false,
+      "InvalidSteps": []
+    },
+    "Accuracy": {
+      "Coverage": 0,
+      "Passed": false,
+      "Missing": [],
+      "ForbiddenHit": []
+    },
+    "Channels": {
+      "Passed": true,
+      "EmailAllowed": false,
+      "EmailRequired": false,
+      "EmailSatisfied": false
+    },
+    "OverallScore": 0,
+    "OverallPassed": false,
+    "FinalComplianceScore": 0,
+    "WtrScore": 0,
+    "ChannelScore": 0,
+    "Replanning": {
+      "PlanHistoryCount": 1,
+      "ReplanCount": 0,
+      "Replanned": false
+    },
+    "Passed": false
+  },
+  {
+    "TestCaseId": "TC-015",
+    "RunId": "3d2e6ac0b6734d1eae3447c9d7151615",
+    "Tools": {
+      "WtrStep": 0,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": true,
+      "ReplanCount": 2,
+      "InvokedCount": 5,
+      "WrongInvocations": 0,
+      "UsedSet": [
+        "mssql_mcp.qry_customers",
+        "mssql_mcp.qry_customer_with_loans",
+        "mssql_mcp.qry_payment_schedule_by_loan",
+        "mssql_mcp.qry_payments_by_loan",
+        "mail_mcp.send_email"
+      ],
+      "Violations": []
+    },
+    "PlanValidity": {
+      "Score": 0,
+      "IsValid": false,
+      "RequiredAllSucceeded": false,
+      "InvalidSteps": []
+    },
+    "Accuracy": {
+      "Coverage": 0,
+      "Passed": false,
+      "Missing": [],
+      "ForbiddenHit": []
+    },
+    "Channels": {
+      "Passed": true,
+      "EmailAllowed": false,
+      "EmailRequired": false,
+      "EmailSatisfied": false
+    },
+    "OverallScore": 0,
+    "OverallPassed": false,
+    "FinalComplianceScore": 0,
+    "WtrScore": 0,
+    "ChannelScore": 0,
+    "Replanning": {
+      "PlanHistoryCount": 3,
+      "ReplanCount": 2,
+      "Replanned": true
+    },
+    "Passed": false
+  },
+  {
+    "TestCaseId": "TC-016",
+    "RunId": "25297742ac5447159c319e03686b04a6",
+    "Tools": {
+      "WtrStep": 0,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": true,
+      "ReplanCount": 0,
+      "InvokedCount": 2,
+      "WrongInvocations": 0,
+      "UsedSet": [
+        "mssql_mcp.qry_interest_methods",
+        "mail_mcp.send_email"
+      ],
+      "Violations": []
+    },
+    "PlanValidity": {
+      "Score": 0,
+      "IsValid": false,
+      "RequiredAllSucceeded": false,
+      "InvalidSteps": []
+    },
+    "Accuracy": {
+      "Coverage": 0,
+      "Passed": false,
+      "Missing": [],
+      "ForbiddenHit": []
+    },
+    "Channels": {
+      "Passed": true,
+      "EmailAllowed": false,
+      "EmailRequired": false,
+      "EmailSatisfied": false
+    },
+    "OverallScore": 0,
+    "OverallPassed": false,
+    "FinalComplianceScore": 0,
+    "WtrScore": 0,
+    "ChannelScore": 0,
+    "Replanning": {
+      "PlanHistoryCount": 1,
+      "ReplanCount": 0,
+      "Replanned": false
+    },
+    "Passed": false
+  },
+  {
+    "TestCaseId": "TC-017",
+    "RunId": "f33bf852d4d54f84a249a5223c49b774",
+    "Tools": {
+      "WtrStep": 0,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": true,
+      "ReplanCount": 0,
+      "InvokedCount": 2,
+      "WrongInvocations": 0,
+      "UsedSet": [
+        "mssql_mcp.qry_payments_by_date",
+        "mail_mcp.send_email"
+      ],
+      "Violations": []
+    },
+    "PlanValidity": {
+      "Score": 0,
+      "IsValid": false,
+      "RequiredAllSucceeded": false,
+      "InvalidSteps": []
+    },
+    "Accuracy": {
+      "Coverage": 0,
+      "Passed": false,
+      "Missing": [],
+      "ForbiddenHit": []
+    },
+    "Channels": {
+      "Passed": true,
+      "EmailAllowed": false,
+      "EmailRequired": false,
+      "EmailSatisfied": false
+    },
+    "OverallScore": 0,
+    "OverallPassed": false,
+    "FinalComplianceScore": 0,
+    "WtrScore": 0,
+    "ChannelScore": 0,
+    "Replanning": {
+      "PlanHistoryCount": 1,
+      "ReplanCount": 0,
+      "Replanned": false
+    },
+    "Passed": false
+  },
+  {
+    "TestCaseId": "TC-019",
+    "RunId": "2ba0f5644e9f443a9cba6f451a670260",
+    "Tools": {
+      "WtrStep": 0,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": true,
+      "ReplanCount": 0,
+      "InvokedCount": 2,
+      "WrongInvocations": 0,
+      "UsedSet": [
+        "mssql_mcp.qry_delinquency_aging",
+        "mail_mcp.send_email"
+      ],
+      "Violations": []
+    },
+    "PlanValidity": {
+      "Score": 0,
+      "IsValid": false,
+      "RequiredAllSucceeded": false,
+      "InvalidSteps": []
+    },
+    "Accuracy": {
+      "Coverage": 0,
+      "Passed": false,
+      "Missing": [],
+      "ForbiddenHit": []
+    },
+    "Channels": {
+      "Passed": true,
+      "EmailAllowed": false,
+      "EmailRequired": false,
+      "EmailSatisfied": false
+    },
+    "OverallScore": 0,
+    "OverallPassed": false,
+    "FinalComplianceScore": 0,
+    "WtrScore": 0,
+    "ChannelScore": 0,
+    "Replanning": {
+      "PlanHistoryCount": 1,
+      "ReplanCount": 0,
+      "Replanned": false
+    },
+    "Passed": false
+  },
+  {
+    "TestCaseId": "TC-020",
+    "RunId": "4c410f3277ff4fcfb6e52b7c6868563a",
+    "Tools": {
+      "WtrStep": 0,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": true,
+      "ReplanCount": 0,
+      "InvokedCount": 3,
+      "WrongInvocations": 0,
+      "UsedSet": [
+        "mssql_mcp.qry_loan_applications",
+        "mssql_mcp.qry_customer_with_loans",
+        "mail_mcp.send_email"
+      ],
+      "Violations": []
+    },
+    "PlanValidity": {
+      "Score": 0,
+      "IsValid": false,
+      "RequiredAllSucceeded": false,
+      "InvalidSteps": []
+    },
+    "Accuracy": {
+      "Coverage": 0,
+      "Passed": false,
+      "Missing": [],
+      "ForbiddenHit": []
+    },
+    "Channels": {
+      "Passed": true,
+      "EmailAllowed": false,
+      "EmailRequired": false,
+      "EmailSatisfied": false
+    },
+    "OverallScore": 0,
+    "OverallPassed": false,
+    "FinalComplianceScore": 0,
+    "WtrScore": 0,
+    "ChannelScore": 0,
+    "Replanning": {
+      "PlanHistoryCount": 1,
+      "ReplanCount": 0,
+      "Replanned": false
+    },
+    "Passed": false
+  }
+]

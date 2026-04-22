@@ -1,0 +1,10 @@
+{
+  "TotalRuns": 1,
+  "RunsWithReplan": 0,
+  "TotalReplanCount": 0,
+  "ReplanRate": 0,
+  "TotalToolInvocations": 3,
+  "TotalWrongToolInvocations": 0,
+  "WtrRate": 0,
+  "AvgWtrPerRun": 0
+}

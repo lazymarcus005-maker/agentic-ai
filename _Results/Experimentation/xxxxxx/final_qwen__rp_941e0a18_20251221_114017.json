@@ -1,0 +1,50 @@
+[
+  {
+    "TestCaseId": "TC-001",
+    "RunId": "81bce112c81b40f38f8eaec4d61f79c1",
+    "Tools": {
+      "WtrStep": 0,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": true,
+      "ReplanCount": 0,
+      "InvokedCount": 3,
+      "WrongInvocations": 0,
+      "UsedSet": [
+        "mssql_mcp.qry_customers",
+        "mssql_mcp.qry_customer_with_loans",
+        "mail_mcp.send_email"
+      ],
+      "Violations": []
+    },
+    "PlanValidity": {
+      "Score": 0,
+      "IsValid": false,
+      "RequiredAllSucceeded": false,
+      "InvalidSteps": []
+    },
+    "Accuracy": {
+      "Coverage": 0,
+      "Passed": false,
+      "Missing": [],
+      "ForbiddenHit": []
+    },
+    "Channels": {
+      "Passed": true,
+      "EmailAllowed": false,
+      "EmailRequired": false,
+      "EmailSatisfied": false
+    },
+    "OverallScore": 0,
+    "OverallPassed": false,
+    "FinalComplianceScore": 0,
+    "WtrScore": 0,
+    "ChannelScore": 0,
+    "Replanning": {
+      "PlanHistoryCount": 1,
+      "ReplanCount": 0,
+      "Replanned": false
+    },
+    "Passed": false
+  }
+]

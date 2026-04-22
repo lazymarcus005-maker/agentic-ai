@@ -1,0 +1,25 @@
+[
+  {
+    "TestCaseId": "TC-001",
+    "Tools": {
+      "WtrStep": 0,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": true,
+      "ReplanCount": 0,
+      "InvokedCount": 3,
+      "WrongInvocations": 0,
+      "UsedSet": [
+        "mssql_mcp.qry_customers",
+        "mssql_mcp.qry_customer_with_loans",
+        "mail_mcp.send_email"
+      ],
+      "Violations": []
+    },
+    "Replanning": {
+      "PlanHistoryCount": 1,
+      "ReplanCount": 0,
+      "Replanned": false
+    }
+  }
+]

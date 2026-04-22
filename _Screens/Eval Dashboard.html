@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<!-- saved from url=(0043)https://localhost:51386/agentic/report.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    
+    <title>Eval Dashboard</title>
+    <link rel="stylesheet" href="./Eval Dashboard_files/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>Evaluation Dashboard</h1>
+            <span class="subtitle">API: https://localhost:5082/Evaluation</span>
+        </header>
+
+        <!-- controls -->
+        <section class="control-bar" style="padding-bottom: 20px;">
+            <div id="progress-container" class="progress-container" hidden="" style="display: none;">
+                <div class="progress-track">
+                    <div id="progress-bar" class="progress-bar" style="width: 100%;"></div>
+                </div>
+                <span id="progress-label" class="progress-label">Loading data from API...</span>
+            </div>
+            
+            <button id="load-btn" class="btn-primary">Load Data from API</button>
+
+        </section>
+
+        <!-- Summary Cards -->
+        <section id="summary" class="summary-grid"><div class="card">
+            <div class="card-title">Test Cases</div>
+            <div class="card-value">20</div>
+            <div class="card-extra">Total</div>
+        </div><div class="card">
+            <div class="card-title">Passed / Failed</div>
+            <div class="card-value">20/0</div>
+            <div class="card-extra">100.0% Success</div>
+        </div><div class="card">
+            <div class="card-title">Total Tool Invocations</div>
+            <div class="card-value">126</div>
+            <div class="card-extra">Tool calls made</div>
+        </div><div class="card">
+            <div class="card-title">Wrong Invocations</div>
+            <div class="card-value">7</div>
+            <div class="card-extra">Incorrect tool calls</div>
+        </div><div class="card">
+            <div class="card-title">Total Replans</div>
+            <div class="card-value">15</div>
+            <div class="card-extra">Times replanned</div>
+        </div></section>
+
+        <!-- Actions Bar -->
+        <section class="actions-bar">
+            <button id="download-json-btn" class="btn-secondary">Download JSON</button>
+            <div class="filter-controls">
+                <select id="filter-status" class="filter-select">
+                    <option value="">All</option>
+                    <option value="PASS">Passed Only</option>
+                    <option value="FAIL">Failed Only</option>
+                </select>
+                <input type="text" id="search-box" class="search-input" placeholder="Search TestCase ID...">
+            </div>
+        </section>
+
+        <!-- Main Table -->
+        <section class="table-section">
+            <div class="table-header">
+                <h2>Test Case Metrics</h2>
+                <span id="last-updated" class="last-updated">Last updated: 4/22/2026, 11:24:21 AM</span>
+            </div>
+
+            <div class="table-wrapper">
+                <table id="test-table">
+                    <thead>
+                        <tr>
+                            <th>TestCase</th>
+                            <th>Task Complete</th>
+                            <th>Tools</th>
+                            <th>Replanning</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody><tr class="data-row">
+        <td><strong>TC-020</strong></td>
+        <td class="center"><span class="badge badge-pass">PASS</span></td>
+        <td>
+        <div class="info-cell">
+            <span class="label">Invoked:</span> <span class="value">3</span><br>
+            <span class="label">Wrong:</span> <span class="value">0</span><br>
+            <span class="label">Compliance:</span> <span class="value">✓</span>
+        </div>
+    </td>
+        <td>
+        <div class="info-cell">
+            <span class="label">History:</span> <span class="value">1</span><br>
+            <span class="label">Replan Count:</span> <span class="value">0</span><br>
+            <span class="label">Status:</span> <span class="value">No</span>
+        </div>
+    </td>
+        <td>
+            <button class="btn-toggle" data-index="0">
+                Detail
+            </button>
+        </td>
+    </tr><tr class="detail-row" style="display: none;">
+        <td colspan="5" class="detail-content">
+            <div class="detail-panel">
+                <div class="detail-section">
+                    <h4>Tools Execution Details</h4>
+                    <table class="detail-table">
+                        <tbody><tr><td>WTR Step:</td><td>0</td></tr>
+                        <tr><td>Required Coverage:</td><td>1</td></tr>
+                        <tr><td>Forbidden Used:</td><td>No</td></tr>
+                        <tr><td>Final Compliance:</td><td>Compliant</td></tr>
+                        <tr><td>Replan Count:</td><td>0</td></tr>
+                        <tr><td>Invoked Count:</td><td>3</td></tr>
+                        <tr><td>Wrong Invocations:</td><td>0</td></tr>
+                    </tbody></table>
+                    <div class="detail-subsection"><strong>Tools Used:</strong><ul class="tools-list"><li>mssql_mcp.qry_loan_applications</li><li>mssql_mcp.qry_customer_with_loans</li><li>mail_mcp.send_email</li></ul></div>
+                    
+                </div>
+
+                <div class="detail-section">
+                    <h4>Replanning Details</h4>
+                    <table class="detail-table">
+                        <tbody><tr><td>Plan History Count:</td><td>1</td></tr>
+                        <tr><td>Replan Count:</td><td>0</td></tr>
+                        <tr><td>Was Replanned:</td><td>No</td></tr>
+                    </tbody></table>
+                </div>
+
+                <div class="detail-section">
+                    <h4>Raw JSON</h4>
+                    <pre class="json-view">{
+  "testCaseId": "TC-020",
+  "runComplete": true,
+  "tools": {
+    "wtrStep": 0,
+    "requiredCoverage": 1,
+    "forbiddenUsed": false,
+    "finalCompliance": true,
+    "replanCount": 0,
+    "invokedCount": 3,
+    "wrongInvocations": 0,
+    "usedSet": [
+      "mssql_mcp.qry_loan_applications",
+      "mssql_mcp.qry_customer_with_loans",
+      "mail_mcp.send_email"
+    ],
+    "violations": []
+  },
+  "replanning": {
+    "planHistoryCount": 1,
+    "replanCount": 0,
+    "replanned": false
+  }
+}</pre>
+                </div>
+            </div>
+        </td>
+    </tr><tr class="data-row">
+        <td><strong>TC-014</strong></td>
+        <td class="center"><span class="badge badge-pass">PASS</span></td>
+        <td>
+        <div class="info-cell">
+            <span class="label">Invoked:</span> <span class="value">3</span><br>
+            <span class="label">Wrong:</span> <span class="value">0</span><br>
+            <span class="label">Compliance:</span> <span class="value">✓</span>
+        </div>
+    </td>
+        <td>
+        <div class="info-cell">
+            <span class="label">History:</span> <span class="value">1</span><br>
+            <span class="label">Replan Count:</span> <span class="value">0</span><br>
+            <span class="label">Status:</span> <span class="value">No</span>
+        </div>
+    </td>
+        <td>
+            <button class="btn-toggle" data-index="1">
+                Detail
+            </button>
+        </td>
+    </tr><tr class="detail-row" style="display: none;">
+        <td colspan="5" class="detail-content">
+            <div class="detail-panel">
+                <div class="detail-section">
+                    <h4>Tools Execution Details</h4>
+                    <table class="detail-table">
+                        <tbody><tr><td>WTR Step:</td><td>0</td></tr>
+                        <tr><td>Required Coverage:</td><td>1</td></tr>
+                        <tr><td>Forbidden Used:</td><td>No</td></tr>
+                        <tr><td>Final Compliance:</td><td>Compliant</td></tr>
+                        <tr><td>Replan Count:</td><td>0</td></tr>
+                        <tr><td>Invoked Count:</td><td>3</td></tr>
+                        <tr><td>Wrong Invocations:</td><td>0</td></tr>
+                    </tbody></table>
+                    <div class="detail-subsection"><strong>Tools Used:</strong><ul class="tools-list"><li>mssql_mcp.qry_loans</li><li>mssql_mcp.qry_loan_balance_asof</li><li>mail_mcp.send_email</li></ul></div>
+                    
+                </div>
+
+                <div class="detail-section">
+                    <h4>Replanning Details</h4>
+                    <table class="detail-table">
+                        <tbody><tr><td>Plan History Count:</td><td>1</td></tr>
+                        <tr><td>Replan Count:</td><td>0</td></tr>
+                        <tr><td>Was Replanned:</td><td>No</td></tr>
+                    </tbody></table>
+                </div>
+
+                <div class="detail-section">
+                    <h4>Raw JSON</h4>
+                    <pre class="json-view">{
+  "testCaseId": "TC-014",
+  "runComplete": true,
+  "tools": {
+    "wtrStep": 0,
+    "requiredCoverage": 1,
+    "forbiddenUsed": false,
+    "finalCompliance": true,
+    "replanCount": 0,
+    "invokedCount": 3,
+    "wrongInvocations": 0,
+    "usedSet": [
+      "mssql_mcp.qry_loans",
+      "mssql_mcp.qry_loan_balance_asof",
+      "mail_mcp.send_email"
+    ],
+    "violations": []
+  },
+  "replanning": {
+    "planHistoryCount": 1,
+    "replanCount": 0,
+    "replanned": false
+  }
+}</pre>
+                </div>
+            </div>
+        </td>
+    </tr><tr class="data-row">
+        <td><strong>TC-017</strong></td>
+        <td class="center"><span class="badge badge-pass">PASS</span></td>
+        <td>
+        <div class="info-cell">
+            <span class="label">Invoked:</span> <span class="value">2</span><br>
+            <span class="label">Wrong:</span> <span class="value">0</span><br>
+            <span class="label">Compliance:</span> <span class="value">✓</span>
+        </div>
+    </td>
+        <td>
+        <div class="info-cell">
+            <span class="label">History:</span> <span class="value">1</span><br>
+            <span class="label">Replan Count:</span> <span class="value">0</span><br>
+            <span class="label">Status:</span> <span class="value">No</span>
+        </div>
+    </td>
+        <td>
+            <button class="btn-toggle" data-index="2">
+                Detail
+            </button>
+        </td>
+    </tr><tr class="detail-row" style="display: none;">
+        <td colspan="5" class="detail-content">
+            <div class="detail-panel">
+                <div class="detail-section">
+                    <h4>Tools Execution Details</h4>
+                    <table class="detail-table">
+                        <tbody><tr><td>WTR Step:</td><td>0</td></tr>
+                        <tr><td>Required Coverage:</td><td>1</td></tr>
+                        <tr><td>Forbidden Used:</td><td>No</td></tr>
+                        <tr><td>Final Compliance:</td><td>Compliant</td></tr>
+                        <tr><td>Replan Count:</td><td>0</td></tr>
+                        <tr><td>Invoked Count:</td><td>2</td></tr>
+                        <tr><td>Wrong Invocations:</td><td>0</td></tr>
+                    </tbody></table>
+                    <div class="detail-subsection"><strong>Tools Used:</strong><ul class="tools-list"><li>mssql_mcp.qry_payments_by_date</li><li>mail_mcp.send_email</li></ul></div>
+                    
+                </div>
+
+                <div class="detail-section">
+                    <h4>Replanning Details</h4>
+                    <table class="detail-table">
+                        <tbody><tr><td>Plan History Count:</td><td>1</td></tr>
+                        <tr><td>Replan Count:</td><td>0</td></tr>
+                        <tr><td>Was Replanned:</td><td>No</td></tr>
+                    </tbody></table>
+                </div>
+
+                <div class="detail-section">
+                    <h4>Raw JSON</h4>
+                    <pre class="json-view">{
+  "testCaseId": "TC-017",
+  "runComplete": true,
+  "tools": {
+    "wtrStep": 0,
+    "requiredCoverage": 1,
+    "forbiddenUsed": false,
+    "finalCompliance": true,
+    "replanCount": 0,
+    "invokedCount": 2,
+    "wrongInvocations": 0,
+    "usedSet": [
+      "mssql_mcp.qry_payments_by_date",
+      "mail_mcp.send_email"
+    ],
+    "violations": []
+  },
+  "replanning": {
+    "planHistoryCount": 1,
+    "replanCount": 0,
+    "replanned": false
+  }
+}</pre>
+                </div>
+            </div>
+        </td>
+    </tr><tr class="data-row">
+        <td><strong>TC-009</strong></td>
+        <td class="center"><span class="badge badge-pass">PASS</span></td>
+        <td>
+        <div class="info-cell">
+            <span class="label">Invoked:</span> <span class="value">4</span><br>
+            <span class="label">Wrong:</span> <span class="value">0</span><br>
+            <span class="label">Compliance:</span> <span class="value">✓</span>
+        </div>
+    </td>
+        <td>
+        <div class="info-cell">
+            <span class="label">History:</span> <span class="value">1</span><br>
+            <span class="label">Replan Count:</span> <span class="value">0</span><br>
+            <span class="label">Status:</span> <span class="value">No</span>
+        </div>
+    </td>
+        <td>
+            <button class="btn-toggle" data-index="3">
+                Detail
+            </button>
+        </td>
+    </tr><tr class="detail-row" style="display: none;">
+        <td colspan="5" class="detail-content">
+            <div class="detail-panel">
+                <div class="detail-section">
+                    <h4>Tools Execution Details</h4>
+                    <table class="detail-table">
+                        <tbody><tr><td>WTR Step:</td><td>0</td></tr>
+                        <tr><td>Required Coverage:</td><td>1</td></tr>
+                        <tr><td>Forbidden Used:</td><td>No</td></tr>
+                        <tr><td>Final Compliance:</td><td>Compliant</td></tr>
+                        <tr><td>Replan Count:</td><td>0</td></tr>
+                        <tr><td>Invoked Count:</td><td>4</td></tr>
+                        <tr><td>Wrong Invocations:</td><td>0</td></tr>
+                    </tbody></table>
+                    <div class="detail-subsection"><strong>Tools Used:</strong><ul class="tools-list"><li>mssql_mcp.qry_prepayment_history</li><li>mssql_mcp.qry_loan_overview</li><li>mssql_mcp.qry_payments_by_loan</li><li>mail_mcp.send_email</li></ul></div>
+                    
+                </div>
+
+                <div class="detail-section">
+                    <h4>Replanning Details</h4>
+                    <table class="detail-table">
+                        <tbody><tr><td>Plan History Count:</td><td>1</td></tr>
+                        <tr><td>Replan Count:</td><td>0</td></tr>
+                        <tr><td>Was Replanned:</td><td>No</td></tr>
+                    </tbody></table>
+                </div>
+
+                <div class="detail-section">
+                    <h4>Raw JSON</h4>
+                    <pre class="json-view">{
+  "testCaseId": "TC-009",
+  "runComplete": true,
+  "tools": {
+    "wtrStep": 0,
+    "requiredCoverage": 1,
+    "forbiddenUsed": false,
+    "finalCompliance": true,
+    "replanCount": 0,
+    "invokedCount": 4,
+    "wrongInvocations": 0,
+    "usedSet": [
+      "mssql_mcp.qry_prepayment_history",
+      "mssql_mcp.qry_loan_overview",
+      "mssql_mcp.qry_payments_by_loan",
+      "mail_mcp.send_email"
+    ],
+    "violations": []
+  },
+  "replanning": {
+    "planHistoryCount": 1,
+    "replanCount": 0,
+    "replanned": false
+  }
+}</pre>
+                </div>
+            </div>
+        </td>
+    </tr><tr class="data-row">
+        <td><strong>TC-015</strong></td>
+        <td class="center"><span class="badge badge-pass">PASS</span></td>
+        <td>
+        <div class="info-cell">
+            <span class="label">Invoked:</span> <span class="value">5</span><br>
+            <span class="label">Wrong:</span> <span class="value">0</span><br>
+            <span class="label">Compliance:</span> <span class="value">✓</span>
+        </div>
+    </td>
+        <td>
+        <div class="info-cell">
+            <span class="label">History:</span> <span class="value">1</span><br>
+            <span class="label">Replan Count:</span> <span class="value">0</span><br>
+            <span class="label">Status:</span> <span class="value">No</span>
+        </div>
+    </td>
+        <td>
+            <button class="btn-toggle" data-index="4">
+                Detail
+            </button>
+        </td>
+    </tr><tr class="detail-row" style="display: none;">
+        <td colspan="5" class="detail-content">
+            <div class="detail-panel">
+                <div class="detail-section">
+                    <h4>Tools Execution Details</h4>
+                    <table class="detail-table">
+                        <tbody><tr><td>WTR Step:</td><td>0</td></tr>
+                        <tr><td>Required Coverage:</td><td>1</td></tr>
+                        <tr><td>Forbidden Used:</td><td>No</td></tr>
+                        <tr><td>Final Compliance:</td><td>Compliant</td></tr>
+                        <tr><td>Replan Count:</td><td>0</td></tr>
+                        <tr><td>Invoked Count:</td><td>5</td></tr>
+                        <tr><td>Wrong Invocations:</td><td>0</td></tr>
+                    </tbody></table>
+                    <div class="detail-subsection"><strong>Tools Used:</strong><ul class="tools-list"><li>mssql_mcp.qry_customers</li><li>mssql_mcp.qry_customer_with_loans</li><li>mssql_mcp.qry_payment_schedule_by_loan</li><li>mssql_mcp.qry_payments_by_loan</li><li>mail_mcp.send_email</li></ul></div>
+                    
+                </div>
+
+                <div class="detail-section">
+                    <h4>Replanning Details</h4>
+                    <table class="detail-table">
+                        <tbody><tr><td>Plan History Count:</td><td>1</td></tr>
+                        <tr><td>Replan Count:</td><td>0</td></tr>
+                        <tr><td>Was Replanned:</td><td>No</td></tr>
+                    </tbody></table>
+                </div>
+
+                <div class="detail-section">
+                    <h4>Raw JSON</h4>
+                    <pre class="json-view">{
+  "testCaseId": "TC-015",
+  "runComplete": true,
+  "tools": {
+    "wtrStep": 0,
+    "requiredCoverage": 1,
+    "forbiddenUsed": false,
+    "finalCompliance": true,
+    "replanCount": 0,
+    "invokedCount": 5,
+    "wrongInvocations": 0,
+    "usedSet": [
+      "mssql_mcp.qry_customers",
+      "mssql_mcp.qry_customer_with_loans",
+      "mssql_mcp.qry_payment_schedule_by_loan",
+      "mssql_mcp.qry_payments_by_loan",
+      "mail_mcp.send_email"
+    ],
+    "violations": []
+  },
+  "replanning": {
+    "planHistoryCount": 1,
+    "replanCount": 0,
+    "replanned": false
+  }
+}</pre>
+                </div>
+            </div>
+        </td>
+    </tr><tr class="data-row">
+        <td><strong>TC-013</strong></td>
+        <td class="center"><span class="badge badge-pass">PASS</span></td>
+        <td>
+        <div class="info-cell">
+            <span class="label">Invoked:</span> <span class="value">2</span><br>
+            <span class="label">Wrong:</span> <span class="value">0</span><br>
+            <span class="label">Compliance:</span> <span class="value">✓</span>
+        </div>
+    </td>
+        <td>
+        <div class="info-cell">
+            <span class="label">History:</span> <span class="value">1</span><br>
+            <span class="label">Replan Count:</span> <span class="value">0</span><br>
+            <span class="label">Status:</span> <span class="value">No</span>
+        </div>
+    </td>
+        <td>
+            <button class="btn-toggle" data-index="5">
+                Detail
+            </button>
+        </td>
+    </tr><tr class="detail-row" style="display: none;">
+        <td colspan="5" class="detail-content">
+            <div class="detail-panel">
+                <div class="detail-section">
+                    <h4>Tools Execution Details</h4>
+                    <table class="detail-table">
+                        <tbody><tr><td>WTR Step:</td><td>0</td></tr>
+                        <tr><td>Required Coverage:</td><td>1</td></tr>
+                        <tr><td>Forbidden Used:</td><td>No</td></tr>
+                        <tr><td>Final Compliance:</td><td>Compliant</td></tr>
+                        <tr><td>Replan Count:</td><td>0</td></tr>
+                        <tr><td>Invoked Count:</td><td>2</td></tr>
+                        <tr><td>Wrong Invocations:</td><td>0</td></tr>
+                    </tbody></table>
+                    <div class="detail-subsection"><strong>Tools Used:</strong><ul class="tools-list"><li>mssql_mcp.qry_loan_applications</li><li>mail_mcp.send_email</li></ul></div>
+                    
+                </div>
+
+                <div class="detail-section">
+                    <h4>Replanning Details</h4>
+                    <table class="detail-table">
+                        <tbody><tr><td>Plan History Count:</td><td>1</td></tr>
+                        <tr><td>Replan Count:</td><td>0</td></tr>
+                        <tr><td>Was Replanned:</td><td>No</td></tr>
+                    </tbody></table>
+                </div>
+
+                <div class="detail-section">
+                    <h4>Raw JSON</h4>
+                    <pre class="json-view">{
+  "testCaseId": "TC-013",
+  "runComplete": true,
+  "tools": {
+    "wtrStep": 0,
+    "requiredCoverage": 1,
+    "forbiddenUsed": false,
+    "finalCompliance": true,
+    "replanCount": 0,
+    "invokedCount": 2,
+    "wrongInvocations": 0,
+    "usedSet": [
+      "mssql_mcp.qry_loan_applications",
+      "mail_mcp.send_email"
+    ],
+    "violations": []
+  },
+  "replanning": {
+    "planHistoryCount": 1,
+    "replanCount": 0,
+    "replanned": false
+  }
+}</pre>
+                </div>
+            </div>
+        </td>
+    </tr><tr class="data-row">
+        <td><strong>TC-006</strong></td>
+        <td class="center"><span class="badge badge-pass">PASS</span></td>
+        <td>
+        <div class="info-cell">
+            <span class="label">Invoked:</span> <span class="value">25</span><br>
+            <span class="label">Wrong:</span> <span class="value">0</span><br>
+            <span class="label">Compliance:</span> <span class="value">✗</span>
+        </div>
+    </td>
+        <td>
+        <div class="info-cell">
+            <span class="label">History:</span> <span class="value">5</span><br>
+            <span class="label">Replan Count:</span> <span class="value">4</span><br>
+            <span class="label">Status:</span> <span class="value">Yes</span>
+        </div>
+    </td>
+        <td>
+            <button class="btn-toggle" data-index="6">
+                Detail
+            </button>
+        </td>
+    </tr><tr class="detail-row" style="display: none;">
+        <td colspan="5" class="detail-content">
+            <div class="detail-panel">
+                <div class="detail-section">
+                    <h4>Tools Execution Details</h4>
+                    <table class="detail-table">
+                        <tbody><tr><td>WTR Step:</td><td>0.16</td></tr>
+                        <tr><td>Required Coverage:</td><td>1</td></tr>
+                        <tr><td>Forbidden Used:</td><td>No</td></tr>
+                        <tr><td>Final Compliance:</td><td>Non-Compliant</td></tr>
+                        <tr><td>Replan Count:</td><td>4</td></tr>
+                        <tr><td>Invoked Count:</td><td>25</td></tr>
+                        <tr><td>Wrong Invocations:</td><td>0</td></tr>
+                    </tbody></table>
+                    <div class="detail-subsection"><strong>Tools Used:</strong><ul class="tools-list"><li>mssql_mcp.qry_loans</li><li>mssql_mcp.qry_loan_balance_asof</li><li>mail_mcp.send_email</li></ul></div>
+                    
+                </div>
+
+                <div class="detail-section">
+                    <h4>Replanning Details</h4>
+                    <table class="detail-table">
+                        <tbody><tr><td>Plan History Count:</td><td>5</td></tr>
+                        <tr><td>Replan Count:</td><td>4</td></tr>
+                        <tr><td>Was Replanned:</td><td>Yes</td></tr>
+                    </tbody></table>
+                </div>
+
+                <div class="detail-section">
+                    <h4>Raw JSON</h4>
+                    <pre class="json-view">{
+  "testCaseId": "TC-006",
+  "runComplete": true,
+  "tools": {
+    "wtrStep": 0.16,
+    "requiredCoverage": 1,
+    "forbiddenUsed": false,
+    "finalCompliance": false,
+    "replanCount": 4,
+    "invokedCount": 25,
+    "wrongInvocations": 0,
+    "usedSet": [
+      "mssql_mcp.qry_loans",
+      "mssql_mcp.qry_loan_balance_asof",
+      "mail_mcp.send_email"
+    ],
+    "violations": []
+  },
+  "replanning": {
+    "planHistoryCount": 5,
+    "replanCount": 4,
+    "replanned": true
+  }
+}</pre>
+                </div>
+            </div>
+        </td>
+    </tr><tr class="data-row">
+        <td><strong>TC-012</strong></td>
+        <td class="center"><span class="badge badge-pass">PASS</span></td>
+        <td>
+        <div class="info-cell">
+            <span class="label">Invoked:</span> <span class="value">5</span><br>
+            <span class="label">Wrong:</span> <span class="value">0</span><br>
+            <span class="label">Compliance:</span> <span class="value">✓</span>
+        </div>
+    </td>
+        <td>
+        <div class="info-cell">
+            <span class="label">History:</span> <span class="value">1</span><br>
+            <span class="label">Replan Count:</span> <span class="value">0</span><br>
+            <span class="label">Status:</span> <span class="value">No</span>
+        </div>
+    </td>
+        <td>
+            <button class="btn-toggle" data-index="7">
+                Detail
+            </button>
+        </td>
+    </tr><tr class="detail-row" style="display: none;">
+        <td colspan="5" class="detail-content">
+            <div class="detail-panel">
+                <div class="detail-section">
+                    <h4>Tools Execution Details</h4>
+                    <table class="detail-table">
+                        <tbody><tr><td>WTR Step:</td><td>0</td></tr>
+                        <tr><td>Required Coverage:</td><td>1</td></tr>
+                        <tr><td>Forbidden Used:</td><td>No</td></tr>
+                        <tr><td>Final Compliance:</td><td>Compliant</td></tr>
+                        <tr><td>Replan Count:</td><td>0</td></tr>
+                        <tr><td>Invoked Count:</td><td>5</td></tr>
+                        <tr><td>Wrong Invocations:</td><td>0</td></tr>
+                    </tbody></table>
+                    <div class="detail-subsection"><strong>Tools Used:</strong><ul class="tools-list"><li>mssql_mcp.qry_collector_queue</li><li>mssql_mcp.qry_loan_overview</li><li>mail_mcp.send_email</li></ul></div>
+                    
+                </div>
+
+                <div class="detail-section">
+                    <h4>Replanning Details</h4>
+                    <table class="detail-table">
+                        <tbody><tr><td>Plan History Count:</td><td>1</td></tr>
+                        <tr><td>Replan Count:</td><td>0</td></tr>
+                        <tr><td>Was Replanned:</td><td>No</td></tr>
+                    </tbody></table>
+                </div>
+
+                <div class="detail-section">
+                    <h4>Raw JSON</h4>
+                    <pre class="json-view">{
+  "testCaseId": "TC-012",
+  "runComplete": true,
+  "tools": {
+    "wtrStep": 0,
+    "requiredCoverage": 1,
+    "forbiddenUsed": false,
+    "finalCompliance": true,
+    "replanCount": 0,
+    "invokedCount": 5,
+    "wrongInvocations": 0,
+    "usedSet": [
+      "mssql_mcp.qry_collector_queue",
+      "mssql_mcp.qry_loan_overview",
+      "mail_mcp.send_email"
+    ],
+    "violations": []
+  },
+  "replanning": {
+    "planHistoryCount": 1,
+    "replanCount": 0,
+    "replanned": false
+  }
+}</pre>
+                </div>
+            </div>
+        </td>
+    </tr><tr class="data-row">
+        <td><strong>TC-011</strong></td>
+        <td class="center"><span class="badge badge-pass">PASS</span></td>
+        <td>
+        <div class="info-cell">
+            <span class="label">Invoked:</span> <span class="value">3</span><br>
+            <span class="label">Wrong:</span> <span class="value">0</span><br>
+            <span class="label">Compliance:</span> <span class="value">✓</span>
+        </div>
+    </td>
+        <td>
+        <div class="info-cell">
+            <span class="label">History:</span> <span class="value">1</span><br>
+            <span class="label">Replan Count:</span> <span class="value">0</span><br>
+            <span class="label">Status:</span> <span class="value">No</span>
+        </div>
+    </td>
+        <td>
+            <button class="btn-toggle" data-index="8">
+                Detail
+            </button>
+        </td>
+    </tr><tr class="detail-row" style="display: none;">
+        <td colspan="5" class="detail-content">
+            <div class="detail-panel">
+                <div class="detail-section">
+                    <h4>Tools Execution Details</h4>
+                    <table class="detail-table">
+                        <tbody><tr><td>WTR Step:</td><td>0</td></tr>
+                        <tr><td>Required Coverage:</td><td>1</td></tr>
+                        <tr><td>Forbidden Used:</td><td>No</td></tr>
+                        <tr><td>Final Compliance:</td><td>Compliant</td></tr>
+                        <tr><td>Replan Count:</td><td>0</td></tr>
+                        <tr><td>Invoked Count:</td><td>3</td></tr>
+                        <tr><td>Wrong Invocations:</td><td>0</td></tr>
+                    </tbody></table>
+                    <div class="detail-subsection"><strong>Tools Used:</strong><ul class="tools-list"><li>mssql_mcp.qry_product_portfolio_summary</li><li>mssql_mcp.qry_loans</li><li>mail_mcp.send_email</li></ul></div>
+                    
+                </div>
+
+                <div class="detail-section">
+                    <h4>Replanning Details</h4>
+                    <table class="detail-table">
+                        <tbody><tr><td>Plan History Count:</td><td>1</td></tr>
+                        <tr><td>Replan Count:</td><td>0</td></tr>
+                        <tr><td>Was Replanned:</td><td>No</td></tr>
+                    </tbody></table>
+                </div>
+
+                <div class="detail-section">
+                    <h4>Raw JSON</h4>
+                    <pre class="json-view">{
+  "testCaseId": "TC-011",
+  "runComplete": true,
+  "tools": {
+    "wtrStep": 0,
+    "requiredCoverage": 1,
+    "forbiddenUsed": false,
+    "finalCompliance": true,
+    "replanCount": 0,
+    "invokedCount": 3,
+    "wrongInvocations": 0,
+    "usedSet": [
+      "mssql_mcp.qry_product_portfolio_summary",
+      "mssql_mcp.qry_loans",
+      "mail_mcp.send_email"
+    ],
+    "violations": []
+  },
+  "replanning": {
+    "planHistoryCount": 1,
+    "replanCount": 0,
+    "replanned": false
+  }
+}</pre>
+                </div>
+            </div>
+        </td>
+    </tr><tr class="data-row">
+        <td><strong>TC-002</strong></td>
+        <td class="center"><span class="badge badge-pass">PASS</span></td>
+        <td>
+        <div class="info-cell">
+            <span class="label">Invoked:</span> <span class="value">4</span><br>
+            <span class="label">Wrong:</span> <span class="value">0</span><br>
+            <span class="label">Compliance:</span> <span class="value">✓</span>
+        </div>
+    </td>
+        <td>
+        <div class="info-cell">
+            <span class="label">History:</span> <span class="value">1</span><br>
+            <span class="label">Replan Count:</span> <span class="value">0</span><br>
+            <span class="label">Status:</span> <span class="value">No</span>
+        </div>
+    </td>
+        <td>
+            <button class="btn-toggle" data-index="9">
+                Detail
+            </button>
+        </td>
+    </tr><tr class="detail-row" style="display: none;">
+        <td colspan="5" class="detail-content">
+            <div class="detail-panel">
+                <div class="detail-section">
+                    <h4>Tools Execution Details</h4>
+                    <table class="detail-table">
+                        <tbody><tr><td>WTR Step:</td><td>0</td></tr>
+                        <tr><td>Required Coverage:</td><td>1</td></tr>
+                        <tr><td>Forbidden Used:</td><td>No</td></tr>
+                        <tr><td>Final Compliance:</td><td>Compliant</td></tr>
+                        <tr><td>Replan Count:</td><td>0</td></tr>
+                        <tr><td>Invoked Count:</td><td>4</td></tr>
+                        <tr><td>Wrong Invocations:</td><td>0</td></tr>
+                    </tbody></table>
+                    <div class="detail-subsection"><strong>Tools Used:</strong><ul class="tools-list"><li>mssql_mcp.qry_customers</li><li>mssql_mcp.qry_customer_with_loans</li><li>mssql_mcp.qry_loan_overview</li><li>mail_mcp.send_email</li></ul></div>
+                    
+                </div>
+
+                <div class="detail-section">
+                    <h4>Replanning Details</h4>
+                    <table class="detail-table">
+                        <tbody><tr><td>Plan History Count:</td><td>1</td></tr>
+                        <tr><td>Replan Count:</td><td>0</td></tr>
+                        <tr><td>Was Replanned:</td><td>No</td></tr>
+                    </tbody></table>
+                </div>
+
+                <div class="detail-section">
+                    <h4>Raw JSON</h4>
+                    <pre class="json-view">{
+  "testCaseId": "TC-002",
+  "runComplete": true,
+  "tools": {
+    "wtrStep": 0,
+    "requiredCoverage": 1,
+    "forbiddenUsed": false,
+    "finalCompliance": true,
+    "replanCount": 0,
+    "invokedCount": 4,
+    "wrongInvocations": 0,
+    "usedSet": [
+      "mssql_mcp.qry_customers",
+      "mssql_mcp.qry_customer_with_loans",
+      "mssql_mcp.qry_loan_overview",
+      "mail_mcp.send_email"
+    ],
+    "violations": []
+  },
+  "replanning": {
+    "planHistoryCount": 1,
+    "replanCount": 0,
+    "replanned": false
+  }
+}</pre>
+                </div>
+            </div>
+        </td>
+    </tr></tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-container">
+                <button id="prev-page-btn" class="btn-pagination" disabled="">← Previous</button>
+                <span id="page-info" class="page-info">Page 1 / 2 (20 items)</span>
+                <button id="next-page-btn" class="btn-pagination">Next →</button>
+                <select id="rows-per-page" class="rows-select">
+                    <option value="5">5 rows</option>
+                    <option value="10" selected="">10 rows</option>
+                    <option value="20">20 rows</option>
+                    <option value="50">50 rows</option>
+                </select>
+            </div>
+        </section>
+
+        <div style="margin-top: 40px;"></div>
+        <hr>
+        <details class="json-output-section" open="">
+            <summary>📋 Raw JSON Response</summary>
+            <div id="jsonOutput" class="code-box">[
+  {
+    "testCaseId": "TC-020",
+    "runComplete": true,
+    "tools": {
+      "wtrStep": 0,
+      "requiredCoverage": 1,
+      "forbiddenUsed": false,
+      "finalCompliance": true,
+      "replanCount": 0,
+      "invokedCount": 3,
+      "wrongInvocations": 0,
+      "usedSet": [
+        "mssql_mcp.qry_loan_applications",
+        "mssql_mcp.qry_customer_with_loans",
+        "mail_mcp.send_email"
+      ],
+      "violations": []
+    },
+    "replanning": {
+      "planHistoryCount": 1,
+      "replanCount": 0,
+      "replanned": false
+    }
+  },
+  {
+    "testCaseId": "TC-014",
+    "runComplete": true,
+    "tools": {
+      "wtrStep": 0,
+      "requiredCoverage": 1,
+      "forbiddenUsed": false,
+      "finalCompliance": true,
+      "replanCount": 0,
+      "invokedCount": 3,
+      "wrongInvocations": 0,
+      "usedSet": [
+        "mssql_mcp.qry_loans",
+        "mssql_mcp.qry_loan_balance_asof",
+        "mail_mcp.send_email"
+      ],
+      "violations": []
+    },
+    "replanning": {
+      "planHistoryCount": 1,
+      "replanCount": 0,
+      "replanned": false
+    }
+  },
+  {
+    "testCaseId": "TC-017",
+    "runComplete": true,
+    "tools": {
+      "wtrStep": 0,
+      "requiredCoverage": 1,
+      "forbiddenUsed": false,
+      "finalCompliance": true,
+      "replanCount": 0,
+      "invokedCount": 2,
+      "wrongInvocations": 0,
+      "usedSet": [
+        "mssql_mcp.qry_payments_by_date",
+        "mail_mcp.send_email"
+      ],
+      "violations": []
+    },
+    "replanning": {
+      "planHistoryCount": 1,
+      "replanCount": 0,
+      "replanned": false
+    }
+  },
+  {
+    "testCaseId": "TC-009",
+    "runComplete": true,
+    "tools": {
+      "wtrStep": 0,
+      "requiredCoverage": 1,
+      "forbiddenUsed": false,
+      "finalCompliance": true,
+      "replanCount": 0,
+      "invokedCount": 4,
+      "wrongInvocations": 0,
+      "usedSet": [
+        "mssql_mcp.qry_prepayment_history",
+        "mssql_mcp.qry_loan_overview",
+        "mssql_mcp.qry_payments_by_loan",
+        "mail_mcp.send_email"
+      ],
+      "violations": []
+    },
+    "replanning": {
+      "planHistoryCount": 1,
+      "replanCount": 0,
+      "replanned": false
+    }
+  },
+  {
+    "testCaseId": "TC-015",
+    "runComplete": true,
+    "tools": {
+      "wtrStep": 0,
+      "requiredCoverage": 1,
+      "forbiddenUsed": false,
+      "finalCompliance": true,
+      "replanCount": 0,
+      "invokedCount": 5,
+      "wrongInvocations": 0,
+      "usedSet": [
+        "mssql_mcp.qry_customers",
+        "mssql_mcp.qry_customer_with_loans",
+        "mssql_mcp.qry_payment_schedule_by_loan",
+        "mssql_mcp.qry_payments_by_loan",
+        "mail_mcp.send_email"
+      ],
+      "violations": []
+    },
+    "replanning": {
+      "planHistoryCount": 1,
+      "replanCount": 0,
+      "replanned": false
+    }
+  },
+  {
+    "testCaseId": "TC-013",
+    "runComplete": true,
+    "tools": {
+      "wtrStep": 0,
+      "requiredCoverage": 1,
+      "forbiddenUsed": false,
+      "finalCompliance": true,
+      "replanCount": 0,
+      "invokedCount": 2,
+      "wrongInvocations": 0,
+      "usedSet": [
+        "mssql_mcp.qry_loan_applications",
+        "mail_mcp.send_email"
+      ],
+      "violations": []
+    },
+    "replanning": {
+      "planHistoryCount": 1,
+      "replanCount": 0,
+      "replanned": false
+    }
+  },
+  {
+    "testCaseId": "TC-006",
+    "runComplete": true,
+    "tools": {
+      "wtrStep": 0.16,
+      "requiredCoverage": 1,
+      "forbiddenUsed": false,
+      "finalCompliance": false,
+      "replanCount": 4,
+      "invokedCount": 25,
+      "wrongInvocations": 0,
+      "usedSet": [
+        "mssql_mcp.qry_loans",
+        "mssql_mcp.qry_loan_balance_asof",
+        "mail_mcp.send_email"
+      ],
+      "violations": []
+    },
+    "replanning": {
+      "planHistoryCount": 5,
+      "replanCount": 4,
+      "replanned": true
+    }
+  },
+  {
+    "testCaseId": "TC-012",
+    "runComplete": true,
+    "tools": {
+      "wtrStep": 0,
+      "requiredCoverage": 1,
+      "forbiddenUsed": false,
+      "finalCompliance": true,
+      "replanCount": 0,
+      "invokedCount": 5,
+      "wrongInvocations": 0,
+      "usedSet": [
+        "mssql_mcp.qry_collector_queue",
+        "mssql_mcp.qry_loan_overview",
+        "mail_mcp.send_email"
+      ],
+      "violations": []
+    },
+    "replanning": {
+      "planHistoryCount": 1,
+      "replanCount": 0,
+      "replanned": false
+    }
+  },
+  {
+    "testCaseId": "TC-011",
+    "runComplete": true,
+    "tools": {
+      "wtrStep": 0,
+      "requiredCoverage": 1,
+      "forbiddenUsed": false,
+      "finalCompliance": true,
+      "replanCount": 0,
+      "invokedCount": 3,
+      "wrongInvocations": 0,
+      "usedSet": [
+        "mssql_mcp.qry_product_portfolio_summary",
+        "mssql_mcp.qry_loans",
+        "mail_mcp.send_email"
+      ],
+      "violations": []
+    },
+    "replanning": {
+      "planHistoryCount": 1,
+      "replanCount": 0,
+      "replanned": false
+    }
+  },
+  {
+    "testCaseId": "TC-002",
+    "runComplete": true,
+    "tools": {
+      "wtrStep": 0,
+      "requiredCoverage": 1,
+      "forbiddenUsed": false,
+      "finalCompliance": true,
+      "replanCount": 0,
+      "invokedCount": 4,
+      "wrongInvocations": 0,
+      "usedSet": [
+        "mssql_mcp.qry_customers",
+        "mssql_mcp.qry_customer_with_loans",
+        "mssql_mcp.qry_loan_overview",
+        "mail_mcp.send_email"
+      ],
+      "violations": []
+    },
+    "replanning": {
+      "planHistoryCount": 1,
+      "replanCount": 0,
+      "replanned": false
+    }
+  },
+  {
+    "testCaseId": "TC-010",
+    "runComplete": true,
+    "tools": {
+      "wtrStep": 0,
+      "requiredCoverage": 1,
+      "forbiddenUsed": false,
+      "finalCompliance": true,
+      "replanCount": 0,
+      "invokedCount": 2,
+      "wrongInvocations": 0,
+      "usedSet": [
+        "mssql_mcp.qry_delinquency_aging",
+        "mail_mcp.send_email"
+      ],
+      "violations": []
+    },
+    "replanning": {
+      "planHistoryCount": 1,
+      "replanCount": 0,
+      "replanned": false
+    }
+  },
+  {
+    "testCaseId": "TC-019",
+    "runComplete": true,
+    "tools": {
+      "wtrStep": 0,
+      "requiredCoverage": 1,
+      "forbiddenUsed": false,
+      "finalCompliance": true,
+      "replanCount": 0,
+      "invokedCount": 2,
+      "wrongInvocations": 0,
+      "usedSet": [
+        "mssql_mcp.qry_delinquency_aging",
+        "mail_mcp.send_email"
+      ],
+      "violations": []
+    },
+    "replanning": {
+      "planHistoryCount": 1,
+      "replanCount": 0,
+      "replanned": false
+    }
+  },
+  {
+    "testCaseId": "TC-016",
+    "runComplete": true,
+    "tools": {
+      "wtrStep": 0,
+      "requiredCoverage": 1,
+      "forbiddenUsed": false,
+      "finalCompliance": true,
+      "replanCount": 0,
+      "invokedCount": 2,
+      "wrongInvocations": 0,
+      "usedSet": [
+        "mssql_mcp.qry_interest_methods",
+        "mail_mcp.send_email"
+      ],
+      "violations": []
+    },
+    "replanning": {
+      "planHistoryCount": 1,
+      "replanCount": 0,
+      "replanned": false
+    }
+  },
+  {
+    "testCaseId": "TC-008",
+    "runComplete": true,
+    "tools": {
+      "wtrStep": 0.2,
+      "requiredCoverage": 1,
+      "forbiddenUsed": false,
+      "finalCompliance": false,
+      "replanCount": 1,
+      "invokedCount": 5,
+      "wrongInvocations": 1,
+      "usedSet": [
+        "mssql_mcp.qry_payment_schedule_by_loan",
+        "mssql_mcp.qry_loans",
+        "mail_mcp.send_email",
+        "mssql_mcp.qry_collector_queue"
+      ],
+      "violations": [
+        {
+          "stepId": "query-loans",
+          "toolFullName": "mssql_mcp.qry_loans",
+          "reason": "tool_not_allowed"
+        }
+      ]
+    },
+    "replanning": {
+      "planHistoryCount": 2,
+      "replanCount": 1,
+      "replanned": true
+    }
+  },
+  {
+    "testCaseId": "TC-003",
+    "runComplete": true,
+    "tools": {
+      "wtrStep": 0.125,
+      "requiredCoverage": 1,
+      "forbiddenUsed": false,
+      "finalCompliance": false,
+      "replanCount": 1,
+      "invokedCount": 8,
+      "wrongInvocations": 1,
+      "usedSet": [
+        "mssql_mcp.qry_customers",
+        "mssql_mcp.qry_customer_with_loans",
+        "mssql_mcp.qry_upcoming_due",
+        "mail_mcp.send_email",
+        "mssql_mcp.qry_payment_schedule_by_loan"
+      ],
+      "violations": [
+        {
+          "stepId": "get-upcoming-due",
+          "toolFullName": "mssql_mcp.qry_upcoming_due",
+          "reason": "tool_not_allowed"
+        }
+      ]
+    },
+    "replanning": {
+      "planHistoryCount": 2,
+      "replanCount": 1,
+      "replanned": true
+    }
+  },
+  {
+    "testCaseId": "TC-005",
+    "runComplete": true,
+    "tools": {
+      "wtrStep": 0.16666666666666666,
+      "requiredCoverage": 1,
+      "forbiddenUsed": false,
+      "finalCompliance": false,
+      "replanCount": 1,
+      "invokedCount": 6,
+      "wrongInvocations": 1,
+      "usedSet": [
+        "mssql_mcp.qry_payments_by_date",
+        "mssql_mcp.qry_loan_balance_asof",
+        "mail_mcp.send_email",
+        "mssql_mcp.qry_loan_overview"
+      ],
+      "violations": [
+        {
+          "stepId": "get-loan-balance",
+          "toolFullName": "mssql_mcp.qry_loan_balance_asof",
+          "reason": "tool_not_allowed"
+        }
+      ]
+    },
+    "replanning": {
+      "planHistoryCount": 2,
+      "replanCount": 1,
+      "replanned": true
+    }
+  },
+  {
+    "testCaseId": "TC-004",
+    "runComplete": true,
+    "tools": {
+      "wtrStep": 0,
+      "requiredCoverage": 1,
+      "forbiddenUsed": false,
+      "finalCompliance": true,
+      "replanCount": 0,
+      "invokedCount": 2,
+      "wrongInvocations": 0,
+      "usedSet": [
+        "mssql_mcp.qry_product_portfolio_summary",
+        "mail_mcp.send_email"
+      ],
+      "violations": []
+    },
+    "replanning": {
+      "planHistoryCount": 1,
+      "replanCount": 0,
+      "replanned": false
+    }
+  },
+  {
+    "testCaseId": "TC-018",
+    "runComplete": true,
+    "tools": {
+      "wtrStep": 0.16666666666666666,
+      "requiredCoverage": 1,
+      "forbiddenUsed": false,
+      "finalCompliance": false,
+      "replanCount": 4,
+      "invokedCount": 30,
+      "wrongInvocations": 4,
+      "usedSet": [
+        "mssql_mcp.qry_upcoming_due",
+        "mssql_mcp.qry_loan_overview",
+        "mssql_mcp.qry_payment_schedule_by_loan",
+        "mail_mcp.send_email",
+        "mssql_mcp.qry_loan_balance_asof"
+      ],
+      "violations": [
+        {
+          "stepId": "loan-overview-1",
+          "toolFullName": "mssql_mcp.qry_loan_balance_asof",
+          "reason": "tool_not_allowed"
+        },
+        {
+          "stepId": "loan-overview-2",
+          "toolFullName": "mssql_mcp.qry_loan_balance_asof",
+          "reason": "tool_not_allowed"
+        },
+        {
+          "stepId": "loan1-balance",
+          "toolFullName": "mssql_mcp.qry_loan_balance_asof",
+          "reason": "tool_not_allowed"
+        },
+        {
+          "stepId": "loan2-balance",
+          "toolFullName": "mssql_mcp.qry_loan_balance_asof",
+          "reason": "tool_not_allowed"
+        }
+      ]
+    },
+    "replanning": {
+      "planHistoryCount": 5,
+      "replanCount": 4,
+      "replanned": true
+    }
+  },
+  {
+    "testCaseId": "TC-007",
+    "runComplete": true,
+    "tools": {
+      "wtrStep": 0.5,
+      "requiredCoverage": 1,
+      "forbiddenUsed": false,
+      "finalCompliance": false,
+      "replanCount": 4,
+      "invokedCount": 10,
+      "wrongInvocations": 0,
+      "usedSet": [
+        "mssql_mcp.qry_upcoming_due",
+        "mail_mcp.send_email"
+      ],
+      "violations": []
+    },
+    "replanning": {
+      "planHistoryCount": 5,
+      "replanCount": 4,
+      "replanned": true
+    }
+  },
+  {
+    "testCaseId": "TC-001",
+    "runComplete": true,
+    "tools": {
+      "wtrStep": 0,
+      "requiredCoverage": 1,
+      "forbiddenUsed": false,
+      "finalCompliance": true,
+      "replanCount": 0,
+      "invokedCount": 3,
+      "wrongInvocations": 0,
+      "usedSet": [
+        "mssql_mcp.qry_customers",
+        "mssql_mcp.qry_customer_with_loans",
+        "mail_mcp.send_email"
+      ],
+      "violations": []
+    },
+    "replanning": {
+      "planHistoryCount": 1,
+      "replanCount": 0,
+      "replanned": false
+    }
+  }
+]</div>
+        </details>
+    </div>
+    <script src="./Eval Dashboard_files/app.js.download"></script>
+
+<!-- Visual Studio Browser Link -->
+<script type="text/javascript" src="./Eval Dashboard_files/browserLink" async="async" id="__browserLink_initializationData" data-requestid="7681508476954bdeb46166313883bf11" data-requestmappingfromserver="false" data-connecturl="http://localhost:50246/accbb73d3bb34546a65619254db76370/browserLink"></script>
+<!-- End Browser Link -->
+<script src="./Eval Dashboard_files/aspnetcore-browser-refresh.js.download"></script>
+
+</body></html>

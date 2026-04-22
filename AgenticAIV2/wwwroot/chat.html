@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AgenticAI Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root {
+            --bg0: #07111f;
+            --bg1: #0f172a;
+            --panel: rgba(15, 23, 42, 0.84);
+            --line: rgba(148, 163, 184, 0.18);
+            --text: #e5eefc;
+            --muted: #9fb0c8;
+            --accent: #38bdf8;
+            --accent-2: #22c55e;
+            --user: linear-gradient(135deg, #2563eb, #1d4ed8);
+            --assistant: rgba(15, 23, 42, 0.92);
+            --shadow: 0 24px 80px rgba(2, 6, 23, 0.45);
+            --radius: 24px;
+        }
+
+        * { box-sizing: border-box; }
+        html, body { height: 100%; }
+
+        body {
+            margin: 0;
+            font-family: "Kanit", system-ui, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 28%),
+                radial-gradient(circle at top right, rgba(34, 197, 94, 0.12), transparent 24%),
+                linear-gradient(180deg, var(--bg0), var(--bg1));
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 32px 32px;
+            mask-image: linear-gradient(180deg, rgba(0,0,0,0.5), transparent 100%);
+        }
+
+        .shell {
+            position: relative;
+            height: 100dvh;
+            min-height: 100vh;
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr) auto;
+            gap: 16px;
+            width: min(1200px, calc(100% - 24px));
+            margin: 0 auto;
+            padding: 12px 0 16px;
+            overflow: hidden;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 18px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(20px);
+        }
+
+        .brand { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+        .brand h1 { margin: 0; font-size: 20px; line-height: 1.2; }
+        .brand p { margin: 0; font-size: 13px; color: var(--muted); }
+
+        .session-box {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .session-chip, .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            background: rgba(148, 163, 184, 0.08);
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .session-chip strong { color: var(--text); font-weight: 600; word-break: break-all; }
+        .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--accent); box-shadow: 0 0 0 6px rgba(56, 189, 248, 0.12); }
+
+        .button {
+            appearance: none;
+            border: 0;
+            border-radius: 999px;
+            padding: 11px 14px;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease;
+            color: white;
+        }
+
+        .button:hover { transform: translateY(-1px); }
+        .button:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+        .button-secondary { background: rgba(148, 163, 184, 0.14); border: 1px solid var(--line); color: var(--text); }
+        .button-primary { background: linear-gradient(135deg, #38bdf8, #2563eb); box-shadow: 0 12px 30px rgba(37, 99, 235, 0.25); }
+
+        .chat-card {
+            overflow: hidden;
+            display: grid;
+            grid-template-rows: minmax(0, 1fr) auto;
+            min-height: 0;
+            height: 100%;
+            border-radius: calc(var(--radius) + 6px);
+            border: 1px solid var(--line);
+            background: var(--panel);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(20px);
+        }
+
+        .messages {
+            min-height: 0;
+            flex: 1 1 auto;
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            padding: 20px;
+        }
+
+        .empty-state {
+            margin: auto;
+            max-width: 520px;
+            text-align: center;
+            color: var(--muted);
+            padding: 40px 24px;
+            border: 1px dashed rgba(148, 163, 184, 0.22);
+            border-radius: 24px;
+            background: rgba(15, 23, 42, 0.34);
+        }
+
+        .empty-state h2 { margin: 0 0 8px; color: var(--text); font-size: 22px; }
+
+        .msg { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 12px; align-items: end; animation: rise 0.18s ease-out; }
+        .msg.user { grid-template-columns: minmax(0, 1fr) 44px; }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            font-size: 18px;
+            font-weight: 700;
+            border: 1px solid var(--line);
+            background: rgba(148, 163, 184, 0.12);
+            color: var(--text);
+        }
+
+        .avatar.user { background: rgba(37, 99, 235, 0.2); }
+        .avatar.assistant { background: rgba(56, 189, 248, 0.16); }
+
+        .bubble {
+            min-width: 0;
+            padding: 16px 18px;
+            border-radius: 22px;
+            border: 1px solid var(--line);
+            background: var(--assistant);
+            color: var(--text);
+            box-shadow: 0 10px 30px rgba(2, 6, 23, 0.18);
+        }
+
+        .msg.user .bubble {
+            justify-self: end;
+            background: var(--user);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 10px;
+            color: rgba(229, 238, 252, 0.82);
+            font-size: 12px;
+        }
+
+        .meta .muted { color: var(--muted); }
+
+        .content { font-size: 15px; line-height: 1.75; overflow-wrap: anywhere; }
+        .content > :first-child { margin-top: 0; }
+        .content > :last-child { margin-bottom: 0; }
+        .content p { margin: 0 0 10px; }
+        .content h1, .content h2, .content h3 { margin: 0 0 10px; line-height: 1.3; }
+        .content ul, .content ol { margin: 0 0 10px; padding-left: 20px; }
+        .content li + li { margin-top: 4px; }
+        .content code { padding: 2px 6px; border-radius: 8px; background: rgba(148, 163, 184, 0.15); font-family: Consolas, "SFMono-Regular", Menlo, monospace; font-size: 0.92em; }
+        .content pre { margin: 0 0 10px; padding: 14px; border-radius: 18px; background: rgba(2, 6, 23, 0.65); overflow: auto; white-space: pre-wrap; word-break: break-word; }
+        .content a { color: #7dd3fc; }
+
+        .status-shell {
+            margin-bottom: 12px;
+        }
+
+        .status-shell details {
+            margin-top: 0;
+        }
+
+        .status-shell summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            color: var(--text);
+        }
+
+        .status-shell summary .status-summary-muted {
+            color: var(--muted);
+            font-weight: 400;
+            font-size: 12px;
+        }
+
+        .status-shell .status-body {
+            margin-top: 12px;
+        }
+
+        .status-panel { display: grid; gap: 8px; }
+        .status-item { display: flex; align-items: flex-start; gap: 10px; color: #cbd5e1; font-size: 13px; line-height: 1.5; }
+        .pulse { width: 8px; height: 8px; margin-top: 7px; border-radius: 999px; background: var(--accent); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.35); animation: pulse 1.4s infinite; flex: 0 0 auto; }
+        .status-final .pulse { background: var(--accent-2); }
+
+        .content-shell {
+            margin-top: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            border-radius: 18px;
+            background: rgba(148, 163, 184, 0.08);
+            overflow: hidden;
+        }
+
+        .content-shell-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+            color: var(--text);
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .content-shell-head .content-summary-muted {
+            color: var(--muted);
+            font-weight: 400;
+            font-size: 12px;
+        }
+
+        .content-shell-body {
+            padding: 14px;
+        }
+
+        .markdown-content {
+            font-size: 15px;
+            line-height: 1.75;
+            overflow-wrap: anywhere;
+        }
+
+        .markdown-content > :first-child { margin-top: 0; }
+        .markdown-content > :last-child { margin-bottom: 0; }
+        .markdown-content p { margin: 0 0 10px; }
+        .markdown-content h1, .markdown-content h2, .markdown-content h3 { margin: 0 0 10px; line-height: 1.3; }
+        .markdown-content ul, .markdown-content ol { margin: 0 0 10px; padding-left: 20px; }
+        .markdown-content li + li { margin-top: 4px; }
+        .markdown-content code { padding: 2px 6px; border-radius: 8px; background: rgba(148, 163, 184, 0.15); font-family: Consolas, "SFMono-Regular", Menlo, monospace; font-size: 0.92em; }
+        .markdown-content pre { margin: 0 0 10px; padding: 14px; border-radius: 18px; background: rgba(2, 6, 23, 0.65); overflow: auto; white-space: pre-wrap; word-break: break-word; }
+        .markdown-content a { color: #7dd3fc; }
+        .markdown-content table { width: 100%; border-collapse: collapse; margin: 0 0 12px; overflow: hidden; border-radius: 14px; }
+        .markdown-content th, .markdown-content td { padding: 10px 12px; border: 1px solid rgba(148, 163, 184, 0.18); vertical-align: top; text-align: left; }
+        .markdown-content th { background: rgba(15, 23, 42, 0.68); color: var(--text); }
+
+        .details-grid { display: grid; gap: 10px; margin-top: 14px; }
+        details { border: 1px solid rgba(148, 163, 184, 0.16); border-radius: 18px; padding: 12px 14px; background: rgba(148, 163, 184, 0.08); }
+        summary { cursor: pointer; font-weight: 600; list-style: none; }
+        summary::-webkit-details-marker { display: none; }
+        .kv { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 6px 12px; margin-top: 10px; font-size: 13px; color: #dbeafe; }
+        .kv .key { color: var(--muted); }
+        details pre { margin-top: 10px; color: #e2e8f0; }
+
+        .composer { padding: 16px; border-top: 1px solid rgba(148, 163, 184, 0.16); background: linear-gradient(180deg, rgba(2, 6, 23, 0.15), rgba(2, 6, 23, 0.32)); }
+        .composer-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; color: var(--muted); font-size: 12px; }
+        .composer-top .hint { display: flex; align-items: center; gap: 8px; }
+
+        textarea {
+            width: 100%;
+            min-height: 88px;
+            max-height: 220px;
+            resize: vertical;
+            padding: 14px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            background: rgba(2, 6, 23, 0.6);
+            color: var(--text);
+            font: inherit;
+            outline: none;
+        }
+
+        textarea:focus { border-color: rgba(56, 189, 248, 0.75); box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.12); }
+        .composer-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+        .quick-prompt { display: flex; flex-wrap: wrap; gap: 8px; }
+        .quick-prompt button { border: 1px solid rgba(148, 163, 184, 0.16); border-radius: 999px; padding: 8px 12px; background: rgba(148, 163, 184, 0.08); color: var(--text); font: inherit; font-size: 12px; cursor: pointer; }
+        .quick-prompt button:hover { background: rgba(148, 163, 184, 0.16); }
+        .send-row { display: flex; align-items: center; gap: 10px; }
+        .send-row .button-primary { min-width: 120px; height: 48px; }
+        .live-state { font-size: 12px; color: var(--muted); }
+        .live-state strong { color: var(--text); }
+
+        @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.35); } 70% { box-shadow: 0 0 0 10px rgba(56, 189, 248, 0); } 100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); } }
+
+        @media (max-width: 760px) {
+            .shell { width: min(100%, calc(100% - 12px)); padding-top: 6px; }
+            .topbar, .composer { padding-left: 14px; padding-right: 14px; }
+            .topbar { flex-direction: column; align-items: stretch; }
+            .session-box { justify-content: flex-start; }
+            .messages { padding: 14px; }
+            .msg { grid-template-columns: 36px minmax(0, 1fr); gap: 10px; }
+            .msg.user { grid-template-columns: minmax(0, 1fr) 36px; }
+            .avatar { width: 36px; height: 36px; border-radius: 14px; font-size: 15px; }
+            .bubble { padding: 14px; border-radius: 20px; }
+            .composer-actions { flex-direction: column; align-items: stretch; }
+            .send-row { justify-content: space-between; }
+            .send-row .button-primary { width: 100%; }
+            .kv { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <header class="topbar">
+            <div class="brand">
+                <h1>Agentic AI Chat</h1>
+                <p>คุยแบบแชตจริง รับสถานะแบบ stream จาก /Chat/stream</p>
+            </div>
+            <div class="session-box">
+                <span class="badge"><span class="dot"></span><span id="connection-state">Ready</span></span>
+                <span class="session-chip">SessionId <strong id="session-id"></strong></span>
+                <button class="button button-secondary" id="new-session-btn" type="button">New Session</button>
+            </div>
+        </header>
+
+        <main class="chat-card">
+            <div class="messages" id="messages">
+                <div class="empty-state" id="empty-state">
+                    <h2>เริ่มคุยได้เลย</h2>
+                    <div>พิมพ์คำถามแล้วส่ง ระบบจะโชว์ status ระหว่างประมวลผล และสรุปผลลัพธ์สุดท้ายในบับเบิลเดียว</div>
+                </div>
+            </div>
+
+            <div class="composer">
+                <div class="composer-top">
+                    <div class="hint">Enter = ส่ง, Shift+Enter = ขึ้นบรรทัดใหม่</div>
+                    <div class="live-state">TestId: <strong id="test-id">chat-ui</strong></div>
+                </div>
+
+                <form id="chat-form">
+                    <textarea id="message-input" placeholder="พิมพ์ข้อความที่ต้องการให้ AI ช่วย..." autocomplete="off"></textarea>
+                    <div class="composer-actions">
+                        <div class="quick-prompt">
+                            <button type="button" data-prompt="ช่วยสรุปภาพรวมพอร์ตสินเชื่อแยกตาม “ผลิตภัณฑ์” ให้หน่อย">สรุปภาพรวมพอร์ตสินเชื่อแยกตาม “ผลิตภัณฑ์”</button>
+                            <button type="button" data-prompt="ช่วยหยิบเคส “ค้างเกิน 30 วัน” มาให้ทีมติดตามหนี้ดูสัก 1 เคสหน่อย">ช่วยหยิบเคส “ค้างเกิน 30 วัน” มาให้ทีมติดตามหนี้ดูสัก 1 เคสหน่อย</button>
+                            <button type="button" data-prompt="ช่วยดูพอร์ตสินเชื่อแล้วบอกหน่อยว่า “ผลิตภัณฑ์ไหน” เป็นตัวหลักสุด">ช่วยดูพอร์ตสินเชื่อแล้วบอกหน่อยว่า “ผลิตภัณฑ์ไหน” เป็นตัวหลักสุด</button>
+                        </div>
+                        <div class="send-row">
+                            <span class="live-state" id="status-text">พร้อมส่ง</span>
+                            <button class="button button-primary" id="send-btn" type="submit">ส่งข้อความ</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        if (window.marked) {
+            marked.setOptions({ gfm: true, breaks: true });
+        }
+
+        const STORAGE_KEY = "agentic.chat.sessionId";
+        const TEST_ID = "chat-ui";
+        const API_URL = "/Chat/stream";
+
+        const messagesEl = document.getElementById("messages");
+        const emptyStateEl = document.getElementById("empty-state");
+        const formEl = document.getElementById("chat-form");
+        const inputEl = document.getElementById("message-input");
+        const sendBtnEl = document.getElementById("send-btn");
+        const newSessionBtnEl = document.getElementById("new-session-btn");
+        const sessionIdEl = document.getElementById("session-id");
+        const connectionStateEl = document.getElementById("connection-state");
+        const statusTextEl = document.getElementById("status-text");
+        const quickPromptEls = document.querySelectorAll("[data-prompt]");
+
+        const decoder = new TextDecoder();
+        let sessionId = loadOrCreateSessionId();
+        let currentAbortController = null;
+        let activeAssistant = null;
+
+        function createSessionId() {
+            if (window.crypto && typeof window.crypto.randomUUID === "function") {
+                return window.crypto.randomUUID();
+            }
+            return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        }
+
+        function loadOrCreateSessionId() {
+            const existing = sessionStorage.getItem(STORAGE_KEY);
+            if (existing) {
+                return existing;
+            }
+
+            const fresh = createSessionId();
+            sessionStorage.setItem(STORAGE_KEY, fresh);
+            return fresh;
+        }
+
+        function persistSessionId(value) {
+            sessionId = value;
+            sessionStorage.setItem(STORAGE_KEY, value);
+            sessionIdEl.textContent = value;
+        }
+
+        function setConnectionState(label, busy) {
+            connectionStateEl.textContent = label;
+            statusTextEl.textContent = label;
+            sendBtnEl.disabled = !!busy;
+            newSessionBtnEl.disabled = !!busy;
+            inputEl.disabled = !!busy;
+        }
+
+        function clearMessages() {
+            messagesEl.innerHTML = "";
+            messagesEl.appendChild(emptyStateEl);
+        }
+
+        function ensureConversationStarted() {
+            if (emptyStateEl.parentElement) {
+                emptyStateEl.remove();
+            }
+        }
+
+        function scrollToBottom() {
+            messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: "smooth" });
+        }
+
+        function addMessage(role, text, metaText) {
+            ensureConversationStarted();
+
+            const row = document.createElement("div");
+            row.className = `msg ${role}`;
+
+            const avatar = document.createElement("div");
+            avatar.className = `avatar ${role}`;
+            avatar.textContent = role === "user" ? "คุณ" : "AI";
+
+            const bubble = document.createElement("div");
+            bubble.className = "bubble";
+
+            const meta = document.createElement("div");
+            meta.className = "meta";
+            meta.innerHTML = `<span>${role === "user" ? "ข้อความของคุณ" : "Assistant"}</span><span class="muted">${metaText || ""}</span>`;
+
+            const content = document.createElement("div");
+            content.className = "content";
+            content.textContent = text;
+
+            bubble.appendChild(meta);
+            bubble.appendChild(content);
+
+            if (role === "user") {
+                row.appendChild(bubble);
+                row.appendChild(avatar);
+            } else {
+                row.appendChild(avatar);
+                row.appendChild(bubble);
+            }
+
+            messagesEl.appendChild(row);
+            scrollToBottom();
+            return { row, bubble, content };
+        }
+
+        function createAssistantShell() {
+            ensureConversationStarted();
+
+            const row = document.createElement("div");
+            row.className = "msg assistant";
+
+            const avatar = document.createElement("div");
+            avatar.className = "avatar assistant";
+            avatar.textContent = "AI";
+
+            const bubble = document.createElement("div");
+            bubble.className = "bubble";
+
+            const meta = document.createElement("div");
+            meta.className = "meta";
+            meta.innerHTML = `<span>กำลังประมวลผล</span><span class="muted">stream</span>`;
+
+            const statusShell = document.createElement("details");
+            statusShell.className = "status-shell";
+            statusShell.open = true;
+
+            const statusSummary = document.createElement("summary");
+            statusSummary.innerHTML = '<span>Status history</span><span class="status-summary-muted">stream</span>';
+
+            const statusBody = document.createElement("div");
+            statusBody.className = "status-body";
+
+            const content = document.createElement("div");
+            content.className = "markdown-content";
+            content.innerHTML = `<p>กำลังรอ status จาก backend...</p>`;
+
+            const contentShell = document.createElement("div");
+            contentShell.className = "content-shell";
+            contentShell.hidden = true;
+
+            const contentShellHead = document.createElement("div");
+            contentShellHead.className = "content-shell-head";
+            contentShellHead.innerHTML = '<span>คำตอบสุดท้าย</span>';
+
+            const contentShellBody = document.createElement("div");
+            contentShellBody.className = "content-shell-body";
+
+            const statusPanel = document.createElement("div");
+            statusPanel.className = "status-panel";
+
+            statusBody.appendChild(statusPanel);
+            statusShell.appendChild(statusSummary);
+            statusShell.appendChild(statusBody);
+
+            contentShellBody.appendChild(content);
+            contentShell.appendChild(contentShellHead);
+            contentShell.appendChild(contentShellBody);
+
+            bubble.appendChild(meta);
+            bubble.appendChild(statusShell);
+            bubble.appendChild(contentShell);
+
+            row.appendChild(avatar);
+            row.appendChild(bubble);
+            messagesEl.appendChild(row);
+            scrollToBottom();
+
+            return { row, bubble, content, contentShell, contentShellHead, contentShellBody, statusPanel, statusShell, statusSummary };
+        }
+
+        function appendStatus(line) {
+            if (!activeAssistant) {
+                activeAssistant = createAssistantShell();
+            }
+
+            const status = document.createElement("div");
+            status.className = line.startsWith("FINAL:") ? "status-item status-final" : "status-item";
+
+            const pulse = document.createElement("span");
+            pulse.className = "pulse";
+
+            const text = document.createElement("div");
+            text.textContent = line;
+
+            status.appendChild(pulse);
+            status.appendChild(text);
+            activeAssistant.statusPanel.appendChild(status);
+            scrollToBottom();
+        }
+
+        function renderObjectSummary(value) {
+            if (value == null) {
+                return "-";
+            }
+
+            if (typeof value === "string") {
+                return value;
+            }
+
+            try {
+                return JSON.stringify(value, null, 2);
+            } catch {
+                return String(value);
+            }
+        }
+
+        function createDetailsBlock(title, pairs, payload, forceJson = false) {
+            const details = document.createElement("details");
+            details.open = title === "Session";
+
+            const summary = document.createElement("summary");
+            summary.textContent = title;
+            details.appendChild(summary);
+
+            if (Array.isArray(pairs) && pairs.length > 0) {
+                const grid = document.createElement("div");
+                grid.className = "kv";
+
+                pairs.forEach(([key, value]) => {
+                    const keyEl = document.createElement("div");
+                    keyEl.className = "key";
+                    keyEl.textContent = key;
+
+                    const valueEl = document.createElement("div");
+                    valueEl.textContent = value;
+
+                    grid.appendChild(keyEl);
+                    grid.appendChild(valueEl);
+                });
+
+                details.appendChild(grid);
+            }
+
+            if (payload != null || forceJson) {
+                const pre = document.createElement("pre");
+                pre.textContent = renderObjectSummary(payload);
+                details.appendChild(pre);
+            }
+
+            return details;
+        }
+
+        function renderFinalResponse(finalText) {
+            if (!activeAssistant) {
+                activeAssistant = createAssistantShell();
+            }
+
+            const meta = activeAssistant.bubble.querySelector(".meta");
+            meta.innerHTML = `<span>ผลลัพธ์สุดท้าย</span><span class="muted">Final</span>`;
+
+            if (activeAssistant.statusShell) {
+                activeAssistant.statusShell.open = false;
+                activeAssistant.statusSummary.innerHTML = '<span>Status history</span><span class="status-summary-muted">FINAL - click to expand</span>';
+            }
+
+            const screenMarkdown = extractScreenMarkdown(finalText);
+            activeAssistant.contentShell.hidden = false;
+            activeAssistant.contentShellHead.innerHTML = '<span>คำตอบสุดท้าย</span>';
+            activeAssistant.content.innerHTML = window.marked
+                ? marked.parse(screenMarkdown || "ไม่มีข้อมูล screen_markdown")
+                : escapeHtml(screenMarkdown || "ไม่มีข้อมูล screen_markdown");
+            scrollToBottom();
+        }
+
+        function extractScreenMarkdown(value) {
+            if (value == null) {
+                return "";
+            }
+
+            if (typeof value === "object") {
+                const direct = value.screen_markdown ?? value.screenMarkdown;
+                if (direct != null && String(direct).trim()) {
+                    return String(direct);
+                }
+
+                const nested = value.Final ?? value.final ?? value.answer;
+                return extractScreenMarkdown(nested);
+            }
+
+            const text = String(value).trim();
+            if (!text) {
+                return "";
+            }
+
+            try {
+                const parsed = JSON.parse(text);
+                if (parsed && typeof parsed === "object") {
+                    const direct = parsed.screen_markdown ?? parsed.screenMarkdown;
+                    if (direct != null && String(direct).trim()) {
+                        return String(direct);
+                    }
+
+                    const nested = parsed.Final ?? parsed.final ?? parsed.answer;
+                    return extractScreenMarkdown(nested);
+                }
+            } catch {
+                // Fallback to the raw string below.
+            }
+
+            return text;
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#39;");
+        }
+
+        function resetConversation() {
+            activeAssistant = null;
+            clearMessages();
+            setConnectionState("Ready", false);
+            statusTextEl.textContent = "พร้อมส่ง";
+        }
+
+        function newSession() {
+            if (currentAbortController) {
+                currentAbortController.abort();
+                currentAbortController = null;
+            }
+
+            const freshId = createSessionId();
+            persistSessionId(freshId);
+            resetConversation();
+            inputEl.value = "";
+            inputEl.style.height = "auto";
+            inputEl.focus();
+        }
+
+        function processSseBuffer(buffer, flush = false) {
+            let separatorIndex = buffer.indexOf("\n\n");
+
+            while (separatorIndex !== -1) {
+                const eventBlock = buffer.slice(0, separatorIndex).replace(/\r/g, "");
+                buffer = buffer.slice(separatorIndex + 2);
+
+                const dataLines = eventBlock
+                    .split("\n")
+                    .filter(line => line.startsWith("data:"))
+                    .map(line => line.slice(5).trimStart());
+
+                if (dataLines.length > 0) {
+                    handleStreamData(dataLines.join("\n"));
+                }
+
+                separatorIndex = buffer.indexOf("\n\n");
+            }
+
+            if (flush && buffer.trim()) {
+                const eventBlock = buffer.replace(/\r/g, "");
+                const dataLines = eventBlock
+                    .split("\n")
+                    .filter(line => line.startsWith("data:"))
+                    .map(line => line.slice(5).trimStart());
+
+                if (dataLines.length > 0) {
+                    handleStreamData(dataLines.join("\n"));
+                }
+
+                return "";
+            }
+
+            return buffer;
+        }
+
+        function handleStreamData(raw) {
+            const message = (raw || "").trim();
+            if (!message) {
+                return;
+            }
+
+            if (message.startsWith("FINAL:")) {
+                appendStatus("FINAL");
+
+                const jsonText = message.slice("FINAL:".length).trim();
+                try {
+                    const payload = JSON.parse(jsonText);
+                    renderFinalResponse(payload);
+                } catch {
+                    renderFinalResponse(jsonText || message);
+                }
+
+                setConnectionState("Done", false);
+                return;
+            }
+
+            appendStatus(message);
+        }
+
+        async function handleStreamMessage(message) {
+            if (currentAbortController) {
+                currentAbortController.abort();
+            }
+
+            const controller = new AbortController();
+            currentAbortController = controller;
+
+            addMessage("user", message, `SessionId: ${sessionId}`);
+            activeAssistant = createAssistantShell();
+            setConnectionState("Streaming", true);
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        Message: message,
+                        TestId: TEST_ID,
+                        SessionId: sessionId,
+                        message,
+                        testId: TEST_ID,
+                        sessionId
+                    }),
+                    signal: controller.signal
+                });
+
+                if (!response.ok) {
+                    const text = await response.text().catch(() => "");
+                    throw new Error(`HTTP ${response.status}${text ? ` - ${text}` : ""}`);
+                }
+
+                if (!response.body) {
+                    throw new Error("ไม่สามารถอ่าน stream ได้");
+                }
+
+                const reader = response.body.getReader();
+                let buffer = "";
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) {
+                        break;
+                    }
+
+                    buffer += decoder.decode(value, { stream: true });
+                    buffer = processSseBuffer(buffer);
+                }
+
+                processSseBuffer(buffer, true);
+            } catch (error) {
+                if (error.name === "AbortError") {
+                    return;
+                }
+
+                if (!activeAssistant) {
+                    activeAssistant = createAssistantShell();
+                }
+
+                activeAssistant.content.innerHTML = `<p>เกิดข้อผิดพลาด: ${escapeHtml(error.message || String(error))}</p>`;
+            } finally {
+                currentAbortController = null;
+                setConnectionState("Ready", false);
+            }
+        }
+
+        function resizeTextarea() {
+            inputEl.style.height = "auto";
+            inputEl.style.height = `${Math.min(inputEl.scrollHeight, 220)}px`;
+        }
+
+        formEl.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const message = inputEl.value.trim();
+            if (!message) {
+                return;
+            }
+
+            inputEl.value = "";
+            resizeTextarea();
+            await handleStreamMessage(message);
+            inputEl.focus();
+        });
+
+        inputEl.addEventListener("input", resizeTextarea);
+
+        inputEl.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                formEl.requestSubmit();
+            }
+        });
+
+        newSessionBtnEl.addEventListener("click", () => {
+            newSession();
+        });
+
+        quickPromptEls.forEach((button) => {
+            button.addEventListener("click", () => {
+                inputEl.value = button.dataset.prompt || "";
+                resizeTextarea();
+                inputEl.focus();
+            });
+        });
+
+        persistSessionId(sessionId);
+        clearMessages();
+        resizeTextarea();
+    </script>
+</body>
+</html>

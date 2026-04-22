@@ -1,0 +1,10 @@
+{
+  "TotalRuns": 20,
+  "RunsWithReplan": 4,
+  "TotalReplanCount": 14,
+  "ReplanRate": 0.2,
+  "TotalToolInvocations": 66,
+  "TotalWrongToolInvocations": 7,
+  "WtrRate": 0.10606060606060606,
+  "AvgWtrPerRun": 0.07166666666666667
+}

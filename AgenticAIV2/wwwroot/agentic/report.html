@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Eval Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>Evaluation Dashboard</h1>
+            <span class="subtitle">API: https://localhost:5082/Evaluation</span>
+        </header>
+
+        <!-- controls -->
+        <section class="control-bar" style="padding-bottom: 20px;">
+            <div id="progress-container" class="progress-container" hidden>
+                <div class="progress-track">
+                    <div id="progress-bar" class="progress-bar"></div>
+                </div>
+                <span id="progress-label" class="progress-label">Loading...</span>
+            </div>
+            
+            <button id="load-btn" class="btn-primary">Load Data from API</button>
+
+        </section>
+
+        <!-- Summary Cards -->
+        <section id="summary" class="summary-grid">
+            <!-- Summary cards will be inserted here by JS -->
+        </section>
+
+        <!-- Actions Bar -->
+        <section class="actions-bar">
+            <button id="download-json-btn" class="btn-secondary">Download JSON</button>
+            <div class="filter-controls">
+                <select id="filter-status" class="filter-select">
+                    <option value="">All</option>
+                    <option value="PASS">Passed Only</option>
+                    <option value="FAIL">Failed Only</option>
+                </select>
+                <input 
+                    type="text" 
+                    id="search-box" 
+                    class="search-input" 
+                    placeholder="Search TestCase ID..."
+                >
+            </div>
+        </section>
+
+        <!-- Main Table -->
+        <section class="table-section">
+            <div class="table-header">
+                <h2>Test Case Metrics</h2>
+                <span id="last-updated" class="last-updated"></span>
+            </div>
+
+            <div class="table-wrapper">
+                <table id="test-table">
+                    <thead>
+                        <tr>
+                            <th>TestCase</th>
+                            <th>Task Complete</th>
+                            <th>Tools</th>
+                            <th>Replanning</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- JS generate rows -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-container">
+                <button id="prev-page-btn" class="btn-pagination">← Previous</button>
+                <span id="page-info" class="page-info">Page 1</span>
+                <button id="next-page-btn" class="btn-pagination">Next →</button>
+                <select id="rows-per-page" class="rows-select">
+                    <option value="5">5 rows</option>
+                    <option value="10" selected>10 rows</option>
+                    <option value="20">20 rows</option>
+                    <option value="50">50 rows</option>
+                </select>
+            </div>
+        </section>
+
+        <div style="margin-top: 40px;"></div>
+        <hr />
+        <details class="json-output-section">
+            <summary>📋 Raw JSON Response</summary>
+            <div id="jsonOutput" class="code-box">Waiting for data...</div>
+        </details>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

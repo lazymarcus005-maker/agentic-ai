@@ -1,0 +1,2436 @@
+[
+  {
+    "Final": "{\n  \u0022screen_markdown\u0022: \u0022# \u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 \u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\\n\\n- **Contract Number:** LO20250110-0001\\n- **Product Name:** \u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E2D\u0E40\u0E15\u0E2D\u0E23\u0E4C\u0E44\u0E0B\u0E04\u0E4C\\n- **Loan Amount:** 45000.00\\n- **Status:** ACTIVE\\n\\n\u2705 \u0E2A\u0E48\u0E07\u0E2D\u0E35\u0E40\u0E21\u0E25\u0E41\u0E08\u0E49\u0E07\u0E17\u0E35\u0E21 Finance \u0E44\u0E1B\u0E22\u0E31\u0E07 finance@example.com \u0E40\u0E23\u0E35\u0E22\u0E1A\u0E23\u0E49\u0E2D\u0E22\u0022\n}",
+    "Plan": {
+      "Version": "1.0",
+      "Goal": "\u0E04\u0E49\u0E19\u0E2B\u0E32\u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 \u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\u0E41\u0E25\u0E30\u0E2A\u0E48\u0E07\u0E43\u0E2B\u0E49\u0E17\u0E35\u0E21 finance",
+      "Constraints": {
+        "MaxSteps": 8,
+        "TimeoutSec": 120
+      },
+      "Steps": [
+        {
+          "Id": "search-customer",
+          "Type": "tool",
+          "Plugin": "mssql_mcp",
+          "Tool": "qry_customers",
+          "Params": {
+            "keyword": "\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35"
+          },
+          "Output": "customers_list"
+        },
+        {
+          "Id": "extract-customer-id",
+          "Type": "llm",
+          "Prompt": "\u0E08\u0E32\u0E01\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C [[customers_list]] \u0E43\u0E2B\u0E49\u0E14\u0E36\u0E07\u0E04\u0E48\u0E32 customer_id \u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E17\u0E35\u0E48\u0E0A\u0E37\u0E48\u0E2D\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35 \u0E41\u0E25\u0E30\u0E04\u0E37\u0E19\u0E04\u0E48\u0E32\u0E40\u0E1B\u0E47\u0E19\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E40\u0E14\u0E35\u0E22\u0E27",
+          "Output": "customer_id",
+          "DependsOn": [
+            "search-customer"
+          ]
+        },
+        {
+          "Id": "get-customer-loans",
+          "Type": "tool",
+          "Plugin": "mssql_mcp",
+          "Tool": "qry_customer_with_loans",
+          "Params": {
+            "customer_id": "[[customer_id]]"
+          },
+          "Output": "customer_loans",
+          "DependsOn": [
+            "extract-customer-id"
+          ]
+        },
+        {
+          "Id": "compose-email-body",
+          "Type": "llm",
+          "Prompt": "\u0E2A\u0E23\u0E38\u0E1B\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E08\u0E32\u0E01 [[customer_loans]] \u0E43\u0E2B\u0E49\u0E40\u0E1B\u0E47\u0E19\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E17\u0E35\u0E48\u0E21\u0E35 contract_number, product_name, loan_amount, status \u0E41\u0E15\u0E48\u0E25\u0E30\u0E23\u0E32\u0E22\u0E01\u0E32\u0E23\u0E41\u0E22\u0E01\u0E1A\u0E23\u0E23\u0E17\u0E31\u0E14",
+          "Output": "email_body",
+          "DependsOn": [
+            "get-customer-loans"
+          ]
+        },
+        {
+          "Id": "send-email",
+          "Type": "tool",
+          "Plugin": "mail_mcp",
+          "Tool": "send_email",
+          "Params": {
+            "to": [
+              "finance@example.com"
+            ],
+            "subject": "\u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 \u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35",
+            "body_text": "[[email_body]]"
+          },
+          "Output": "email_result",
+          "DependsOn": [
+            "compose-email-body"
+          ]
+        }
+      ]
+    },
+    "PlanHistories": [
+      {
+        "Version": "1.0",
+        "Goal": "\u0E04\u0E49\u0E19\u0E2B\u0E32\u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\u0E41\u0E25\u0E30\u0E2A\u0E48\u0E07\u0E2D\u0E35\u0E40\u0E21\u0E25\u0E41\u0E08\u0E49\u0E07\u0E17\u0E35\u0E21 finance",
+        "Constraints": {
+          "MaxSteps": 8,
+          "TimeoutSec": 120
+        },
+        "Steps": [
+          {
+            "Id": "search-customer",
+            "Type": "tool",
+            "Plugin": "mssql_mcp",
+            "Tool": "qry_customers",
+            "Params": {
+              "keyword": "\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35"
+            },
+            "Output": "customer_search"
+          },
+          {
+            "Id": "get-loan-details",
+            "Type": "tool",
+            "Plugin": "mssql_mcp",
+            "Tool": "qry_customer_with_loans",
+            "Params": {
+              "customer_id": "[[customer_search]]"
+            },
+            "Output": "loan_details",
+            "DependsOn": [
+              "search-customer"
+            ]
+          },
+          {
+            "Id": "compose-email",
+            "Type": "llm",
+            "Prompt": "\u0E01\u0E23\u0E38\u0E13\u0E32\u0E2A\u0E23\u0E49\u0E32\u0E07\u0E2D\u0E35\u0E40\u0E21\u0E25\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E41\u0E08\u0E49\u0E07\u0E17\u0E35\u0E21 finance \u0E42\u0E14\u0E22\u0E43\u0E0A\u0E49\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E15\u0E48\u0E2D\u0E44\u0E1B\u0E19\u0E35\u0E49\u0E08\u0E32\u0E01 [[loan_details]]: contract_number, product_name, loan_amount, status. \u0E2A\u0E48\u0E07\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C\u0E40\u0E1B\u0E47\u0E19\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E17\u0E35\u0E48\u0E23\u0E27\u0E21\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E17\u0E31\u0E49\u0E07\u0E2B\u0E21\u0E14\u0E43\u0E19\u0E23\u0E39\u0E1B\u0E41\u0E1A\u0E1A\u0E17\u0E35\u0E48\u0E2D\u0E48\u0E32\u0E19\u0E07\u0E48\u0E32\u0E22",
+            "Output": "email_body",
+            "DependsOn": [
+              "get-loan-details"
+            ]
+          },
+          {
+            "Id": "send-email",
+            "Type": "tool",
+            "Plugin": "mail_mcp",
+            "Tool": "send_email",
+            "Params": {
+              "to": [
+                "finance-team@example.com"
+              ],
+              "subject": "\u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07 \u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35",
+              "body_text": "[[email_body]]"
+            },
+            "Output": "email_result",
+            "DependsOn": [
+              "compose-email"
+            ]
+          }
+        ]
+      },
+      {
+        "Version": "1.0",
+        "Goal": "\u0E14\u0E36\u0E07\u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 \u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\u0E41\u0E25\u0E30\u0E2A\u0E48\u0E07\u0E2D\u0E35\u0E40\u0E21\u0E25\u0E41\u0E08\u0E49\u0E07\u0E17\u0E35\u0E21 finance",
+        "Constraints": {
+          "MaxSteps": 8,
+          "TimeoutSec": 120
+        },
+        "Steps": [
+          {
+            "Id": "search-customer",
+            "Type": "tool",
+            "Plugin": "mssql_mcp",
+            "Tool": "qry_customers",
+            "Params": {
+              "keyword": "\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35",
+              "page": 1,
+              "pageSize": 10
+            },
+            "Output": "customers_list"
+          },
+          {
+            "Id": "extract-customer-id",
+            "Type": "llm",
+            "Prompt": "\u0E08\u0E32\u0E01 [[customers_list]] \u0E43\u0E2B\u0E49\u0E14\u0E36\u0E07\u0E04\u0E48\u0E32 customer_id \u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E17\u0E35\u0E48\u0E0A\u0E37\u0E48\u0E2D \u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35 \u0E41\u0E25\u0E49\u0E27\u0E15\u0E31\u0E49\u0E07\u0E40\u0E1B\u0E47\u0E19\u0E15\u0E31\u0E27\u0E41\u0E1B\u0E23 customer_id",
+            "Output": "customer_id",
+            "DependsOn": [
+              "search-customer"
+            ]
+          },
+          {
+            "Id": "get-loans",
+            "Type": "tool",
+            "Plugin": "mssql_mcp",
+            "Tool": "qry_customer_with_loans",
+            "Params": {
+              "customer_id": "[[customer_id]]"
+            },
+            "Output": "loan_details",
+            "DependsOn": [
+              "extract-customer-id"
+            ]
+          },
+          {
+            "Id": "compose-email",
+            "Type": "llm",
+            "Prompt": "\u0E08\u0E32\u0E01 [[loan_details]] \u0E2A\u0E23\u0E49\u0E32\u0E07\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E2D\u0E35\u0E40\u0E21\u0E25\u0E41\u0E08\u0E49\u0E07\u0E17\u0E35\u0E21 finance \u0E42\u0E14\u0E22\u0E23\u0E30\u0E1A\u0E38 contract_number, product_name, loan_amount, status \u0E02\u0E2D\u0E07\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E41\u0E15\u0E48\u0E25\u0E30\u0E23\u0E32\u0E22\u0E01\u0E32\u0E23\u0E43\u0E19\u0E23\u0E39\u0E1B\u0E41\u0E1A\u0E1A\u0E23\u0E32\u0E22\u0E01\u0E32\u0E23",
+            "Output": "email_body",
+            "DependsOn": [
+              "get-loans"
+            ]
+          },
+          {
+            "Id": "send-email",
+            "Type": "tool",
+            "Plugin": "mail_mcp",
+            "Tool": "send_email",
+            "Params": {
+              "to": [
+                "finance@example.com"
+              ],
+              "subject": "\u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 \u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35",
+              "body_text": "[[email_body]]"
+            },
+            "Output": "email_result",
+            "DependsOn": [
+              "compose-email"
+            ]
+          }
+        ]
+      },
+      {
+        "Version": "1.0",
+        "Goal": "\u0E04\u0E49\u0E19\u0E2B\u0E32\u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 \u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\u0E41\u0E25\u0E30\u0E2A\u0E48\u0E07\u0E43\u0E2B\u0E49\u0E17\u0E35\u0E21 finance",
+        "Constraints": {
+          "MaxSteps": 8,
+          "TimeoutSec": 120
+        },
+        "Steps": [
+          {
+            "Id": "search-customer",
+            "Type": "tool",
+            "Plugin": "mssql_mcp",
+            "Tool": "qry_customers",
+            "Params": {
+              "keyword": "\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35"
+            },
+            "Output": "customers_list"
+          },
+          {
+            "Id": "extract-customer-id",
+            "Type": "llm",
+            "Prompt": "\u0E08\u0E32\u0E01\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C [[customers_list]] \u0E43\u0E2B\u0E49\u0E14\u0E36\u0E07\u0E04\u0E48\u0E32 customer_id \u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E17\u0E35\u0E48\u0E0A\u0E37\u0E48\u0E2D\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35 \u0E41\u0E25\u0E30\u0E04\u0E37\u0E19\u0E04\u0E48\u0E32\u0E40\u0E1B\u0E47\u0E19\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E40\u0E14\u0E35\u0E22\u0E27",
+            "Output": "customer_id",
+            "DependsOn": [
+              "search-customer"
+            ]
+          },
+          {
+            "Id": "get-customer-loans",
+            "Type": "tool",
+            "Plugin": "mssql_mcp",
+            "Tool": "qry_customer_with_loans",
+            "Params": {
+              "customer_id": "[[customer_id]]"
+            },
+            "Output": "customer_loans",
+            "DependsOn": [
+              "extract-customer-id"
+            ]
+          },
+          {
+            "Id": "compose-email-body",
+            "Type": "llm",
+            "Prompt": "\u0E2A\u0E23\u0E38\u0E1B\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E08\u0E32\u0E01 [[customer_loans]] \u0E43\u0E2B\u0E49\u0E40\u0E1B\u0E47\u0E19\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E17\u0E35\u0E48\u0E21\u0E35 contract_number, product_name, loan_amount, status \u0E41\u0E15\u0E48\u0E25\u0E30\u0E23\u0E32\u0E22\u0E01\u0E32\u0E23\u0E41\u0E22\u0E01\u0E1A\u0E23\u0E23\u0E17\u0E31\u0E14",
+            "Output": "email_body",
+            "DependsOn": [
+              "get-customer-loans"
+            ]
+          },
+          {
+            "Id": "send-email",
+            "Type": "tool",
+            "Plugin": "mail_mcp",
+            "Tool": "send_email",
+            "Params": {
+              "to": [
+                "finance@example.com"
+              ],
+              "subject": "\u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 \u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35",
+              "body_text": "[[email_body]]"
+            },
+            "Output": "email_result",
+            "DependsOn": [
+              "compose-email-body"
+            ]
+          }
+        ]
+      }
+    ],
+    "Journal": {
+      "RunId": "72dab5a4-61c4-4b3e-9c2c-6893d6e50ecf",
+      "Steps": [
+        {
+          "Id": "search-customer",
+          "Status": "succeeded",
+          "DurationMs": 67,
+          "Output": [
+            {
+              "customer_id": 1,
+              "name": "\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35",
+              "citizen_id": "1103700012345",
+              "phone": "0812345678",
+              "email": "somchai@example.com",
+              "address": "99 \u0E2B\u0E21\u0E39\u0E48 1 \u0E15.\u0E1A\u0E32\u0E07\u0E23\u0E31\u0E01 \u0E2D.\u0E40\u0E21\u0E37\u0E2D\u0E07 \u0E08.\u0E01\u0E23\u0E38\u0E07\u0E40\u0E17\u0E1E\u0E2F 10500",
+              "total_count": 1,
+              "page": 1,
+              "page_size": 20
+            }
+          ],
+          "Input": "{\u0022Plugin\u0022:\u0022mssql_mcp\u0022,\u0022Tool\u0022:\u0022qry_customers\u0022,\u0022Args\u0022:{\u0022keyword\u0022:\u0022\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\u0022}}"
+        },
+        {
+          "Id": "extract-customer-id",
+          "Status": "succeeded",
+          "DurationMs": 2186,
+          "Output": "1",
+          "Input": "\u0E08\u0E32\u0E01\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C [{\u0022customer_id\u0022:1,\u0022name\u0022:\u0022\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\u0022,\u0022citizen_id\u0022:\u00221103700012345\u0022,\u0022phone\u0022:\u00220812345678\u0022,\u0022email\u0022:\u0022somchai@example.com\u0022,\u0022address\u0022:\u002299 \u0E2B\u0E21\u0E39\u0E48 1 \u0E15.\u0E1A\u0E32\u0E07\u0E23\u0E31\u0E01 \u0E2D.\u0E40\u0E21\u0E37\u0E2D\u0E07 \u0E08.\u0E01\u0E23\u0E38\u0E07\u0E40\u0E17\u0E1E\u0E2F 10500\u0022,\u0022total_count\u0022:1,\u0022page\u0022:1,\u0022page_size\u0022:20}] \u0E43\u0E2B\u0E49\u0E14\u0E36\u0E07\u0E04\u0E48\u0E32 customer_id \u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E17\u0E35\u0E48\u0E0A\u0E37\u0E48\u0E2D\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35 \u0E41\u0E25\u0E30\u0E04\u0E37\u0E19\u0E04\u0E48\u0E32\u0E40\u0E1B\u0E47\u0E19\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E40\u0E14\u0E35\u0E22\u0E27"
+        },
+        {
+          "Id": "get-customer-loans",
+          "Status": "succeeded",
+          "DurationMs": 1441,
+          "Output": [
+            {
+              "loan_id": 1,
+              "contract_number": "LO20250110-0001",
+              "status": "ACTIVE",
+              "loan_amount": 45000.00,
+              "loan_term": 12,
+              "start_date": "2025-01-10T00:00:00",
+              "end_date": "2026-01-10T00:00:00",
+              "interest_method": "DIM",
+              "loan_product_id": 1,
+              "product_name": "\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E2D\u0E40\u0E15\u0E2D\u0E23\u0E4C\u0E44\u0E0B\u0E04\u0E4C",
+              "sub_type": "Motorcycle"
+            }
+          ],
+          "Input": "{\u0022Plugin\u0022:\u0022mssql_mcp\u0022,\u0022Tool\u0022:\u0022qry_customer_with_loans\u0022,\u0022Args\u0022:{\u0022customer_id\u0022:\u00221\u0022}}"
+        },
+        {
+          "Id": "compose-email-body",
+          "Status": "succeeded",
+          "DurationMs": 13005,
+          "Output": "LO20250110-0001, \u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E2D\u0E40\u0E15\u0E2D\u0E23\u0E4C\u0E44\u0E0B\u0E04\u0E4C, 45000.00, ACTIVE",
+          "Input": "\u0E2A\u0E23\u0E38\u0E1B\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E08\u0E32\u0E01 [{\u0022loan_id\u0022:1,\u0022contract_number\u0022:\u0022LO20250110-0001\u0022,\u0022status\u0022:\u0022ACTIVE\u0022,\u0022loan_amount\u0022:45000.00,\u0022loan_term\u0022:12,\u0022start_date\u0022:\u00222025-01-10T00:00:00\u0022,\u0022end_date\u0022:\u00222026-01-10T00:00:00\u0022,\u0022interest_method\u0022:\u0022DIM\u0022,\u0022loan_product_id\u0022:1,\u0022product_name\u0022:\u0022\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E2D\u0E40\u0E15\u0E2D\u0E23\u0E4C\u0E44\u0E0B\u0E04\u0E4C\u0022,\u0022sub_type\u0022:\u0022Motorcycle\u0022}] \u0E43\u0E2B\u0E49\u0E40\u0E1B\u0E47\u0E19\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E17\u0E35\u0E48\u0E21\u0E35 contract_number, product_name, loan_amount, status \u0E41\u0E15\u0E48\u0E25\u0E30\u0E23\u0E32\u0E22\u0E01\u0E32\u0E23\u0E41\u0E22\u0E01\u0E1A\u0E23\u0E23\u0E17\u0E31\u0E14"
+        },
+        {
+          "Id": "send-email",
+          "Status": "succeeded",
+          "DurationMs": 3266,
+          "Output": "{success=true}",
+          "Input": "{\u0022Plugin\u0022:\u0022mail_mcp\u0022,\u0022Tool\u0022:\u0022send_email\u0022,\u0022Args\u0022:{\u0022to\u0022:[\u0022finance@example.com\u0022],\u0022subject\u0022:\u0022\u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 \u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\u0022,\u0022body_text\u0022:\u0022LO20250110-0001, \u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E2D\u0E40\u0E15\u0E2D\u0E23\u0E4C\u0E44\u0E0B\u0E04\u0E4C, 45000.00, ACTIVE\u0022}}"
+        }
+      ]
+    },
+    "RunId": "f89979ddfab84a3a83f0c95f59a5548c",
+    "LLMHistory": {
+      "TotalPromptTokens": 99736,
+      "TotalCompletionTokens": 0,
+      "TotalTokens": 99736,
+      "Entries": [
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1385,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:12.8972947Z",
+          "TotalTokens": 1385
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1385,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:15.1353044Z",
+          "TotalTokens": 1385
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1385,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:21.6087995Z",
+          "TotalTokens": 1385
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1385,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:29.5533779Z",
+          "TotalTokens": 1385
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1385,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:40.3488658Z",
+          "TotalTokens": 1385
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1623,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:43.6860423Z",
+          "TotalTokens": 1623
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1420,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:50.9013176Z",
+          "TotalTokens": 1420
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1420,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:36:00.503424Z",
+          "TotalTokens": 1420
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1168,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:36:01.2598799Z",
+          "TotalTokens": 1168
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1841,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:36:04.3744195Z",
+          "TotalTokens": 1841
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1554,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:36:08.0158188Z",
+          "TotalTokens": 1554
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1554,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:36:19.0824138Z",
+          "TotalTokens": 1554
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1268,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:36:28.8536745Z",
+          "TotalTokens": 1268
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1590,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:00.8593067Z",
+          "TotalTokens": 1590
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1554,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:01.6393654Z",
+          "TotalTokens": 1554
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1591,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:05.539767Z",
+          "TotalTokens": 1591
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1554,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:06.7679651Z",
+          "TotalTokens": 1554
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1418,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:13.1695229Z",
+          "TotalTokens": 1418
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1627,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:16.1203349Z",
+          "TotalTokens": 1627
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1624,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:25.6615004Z",
+          "TotalTokens": 1624
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1735,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:28.9854072Z",
+          "TotalTokens": 1735
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1590,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:29.3163351Z",
+          "TotalTokens": 1590
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1627,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:36.466256Z",
+          "TotalTokens": 1627
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1128,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:36.53772Z",
+          "TotalTokens": 1128
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1590,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:37.5807257Z",
+          "TotalTokens": 1590
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1667,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:39.8191417Z",
+          "TotalTokens": 1667
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1554,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:45.0716056Z",
+          "TotalTokens": 1554
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1590,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:49.3521561Z",
+          "TotalTokens": 1590
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1702,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:54.1649887Z",
+          "TotalTokens": 1702
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1587,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:38:13.1506653Z",
+          "TotalTokens": 1587
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1702,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:38:20.7053394Z",
+          "TotalTokens": 1702
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1702,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:38:33.7947649Z",
+          "TotalTokens": 1702
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 2256,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:38:46.8924067Z",
+          "TotalTokens": 2256
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 3205,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:38:57.5716402Z",
+          "TotalTokens": 3205
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 5015,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:04.4481606Z",
+          "TotalTokens": 5015
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1667,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:10.2827702Z",
+          "TotalTokens": 1667
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1667,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:12.2134765Z",
+          "TotalTokens": 1667
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1667,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:21.929576Z",
+          "TotalTokens": 1667
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 4459,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:23.33322Z",
+          "TotalTokens": 4459
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1701,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:26.7016711Z",
+          "TotalTokens": 1701
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1722,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:26.7489697Z",
+          "TotalTokens": 1722
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1702,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:28.7909522Z",
+          "TotalTokens": 1702
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1667,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:34.7011433Z",
+          "TotalTokens": 1667
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 6354,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:36.8997807Z",
+          "TotalTokens": 6354
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1704,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:37.5282827Z",
+          "TotalTokens": 1704
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1702,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:45.0259345Z",
+          "TotalTokens": 1702
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1703,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:40:15.746987Z",
+          "TotalTokens": 1703
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1701,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:40:16.2885268Z",
+          "TotalTokens": 1701
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 4619,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:40:18.4151661Z",
+          "TotalTokens": 4619
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1702,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:40:35.6632984Z",
+          "TotalTokens": 1702
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 4618,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:40:39.6716453Z",
+          "TotalTokens": 4618
+        }
+      ]
+    }
+  },
+  {
+    "Final": "{\n  \u0022screen_markdown\u0022: \u0022### \u0E2A\u0E23\u0E38\u0E1B\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 **\u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C** (Customer ID = 4)\\n\\n**\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49\u0E17\u0E35\u0E48\u0E22\u0E31\u0E07 ACTIVE**\\n\\n| \u0E23\u0E32\u0E22\u0E01\u0E32\u0E23 | \u0E04\u0E48\u0E32 |\\n|--------|------|\\n| **\u0E40\u0E25\u0E02\u0E2A\u0E31\u0E0D\u0E0D\u0E32** | LO20250208\u20110004 |\\n| **\u0E08\u0E33\u0E19\u0E27\u0E19\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49 (Principal)** | 180,000.00 \u0E1A\u0E32\u0E17 |\\n| **\u0E23\u0E30\u0E22\u0E30\u0E40\u0E27\u0E25\u0E32\u0E01\u0E39\u0E49** | 12 \u0E40\u0E14\u0E37\u0E2D\u0E19 |\\n| **\u0E27\u0E31\u0E19\u0E17\u0E35\u0E48\u0E40\u0E1B\u0E34\u0E14\u0E2A\u0E31\u0E0D\u0E0D\u0E32** | 8 \u0E01.\u0E1E. 2025 |\\n| **\u0E27\u0E31\u0E19\u0E17\u0E35\u0E48\u0E04\u0E23\u0E1A\u0E01\u0E33\u0E2B\u0E19\u0E14** | 8 \u0E01.\u0E1E. 2026 |\\n| **\u0E2A\u0E16\u0E32\u0E19\u0E30** | **ACTIVE** |\\n| **\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22\u0E17\u0E35\u0E48\u0E04\u0E32\u0E14\u0E01\u0E32\u0E23\u0E13\u0E4C** | 27,000.00 \u0E1A\u0E32\u0E17 |\\n| **\u0E08\u0E33\u0E19\u0E27\u0E19\u0E40\u0E07\u0E34\u0E19\u0E23\u0E27\u0E21\u0E17\u0E35\u0E48\u0E15\u0E49\u0E2D\u0E07\u0E0A\u0E33\u0E23\u0E30\u0E15\u0E32\u0E21\u0E15\u0E32\u0E23\u0E32\u0E07** | 207,000.00 \u0E1A\u0E32\u0E17 |\\n| **\u0E22\u0E2D\u0E14\u0E0A\u0E33\u0E23\u0E30\u0E41\u0E25\u0E49\u0E27 (\u0E23\u0E27\u0E21)** | 122,877.50 \u0E1A\u0E32\u0E17 |\\n| \u2013 \u0E0A\u0E33\u0E23\u0E30\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19 | 106,500.00 \u0E1A\u0E32\u0E17 |\\n| \u2013 \u0E0A\u0E33\u0E23\u0E30\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22 | 15,975.00 \u0E1A\u0E32\u0E17 |\\n| \u2013 \u0E04\u0E48\u0E32\u0E1B\u0E23\u0E31\u0E1A\u0E17\u0E35\u0E48\u0E0A\u0E33\u0E23\u0E30 | 402.50 \u0E1A\u0E32\u0E17 |\\n| **\u0E22\u0E2D\u0E14\u0E04\u0E49\u0E32\u0E07\u0E0A\u0E33\u0E23\u0E30 (\u0E15\u0E32\u0E21\u0E15\u0E32\u0E23\u0E32\u0E07)** | 84,525.00 \u0E1A\u0E32\u0E17 |\\n| **\u0E1B\u0E23\u0E30\u0E21\u0E32\u0E13\u0E01\u0E32\u0E23\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19\u0E04\u0E07\u0E40\u0E2B\u0E25\u0E37\u0E2D** | 73,500.00 \u0E1A\u0E32\u0E17 |\\n| **\u0E2D\u0E31\u0E15\u0E23\u0E32\u0E01\u0E32\u0E23\u0E0A\u0E33\u0E23\u0E30\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19\u0E41\u0E25\u0E49\u0E27** | 106,500 / 180,000 \u2248 59.2\u202F% |\\n| **\u0E2D\u0E31\u0E15\u0E23\u0E32\u0E01\u0E32\u0E23\u0E0A\u0E33\u0E23\u0E30\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22\u0E41\u0E25\u0E49\u0E27** | 15,975 / 27,000 \u2248 59.2\u202F% |\\n| **\u0E2D\u0E31\u0E15\u0E23\u0E32\u0E01\u0E32\u0E23\u0E0A\u0E33\u0E23\u0E30\u0E23\u0E27\u0E21\u0E41\u0E25\u0E49\u0E27** | 122,877.5 / 207,000 \u2248 59.4\u202F% |\\n\\n**\u0E02\u0E49\u0E2D\u0E2A\u0E31\u0E07\u0E40\u0E01\u0E15\u0E2A\u0E33\u0E04\u0E31\u0E0D**\\n- \u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E22\u0E31\u0E07\u0E04\u0E07\u0E2D\u0E22\u0E39\u0E48\u0E43\u0E19\u0E2A\u0E16\u0E32\u0E19\u0E30 ACTIVE \u0E08\u0E36\u0E07\u0E22\u0E31\u0E07\u0E21\u0E35\u0E23\u0E30\u0E22\u0E30\u0E40\u0E27\u0E25\u0E32\u0E0A\u0E33\u0E23\u0E30\u0E40\u0E07\u0E34\u0E19\u0E17\u0E35\u0E48\u0E40\u0E2B\u0E25\u0E37\u0E2D **12 \u0E40\u0E14\u0E37\u0E2D\u0E19** \u0E08\u0E19\u0E16\u0E36\u0E07 8 \u0E01.\u0E1E. 2026\\n- \u0E22\u0E2D\u0E14\u0E04\u0E49\u0E32\u0E07\u0E0A\u0E33\u0E23\u0E30 84,525.00 \u0E1A\u0E32\u0E17 \u0E23\u0E27\u0E21\u0E2A\u0E48\u0E27\u0E19\u0E02\u0E2D\u0E07\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19\u0E41\u0E25\u0E30\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22\u0E17\u0E35\u0E48\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48\u0E44\u0E14\u0E49\u0E0A\u0E33\u0E23\u0E30\u0E15\u0E32\u0E21\u0E15\u0E32\u0E23\u0E32\u0E07\\n- \u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19\u0E04\u0E07\u0E40\u0E2B\u0E25\u0E37\u0E2D\u0E42\u0E14\u0E22\u0E1B\u0E23\u0E30\u0E21\u0E32\u0E13 73,500.00 \u0E1A\u0E32\u0E17 (\u0E2D\u0E32\u0E08\u0E41\u0E15\u0E01\u0E15\u0E48\u0E32\u0E07\u0E08\u0E32\u0E01\u0E22\u0E2D\u0E14\u0E04\u0E49\u0E32\u0E07\u0E0A\u0E33\u0E23\u0E30\u0E23\u0E27\u0E21\u0E40\u0E25\u0E47\u0E01\u0E19\u0E49\u0E2D\u0E22\u0E40\u0E19\u0E37\u0E48\u0E2D\u0E07\u0E08\u0E32\u0E01\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22\u0E41\u0E25\u0E30\u0E04\u0E48\u0E32\u0E1B\u0E23\u0E31\u0E1A)\\n\\n\u003E **\u0E2D\u0E35\u0E40\u0E21\u0E25\u0E2A\u0E23\u0E38\u0E1B\u0E44\u0E14\u0E49\u0E2A\u0E48\u0E07\u0E44\u0E1B\u0E22\u0E31\u0E07\u0E17\u0E35\u0E21\u0E1A\u0E31\u0E0D\u0E0A\u0E35\u0E40\u0E23\u0E35\u0E22\u0E1A\u0E23\u0E49\u0E2D\u0E22\u0E41\u0E25\u0E49\u0E27** (\u0E1A\u0E31\u0E0D\u0E0A\u0E35: accounting@company.com)   \\n---\u0022\n}",
+    "Plan": {
+      "Version": "1.0",
+      "Goal": "\u0E2A\u0E23\u0E38\u0E1B\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 \u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C\u0E41\u0E25\u0E30\u0E41\u0E08\u0E49\u0E07\u0E17\u0E35\u0E21\u0E1A\u0E31\u0E0D\u0E0A\u0E35",
+      "Constraints": {
+        "MaxSteps": 8,
+        "TimeoutSec": 120
+      },
+      "Steps": [
+        {
+          "Id": "search-customer",
+          "Type": "tool",
+          "Plugin": "mssql_mcp",
+          "Tool": "qry_customers",
+          "Params": {
+            "keyword": "\u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C",
+            "page": 1,
+            "pageSize": 10
+          },
+          "Output": "customer_search"
+        },
+        {
+          "Id": "extract-customer-id",
+          "Type": "llm",
+          "Prompt": "\u0E08\u0E32\u0E01\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C [[customer_search]] \u0E43\u0E2B\u0E49\u0E2B\u0E32 customer_id \u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E17\u0E35\u0E48\u0E0A\u0E37\u0E48\u0E2D \u0027\u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C\u0027 (\u0E04\u0E48\u0E32\u0E40\u0E1B\u0E47\u0E19\u0E15\u0E31\u0E27\u0E40\u0E25\u0E02) \u0E41\u0E25\u0E30\u0E40\u0E01\u0E47\u0E1A\u0E40\u0E1B\u0E47\u0E19\u0E15\u0E31\u0E27\u0E41\u0E1B\u0E23 customer_id",
+          "Output": "customer_id",
+          "DependsOn": [
+            "search-customer"
+          ]
+        },
+        {
+          "Id": "get-customer-loans",
+          "Type": "tool",
+          "Plugin": "mssql_mcp",
+          "Tool": "qry_customer_with_loans",
+          "Params": {
+            "customer_id": "[[customer_id]]"
+          },
+          "Output": "customer_loans",
+          "DependsOn": [
+            "extract-customer-id"
+          ]
+        },
+        {
+          "Id": "determine-active-loan",
+          "Type": "llm",
+          "Prompt": "\u0E08\u0E32\u0E01\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C [[customer_loans]] \u0E43\u0E2B\u0E49\u0E15\u0E23\u0E27\u0E08\u0E2A\u0E2D\u0E1A\u0E27\u0E48\u0E32\u0E21\u0E35\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49\u0E17\u0E35\u0E48\u0E2A\u0E16\u0E32\u0E19\u0E30 ACTIVE \u0E2B\u0E23\u0E37\u0E2D\u0E44\u0E21\u0E48 \u0E16\u0E49\u0E32\u0E21\u0E35 \u0E43\u0E2B\u0E49\u0E40\u0E25\u0E37\u0E2D\u0E01 loan_id \u0E2B\u0E19\u0E36\u0E48\u0E07\u0E41\u0E25\u0E30\u0E40\u0E01\u0E47\u0E1A\u0E40\u0E1B\u0E47\u0E19 active_loan_id; \u0E16\u0E49\u0E32\u0E44\u0E21\u0E48\u0E21\u0E35 \u0E43\u0E2B\u0E49\u0E15\u0E31\u0E49\u0E07\u0E04\u0E48\u0E32 active_loan_id \u0E40\u0E1B\u0E47\u0E19 null \u0E41\u0E25\u0E30\u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01\u0E27\u0E48\u0E32\u0E44\u0E21\u0E48\u0E21\u0E35\u0E2A\u0E31\u0E0D\u0E0D\u0E32 ACTIVE",
+          "Output": "active_loan_info",
+          "DependsOn": [
+            "get-customer-loans"
+          ]
+        },
+        {
+          "Id": "query-loan-overview",
+          "Type": "tool",
+          "Plugin": "mssql_mcp",
+          "Tool": "qry_loan_overview",
+          "Params": {
+            "loan_id": "[[active_loan_info.active_loan_id]]"
+          },
+          "Output": "loan_overview",
+          "DependsOn": [
+            "determine-active-loan"
+          ]
+        },
+        {
+          "Id": "compose-summary",
+          "Type": "llm",
+          "Prompt": "\u0E2A\u0E23\u0E38\u0E1B\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E01\u0E32\u0E23\u0E40\u0E07\u0E34\u0E19\u0E02\u0E2D\u0E07\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49\u0E08\u0E32\u0E01 [[loan_overview]] \u0E2B\u0E32\u0E01 active_loan_id \u0E40\u0E1B\u0E47\u0E19 null \u0E43\u0E2B\u0E49\u0E2A\u0E23\u0E38\u0E1B\u0E27\u0E48\u0E32\u0E44\u0E21\u0E48\u0E21\u0E35\u0E2A\u0E31\u0E0D\u0E0D\u0E32 ACTIVE \u0E41\u0E25\u0E30\u0E41\u0E2A\u0E14\u0E07\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E2D\u0E37\u0E48\u0E19 \u0E46 \u0E08\u0E32\u0E01 [[customer_loans]] \u0E43\u0E2B\u0E49\u0E40\u0E1B\u0E47\u0E19\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E2D\u0E48\u0E32\u0E19\u0E07\u0E48\u0E32\u0E22",
+          "Output": "summary",
+          "DependsOn": [
+            "query-loan-overview",
+            "determine-active-loan"
+          ]
+        },
+        {
+          "Id": "send-email",
+          "Type": "tool",
+          "Plugin": "mail_mcp",
+          "Tool": "send_email",
+          "Params": {
+            "to": [
+              "accounting@company.com"
+            ],
+            "subject": "\u0E2A\u0E23\u0E38\u0E1B\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 \u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C",
+            "body_text": "[[summary]]"
+          },
+          "Output": "email_result",
+          "DependsOn": [
+            "compose-summary"
+          ]
+        }
+      ]
+    },
+    "PlanHistories": [
+      {
+        "Version": "1.0",
+        "Goal": "\u0E2A\u0E23\u0E38\u0E1B\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 \u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C\u0E41\u0E25\u0E30\u0E41\u0E08\u0E49\u0E07\u0E17\u0E35\u0E21\u0E1A\u0E31\u0E0D\u0E0A\u0E35",
+        "Constraints": {
+          "MaxSteps": 8,
+          "TimeoutSec": 120
+        },
+        "Steps": [
+          {
+            "Id": "search-customer",
+            "Type": "tool",
+            "Plugin": "mssql_mcp",
+            "Tool": "qry_customers",
+            "Params": {
+              "keyword": "\u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C",
+              "page": 1,
+              "pageSize": 10
+            },
+            "Output": "customer_search"
+          },
+          {
+            "Id": "extract-customer-id",
+            "Type": "llm",
+            "Prompt": "\u0E08\u0E32\u0E01\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C [[customer_search]] \u0E43\u0E2B\u0E49\u0E2B\u0E32 customer_id \u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E17\u0E35\u0E48\u0E0A\u0E37\u0E48\u0E2D \u0027\u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C\u0027 (\u0E04\u0E48\u0E32\u0E40\u0E1B\u0E47\u0E19\u0E15\u0E31\u0E27\u0E40\u0E25\u0E02) \u0E41\u0E25\u0E30\u0E40\u0E01\u0E47\u0E1A\u0E40\u0E1B\u0E47\u0E19\u0E15\u0E31\u0E27\u0E41\u0E1B\u0E23 customer_id",
+            "Output": "customer_id",
+            "DependsOn": [
+              "search-customer"
+            ]
+          },
+          {
+            "Id": "get-customer-loans",
+            "Type": "tool",
+            "Plugin": "mssql_mcp",
+            "Tool": "qry_customer_with_loans",
+            "Params": {
+              "customer_id": "[[customer_id]]"
+            },
+            "Output": "customer_loans",
+            "DependsOn": [
+              "extract-customer-id"
+            ]
+          },
+          {
+            "Id": "determine-active-loan",
+            "Type": "llm",
+            "Prompt": "\u0E08\u0E32\u0E01\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C [[customer_loans]] \u0E43\u0E2B\u0E49\u0E15\u0E23\u0E27\u0E08\u0E2A\u0E2D\u0E1A\u0E27\u0E48\u0E32\u0E21\u0E35\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49\u0E17\u0E35\u0E48\u0E2A\u0E16\u0E32\u0E19\u0E30 ACTIVE \u0E2B\u0E23\u0E37\u0E2D\u0E44\u0E21\u0E48 \u0E16\u0E49\u0E32\u0E21\u0E35 \u0E43\u0E2B\u0E49\u0E40\u0E25\u0E37\u0E2D\u0E01 loan_id \u0E2B\u0E19\u0E36\u0E48\u0E07\u0E41\u0E25\u0E30\u0E40\u0E01\u0E47\u0E1A\u0E40\u0E1B\u0E47\u0E19 active_loan_id; \u0E16\u0E49\u0E32\u0E44\u0E21\u0E48\u0E21\u0E35 \u0E43\u0E2B\u0E49\u0E15\u0E31\u0E49\u0E07\u0E04\u0E48\u0E32 active_loan_id \u0E40\u0E1B\u0E47\u0E19 null \u0E41\u0E25\u0E30\u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01\u0E27\u0E48\u0E32\u0E44\u0E21\u0E48\u0E21\u0E35\u0E2A\u0E31\u0E0D\u0E0D\u0E32 ACTIVE",
+            "Output": "active_loan_info",
+            "DependsOn": [
+              "get-customer-loans"
+            ]
+          },
+          {
+            "Id": "query-loan-overview",
+            "Type": "tool",
+            "Plugin": "mssql_mcp",
+            "Tool": "qry_loan_overview",
+            "Params": {
+              "loan_id": "[[active_loan_info.active_loan_id]]"
+            },
+            "Output": "loan_overview",
+            "DependsOn": [
+              "determine-active-loan"
+            ]
+          },
+          {
+            "Id": "compose-summary",
+            "Type": "llm",
+            "Prompt": "\u0E2A\u0E23\u0E38\u0E1B\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E01\u0E32\u0E23\u0E40\u0E07\u0E34\u0E19\u0E02\u0E2D\u0E07\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49\u0E08\u0E32\u0E01 [[loan_overview]] \u0E2B\u0E32\u0E01 active_loan_id \u0E40\u0E1B\u0E47\u0E19 null \u0E43\u0E2B\u0E49\u0E2A\u0E23\u0E38\u0E1B\u0E27\u0E48\u0E32\u0E44\u0E21\u0E48\u0E21\u0E35\u0E2A\u0E31\u0E0D\u0E0D\u0E32 ACTIVE \u0E41\u0E25\u0E30\u0E41\u0E2A\u0E14\u0E07\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E2D\u0E37\u0E48\u0E19 \u0E46 \u0E08\u0E32\u0E01 [[customer_loans]] \u0E43\u0E2B\u0E49\u0E40\u0E1B\u0E47\u0E19\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E2D\u0E48\u0E32\u0E19\u0E07\u0E48\u0E32\u0E22",
+            "Output": "summary",
+            "DependsOn": [
+              "query-loan-overview",
+              "determine-active-loan"
+            ]
+          },
+          {
+            "Id": "send-email",
+            "Type": "tool",
+            "Plugin": "mail_mcp",
+            "Tool": "send_email",
+            "Params": {
+              "to": [
+                "accounting@company.com"
+              ],
+              "subject": "\u0E2A\u0E23\u0E38\u0E1B\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 \u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C",
+              "body_text": "[[summary]]"
+            },
+            "Output": "email_result",
+            "DependsOn": [
+              "compose-summary"
+            ]
+          }
+        ]
+      }
+    ],
+    "Journal": {
+      "RunId": "6c3a80f7-603c-4221-9c6c-73e5d69716b8",
+      "Steps": [
+        {
+          "Id": "search-customer",
+          "Status": "succeeded",
+          "DurationMs": 58,
+          "Output": [
+            {
+              "customer_id": 4,
+              "name": "\u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C",
+              "citizen_id": "1103700044443",
+              "phone": "0854445555",
+              "email": "thanadol@demo.local",
+              "address": "55/7 \u0E15.\u0E2B\u0E49\u0E27\u0E22\u0E02\u0E27\u0E32\u0E07 \u0E40\u0E02\u0E15\u0E2B\u0E49\u0E27\u0E22\u0E02\u0E27\u0E32\u0E07 \u0E01\u0E17\u0E21.",
+              "total_count": 1,
+              "page": 1,
+              "page_size": 10
+            }
+          ],
+          "Input": "{\u0022Plugin\u0022:\u0022mssql_mcp\u0022,\u0022Tool\u0022:\u0022qry_customers\u0022,\u0022Args\u0022:{\u0022keyword\u0022:\u0022\u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C\u0022,\u0022page\u0022:1,\u0022pageSize\u0022:10}}"
+        },
+        {
+          "Id": "extract-customer-id",
+          "Status": "succeeded",
+          "DurationMs": 6565,
+          "Output": "**\u0E04\u0E33\u0E15\u0E2D\u0E1A\u0E2A\u0E31\u0E49\u0E19**  \n- \u0060customer_id\u0060 \u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E17\u0E35\u0E48\u0E0A\u0E37\u0E48\u0E2D **\u201C\u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C\u201D** \u0E04\u0E37\u0E2D **\u00604\u0060**  \n- \u0E15\u0E31\u0E27\u0E41\u0E1B\u0E23\u0E17\u0E35\u0E48\u0E40\u0E01\u0E47\u0E1A\u0E04\u0E48\u0E32\u0E41\u0E1A\u0E1A\u0E08\u0E33\u0E19\u0E27\u0E19\u0E40\u0E15\u0E47\u0E21 (integer) \u0E08\u0E30\u0E44\u0E14\u0E49\u0E04\u0E48\u0E32 \u0060customer_id = 4\u0060\n\n---\n\n## \u0E27\u0E34\u0E18\u0E35\u0E14\u0E36\u0E07\u0E04\u0E48\u0E32\u0E42\u0E14\u0E22\u0E2D\u0E31\u0E15\u0E42\u0E19\u0E21\u0E31\u0E15\u0E34 (\u0E15\u0E31\u0E27\u0E2D\u0E22\u0E48\u0E32\u0E07\u0E42\u0E04\u0E49\u0E14)\n\n\u003E **\u0E2A\u0E33\u0E04\u0E31\u0E0D:** \u0E2B\u0E32\u0E01\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E17\u0E35\u0E48\u0E44\u0E14\u0E49\u0E21\u0E32\u0E21\u0E35\u0E42\u0E04\u0E23\u0E07\u0E2A\u0E23\u0E49\u0E32\u0E07\u0E41\u0E1A\u0E1A  \n\n\u0060\u0060\u0060json\n{\n  \u0022content\u0022: [\n    {\n      \u0022type\u0022: \u0022text\u0022,\n      \u0022text\u0022: \u0022{ \\\u0022rows\\\u0022: [ { ... } ] }\u0022\n    }\n  ]\n}\n\u0060\u0060\u0060\n\n\u0E43\u0E2B\u0E49\u0E14\u0E36\u0E07\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E08\u0E32\u0E01 \u0060content[0].text\u0060 \u0E41\u0E25\u0E49\u0E27\u0E41\u0E1B\u0E25\u0E07\u0E40\u0E1B\u0E47\u0E19 JSON \u0E2D\u0E35\u0E01\u0E04\u0E23\u0E31\u0E49\u0E07 \u0E01\u0E48\u0E2D\u0E19\u0E17\u0E33\u0E01\u0E32\u0E23\u0E04\u0E49\u0E19\u0E2B\u0E32\n\n### 1. Python (\u0E43\u0E0A\u0E49 \u0060json\u0060)\n\n\u0060\u0060\u0060python\nimport json\n\n# \u0E15\u0E31\u0E27\u0E2D\u0E22\u0E48\u0E32\u0E07\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E17\u0E35\u0E48\u0E44\u0E14\u0E49 (\u0E01\u0E23\u0E13\u0E35\u0E44\u0E21\u0E48\u0E21\u0E35 content)\ndata = [{\u0022customer_id\u0022:4,\u0022name\u0022:\u0022\u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C\u0022,\u0022citizen_id\u0022:\u00221103700044443\u0022,\n         \u0022phone\u0022:\u00220854445555\u0022,\u0022email\u0022:\u0022thanadol@demo.local\u0022,\n         \u0022address\u0022:\u002255/7 \u0E15.\u0E2B\u0E49\u0E27\u0E22\u0E02\u0E27\u0E32\u0E07 \u0E40\u0E02\u0E15\u0E2B\u0E49\u0E27\u0E22\u0E02\u0E27\u0E32\u0E07 \u0E01\u0E17\u0E21.\u0022,\n         \u0022total_count\u0022:1,\u0022page\u0022:1,\u0022page_size\u0022:10}]\n\n# \u2500\u2500 \u0E2B\u0E32\u0E01\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E21\u0E32\u0E21\u0E35\u0E42\u0E04\u0E23\u0E07\u0E2A\u0E23\u0E49\u0E32\u0E07 { \u0022content\u0022: [...] } \u2500\u2500\n# raw = \u0027{\u0022content\u0022:[{\u0022type\u0022:\u0022text\u0022,\u0022text\u0022:\u0022{ \\\u0022rows\\\u0022: [ { \\\u0022customer_id\\\u0022:4,\\\u0022name\\\u0022:\\\u0022\u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C\\\u0022 } ] }\u0022}]}\u0027\n# obj = json.loads(raw)\n\n# if \u0022content\u0022 in obj:\n#     # \u0E14\u0E36\u0E07\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21 JSON string \u0E08\u0E32\u0E01 content[0].text\n#     inner_json_str = obj[\u0022content\u0022][0][\u0022text\u0022]\n#     # \u0E41\u0E1B\u0E25\u0E07\u0E40\u0E1B\u0E47\u0E19 dict \u0E2D\u0E35\u0E01\u0E04\u0E23\u0E31\u0E49\u0E07\n#     inner_obj = json.loads(inner_json_str)\n#     rows = inner_obj[\u0022rows\u0022]\n# else:\n#     rows = data   # \u0E01\u0E23\u0E13\u0E35\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E2D\u0E22\u0E39\u0E48\u0E43\u0E19\u0E23\u0E39\u0E1B\u0E41\u0E1A\u0E1A\u0E17\u0E35\u0E48\u0E43\u0E2B\u0E49\u0E21\u0E32\u0E42\u0E14\u0E22\u0E15\u0E23\u0E07\n\nrows = data   # (\u0E41\u0E1A\u0E1A\u0E15\u0E31\u0E27\u0E2D\u0E22\u0E48\u0E32\u0E07\u0E17\u0E35\u0E48\u0E43\u0E2B\u0E49\u0E21\u0E32)\n\n# \u0E04\u0E49\u0E19\u0E2B\u0E32 customer_id \u0E17\u0E35\u0E48\u0E0A\u0E37\u0E48\u0E2D \u0022\u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C\u0022\ncustomer_id = None\nfor row in rows:\n    if row.get(\u0022name\u0022) == \u0022\u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C\u0022:\n        customer_id = int(row[\u0022customer_id\u0022])\n        break\n\nprint(\u0022customer_id =\u0022, customer_id)   # \u2192 4\n\u0060\u0060\u0060\n\n### 2. JavaScript (Node.js \u0E2B\u0E23\u0E37\u0E2D Browser)\n\n\u0060\u0060\u0060javascript\n// \u0E15\u0E31\u0E27\u0E2D\u0E22\u0E48\u0E32\u0E07\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E17\u0E35\u0E48\u0E44\u0E14\u0E49 (\u0E44\u0E21\u0E48\u0E21\u0E35 content)\nconst data = [\n  {\n    customer_id: 4,\n    name: \u0022\u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C\u0022,\n    citizen_id: \u00221103700044443\u0022,\n    phone: \u00220854445555\u0022,\n    email: \u0022thanadol@demo.local\u0022,\n    address: \u002255/7 \u0E15.\u0E2B\u0E49\u0E27\u0E22\u0E02\u0E27\u0E32\u0E07 \u0E40\u0E02\u0E15\u0E2B\u0E49\u0E27\u0E22\u0E02\u0E27\u0E32\u0E07 \u0E01\u0E17\u0E21.\u0022,\n    total_count: 1,\n    page: 1,\n    page_size: 10\n  }\n];\n\n/* \u2500\u2500 \u0E2B\u0E32\u0E01\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E21\u0E32\u0E21\u0E35\u0E42\u0E04\u0E23\u0E07\u0E2A\u0E23\u0E49\u0E32\u0E07 { \u0022content\u0022: [...] } \u2500\u2500\nconst raw = \u0060{\n  \u0022content\u0022:[\n    {\u0022type\u0022:\u0022text\u0022,\u0022text\u0022:\u0022{ \\\u0022rows\\\u0022: [ { \\\u0022customer_id\\\u0022:4,\\\u0022name\\\u0022:\\\u0022\u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C\\\u0022 } ] }\u0022}\n  ]\n}\u0060;\nconst obj = JSON.parse(raw);\n\nlet rows;\nif (obj.content) {\n  const innerText = obj.content[0].text;      // JSON string\n  const innerObj = JSON.parse(innerText);    // \u0E41\u0E1B\u0E25\u0E07\u0E40\u0E1B\u0E47\u0E19 object\n  rows = innerObj.rows;\n} else {\n  rows = data;\n}\n*/\n\n// \u0E43\u0E19\u0E15\u0E31\u0E27\u0E2D\u0E22\u0E48\u0E32\u0E07\u0E19\u0E35\u0E49\u0E43\u0E0A\u0E49 data \u0E15\u0E23\u0E07\u0E46\nconst rows = data;\n\n// \u0E04\u0E49\u0E19\u0E2B\u0E32\nlet customerId = null;\nfor (const r of rows) {\n  if (r.name === \u0022\u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C\u0022) {\n    customerId = Number(r.customer_id);\n    break;\n  }\n}\nconsole.log(\u0022customer_id =\u0022, customerId);   // \u2192 4\n\u0060\u0060\u0060\n\n---\n\n### \u0E2A\u0E23\u0E38\u0E1B\n\n- \u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E17\u0E35\u0E48\u0E21\u0E35\u0E0A\u0E37\u0E48\u0E2D **\u201C\u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C\u201D** \u0E21\u0E35 \u0060customer_id\u0060 \u0E40\u0E1B\u0E47\u0E19 **\u00604\u0060**  \n- \u0E40\u0E01\u0E47\u0E1A\u0E44\u0E27\u0E49\u0E40\u0E1B\u0E47\u0E19\u0E15\u0E31\u0E27\u0E41\u0E1B\u0E23\u0E08\u0E33\u0E19\u0E27\u0E19\u0E40\u0E15\u0E47\u0E21 \u0E40\u0E0A\u0E48\u0E19 \u0060customer_id = 4\u0060 (Python) \u0E2B\u0E23\u0E37\u0E2D \u0060let customerId = 4;\u0060 (JavaScript)  \n- \u0E2B\u0E32\u0E01\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E2D\u0E22\u0E39\u0E48\u0E43\u0E19\u0E23\u0E39\u0E1B\u0E41\u0E1A\u0E1A \u0060content \u2192 text\u0060 \u0E43\u0E2B\u0E49 **\u0E14\u0E36\u0E07\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21**, **parse** \u0E2D\u0E35\u0E01\u0E04\u0E23\u0E31\u0E49\u0E07, \u0E41\u0E25\u0E49\u0E27\u0E17\u0E33\u0E01\u0E32\u0E23\u0E04\u0E49\u0E19\u0E2B\u0E32\u0E40\u0E2B\u0E21\u0E37\u0E2D\u0E19\u0E15\u0E31\u0E27\u0E2D\u0E22\u0E48\u0E32\u0E07\u0E02\u0E49\u0E32\u0E07\u0E1A\u0E19.",
+          "Input": "\u0E08\u0E32\u0E01\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C [{\u0022customer_id\u0022:4,\u0022name\u0022:\u0022\u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C\u0022,\u0022citizen_id\u0022:\u00221103700044443\u0022,\u0022phone\u0022:\u00220854445555\u0022,\u0022email\u0022:\u0022thanadol@demo.local\u0022,\u0022address\u0022:\u002255/7 \u0E15.\u0E2B\u0E49\u0E27\u0E22\u0E02\u0E27\u0E32\u0E07 \u0E40\u0E02\u0E15\u0E2B\u0E49\u0E27\u0E22\u0E02\u0E27\u0E32\u0E07 \u0E01\u0E17\u0E21.\u0022,\u0022total_count\u0022:1,\u0022page\u0022:1,\u0022page_size\u0022:10}] \u0E43\u0E2B\u0E49\u0E2B\u0E32 customer_id \u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E17\u0E35\u0E48\u0E0A\u0E37\u0E48\u0E2D \u0027\u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C\u0027 (\u0E04\u0E48\u0E32\u0E40\u0E1B\u0E47\u0E19\u0E15\u0E31\u0E27\u0E40\u0E25\u0E02) \u0E41\u0E25\u0E30\u0E40\u0E01\u0E47\u0E1A\u0E40\u0E1B\u0E47\u0E19\u0E15\u0E31\u0E27\u0E41\u0E1B\u0E23 customer_id"
+        },
+        {
+          "Id": "get-customer-loans",
+          "Status": "succeeded",
+          "DurationMs": 4950,
+          "Output": [
+            {
+              "loan_id": 4,
+              "contract_number": "LO20250208-0004",
+              "status": "ACTIVE",
+              "loan_amount": 180000.00,
+              "loan_term": 12,
+              "start_date": "2025-02-08T00:00:00",
+              "end_date": "2026-02-08T00:00:00",
+              "interest_method": "FLAT 15%",
+              "loan_product_id": 2,
+              "product_name": "\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E23\u0E16\u0E22\u0E19\u0E15\u0E4C",
+              "sub_type": "Car"
+            }
+          ],
+          "Input": "{\u0022Plugin\u0022:\u0022mssql_mcp\u0022,\u0022Tool\u0022:\u0022qry_customer_with_loans\u0022,\u0022Args\u0022:{\u0022customer_id\u0022:4}}"
+        },
+        {
+          "Id": "determine-active-loan",
+          "Status": "succeeded",
+          "DurationMs": 1332,
+          "Output": "**\u0E1C\u0E25\u0E01\u0E32\u0E23\u0E15\u0E23\u0E27\u0E08\u0E2A\u0E2D\u0E1A**\n\n- \u0E08\u0E32\u0E01\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E17\u0E35\u0E48\u0E43\u0E2B\u0E49\u0E21\u0E32\u0E21\u0E35\u0E23\u0E32\u0E22\u0E01\u0E32\u0E23\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E17\u0E35\u0E48\u0E2A\u0E16\u0E32\u0E19\u0E30 **\u0022ACTIVE\u0022** \u0E2D\u0E22\u0E39\u0E48\n- \u0E40\u0E25\u0E37\u0E2D\u0E01 \u0060loan_id\u0060 \u0E15\u0E31\u0E27\u0E2B\u0E19\u0E36\u0E48\u0E07 (\u0E43\u0E19\u0E01\u0E23\u0E13\u0E35\u0E19\u0E35\u0E49\u0E21\u0E35\u0E41\u0E04\u0E48\u0E23\u0E32\u0E22\u0E01\u0E32\u0E23\u0E40\u0E14\u0E35\u0E22\u0E27) \u0E08\u0E31\u0E14\u0E40\u0E01\u0E47\u0E1A\u0E40\u0E1B\u0E47\u0E19 \u0060active_loan_id\u0060\n\n\u0060\u0060\u0060json\n{\n  \u0022active_loan_id\u0022: 4\n}\n\u0060\u0060\u0060\n\n\u003E \u0E2B\u0E32\u0E01\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E40\u0E02\u0E49\u0E32\u0E21\u0E32\u0E43\u0E19\u0E23\u0E39\u0E1B\u0E41\u0E1A\u0E1A \u0060{ \u0022content\u0022: [ { \u0022type\u0022: \u0022text\u0022, \u0022text\u0022: \u0022{ \\\u0022rows\\\u0022: [ { ... } ] }\u0022 } ] }\u0060 \u0E43\u0E2B\u0E49\u0E14\u0E36\u0E07 JSON \u0E17\u0E35\u0E48\u0E2D\u0E22\u0E39\u0E48\u0E43\u0E19 \u0060content[0].text\u0060 \u0E41\u0E25\u0E49\u0E27\u0E17\u0E33\u0E01\u0E32\u0E23\u0E1E\u0E32\u0E23\u0E4C\u0E2A\u0E40\u0E0A\u0E48\u0E19\u0E40\u0E14\u0E35\u0E22\u0E27\u0E01\u0E31\u0E19\u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E2B\u0E32\u0E04\u0E48\u0E32 \u0060status\u0060 \u0E41\u0E25\u0E30 \u0060loan_id\u0060 \u0E04\u0E48\u0E32\u0E17\u0E35\u0E48\u0E44\u0E14\u0E49\u0E01\u0E47\u0E08\u0E30\u0E16\u0E39\u0E01\u0E08\u0E31\u0E14\u0E40\u0E01\u0E47\u0E1A\u0E43\u0E19 \u0060active_loan_id\u0060 \u0E2B\u0E23\u0E37\u0E2D \u0060null\u0060 \u0E15\u0E32\u0E21\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C.",
+          "Input": "\u0E08\u0E32\u0E01\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C [{\u0022loan_id\u0022:4,\u0022contract_number\u0022:\u0022LO20250208-0004\u0022,\u0022status\u0022:\u0022ACTIVE\u0022,\u0022loan_amount\u0022:180000.00,\u0022loan_term\u0022:12,\u0022start_date\u0022:\u00222025-02-08T00:00:00\u0022,\u0022end_date\u0022:\u00222026-02-08T00:00:00\u0022,\u0022interest_method\u0022:\u0022FLAT 15%\u0022,\u0022loan_product_id\u0022:2,\u0022product_name\u0022:\u0022\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E23\u0E16\u0E22\u0E19\u0E15\u0E4C\u0022,\u0022sub_type\u0022:\u0022Car\u0022}] \u0E43\u0E2B\u0E49\u0E15\u0E23\u0E27\u0E08\u0E2A\u0E2D\u0E1A\u0E27\u0E48\u0E32\u0E21\u0E35\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49\u0E17\u0E35\u0E48\u0E2A\u0E16\u0E32\u0E19\u0E30 ACTIVE \u0E2B\u0E23\u0E37\u0E2D\u0E44\u0E21\u0E48 \u0E16\u0E49\u0E32\u0E21\u0E35 \u0E43\u0E2B\u0E49\u0E40\u0E25\u0E37\u0E2D\u0E01 loan_id \u0E2B\u0E19\u0E36\u0E48\u0E07\u0E41\u0E25\u0E30\u0E40\u0E01\u0E47\u0E1A\u0E40\u0E1B\u0E47\u0E19 active_loan_id; \u0E16\u0E49\u0E32\u0E44\u0E21\u0E48\u0E21\u0E35 \u0E43\u0E2B\u0E49\u0E15\u0E31\u0E49\u0E07\u0E04\u0E48\u0E32 active_loan_id \u0E40\u0E1B\u0E47\u0E19 null \u0E41\u0E25\u0E30\u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01\u0E27\u0E48\u0E32\u0E44\u0E21\u0E48\u0E21\u0E35\u0E2A\u0E31\u0E0D\u0E0D\u0E32 ACTIVE"
+        },
+        {
+          "Id": "query-loan-overview",
+          "Status": "succeeded",
+          "DurationMs": 9504,
+          "Output": [
+            {
+              "loan_id": 4,
+              "interest_method_id": 2,
+              "contract_number": "LO20250208-0004",
+              "loan_amount": 180000.00,
+              "loan_term": 12,
+              "start_date": "2025-02-08T00:00:00",
+              "end_date": "2026-02-08T00:00:00",
+              "status": "ACTIVE",
+              "total_principal_scheduled": 180000.00,
+              "total_interest_scheduled": 27000.00,
+              "total_scheduled": 207000.00,
+              "total_principal_paid": 106500.00,
+              "total_interest_paid": 15975.00,
+              "total_penalty_paid": 402.50,
+              "total_amount_paid": 122877.50,
+              "total_sched_outstanding": 84525.00,
+              "principal_balance_estimate": 73500.00
+            }
+          ],
+          "Input": "{\u0022Plugin\u0022:\u0022mssql_mcp\u0022,\u0022Tool\u0022:\u0022qry_loan_overview\u0022,\u0022Args\u0022:{\u0022loan_id\u0022:4}}"
+        },
+        {
+          "Id": "compose-summary",
+          "Status": "succeeded",
+          "DurationMs": 7770,
+          "Output": "**\u0E2A\u0E23\u0E38\u0E1B\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E01\u0E32\u0E23\u0E40\u0E07\u0E34\u0E19\u0E02\u0E2D\u0E07\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49 (Loan ID\u202F=\u202F4)**  \n\n| \u0E23\u0E32\u0E22\u0E01\u0E32\u0E23 | \u0E04\u0E48\u0E32 |\n|--------|-----|\n| **\u0E40\u0E25\u0E02\u0E2A\u0E31\u0E0D\u0E0D\u0E32** | LO20250208\u20110004 |\n| **\u0E08\u0E33\u0E19\u0E27\u0E19\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49 (Principal)** | 180,000.00\u202F\u0E1A\u0E32\u0E17 |\n| **\u0E23\u0E30\u0E22\u0E30\u0E40\u0E27\u0E25\u0E32\u0E01\u0E39\u0E49** | 12\u202F\u0E40\u0E14\u0E37\u0E2D\u0E19 |\n| **\u0E27\u0E31\u0E19\u0E17\u0E35\u0E48\u0E40\u0E1B\u0E34\u0E14\u0E2A\u0E31\u0E0D\u0E0D\u0E32** | 8\u202F\u0E01.\u0E1E.\u202F2025 |\n| **\u0E27\u0E31\u0E19\u0E17\u0E35\u0E48\u0E04\u0E23\u0E1A\u0E01\u0E33\u0E2B\u0E19\u0E14** | 8\u202F\u0E01.\u0E1E.\u202F2026 |\n| **\u0E2A\u0E16\u0E32\u0E19\u0E30** | **ACTIVE** (\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E22\u0E31\u0E07\u0E43\u0E0A\u0E49\u0E07\u0E32\u0E19\u0E2D\u0E22\u0E39\u0E48) |\n| **\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22\u0E17\u0E35\u0E48\u0E04\u0E32\u0E14\u0E01\u0E32\u0E23\u0E13\u0E4C** | 27,000.00\u202F\u0E1A\u0E32\u0E17 (\u0E27\u0E34\u0E18\u0E35\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22\u202F=\u202F2) |\n| **\u0E08\u0E33\u0E19\u0E27\u0E19\u0E40\u0E07\u0E34\u0E19\u0E23\u0E27\u0E21\u0E17\u0E35\u0E48\u0E15\u0E49\u0E2D\u0E07\u0E0A\u0E33\u0E23\u0E30\u0E15\u0E32\u0E21\u0E15\u0E32\u0E23\u0E32\u0E07** | 207,000.00\u202F\u0E1A\u0E32\u0E17 (Principal\u202F\u002B\u202FInterest) |\n| **\u0E22\u0E2D\u0E14\u0E0A\u0E33\u0E23\u0E30\u0E41\u0E25\u0E49\u0E27 (\u0E23\u0E27\u0E21)** | 122,877.50\u202F\u0E1A\u0E32\u0E17 |\n| \u0026nbsp;\u0026nbsp;\u2013 \u0E0A\u0E33\u0E23\u0E30\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19 | 106,500.00\u202F\u0E1A\u0E32\u0E17 |\n| \u0026nbsp;\u0026nbsp;\u2013 \u0E0A\u0E33\u0E23\u0E30\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22 | 15,975.00\u202F\u0E1A\u0E32\u0E17 |\n| \u0026nbsp;\u0026nbsp;\u2013 \u0E22\u0E2D\u0E14\u0E04\u0E48\u0E32\u0E1B\u0E23\u0E31\u0E1A | 402.50\u202F\u0E1A\u0E32\u0E17 |\n| **\u0E22\u0E2D\u0E14\u0E17\u0E35\u0E48\u0E04\u0E49\u0E32\u0E07\u0E0A\u0E33\u0E23\u0E30 (\u0E15\u0E32\u0E21\u0E15\u0E32\u0E23\u0E32\u0E07)** | 84,525.00\u202F\u0E1A\u0E32\u0E17 |\n| **\u0E1B\u0E23\u0E30\u0E21\u0E32\u0E13\u0E01\u0E32\u0E23\u0E22\u0E2D\u0E14\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19\u0E04\u0E07\u0E40\u0E2B\u0E25\u0E37\u0E2D** | 73,500.00\u202F\u0E1A\u0E32\u0E17 |\n| **\u0E2D\u0E31\u0E15\u0E23\u0E32\u0E01\u0E32\u0E23\u0E0A\u0E33\u0E23\u0E30\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19\u0E41\u0E25\u0E49\u0E27** | 106,500 / 180,000\u202F\u2248\u202F59.2\u202F% |\n| **\u0E2D\u0E31\u0E15\u0E23\u0E32\u0E01\u0E32\u0E23\u0E0A\u0E33\u0E23\u0E30\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22\u0E41\u0E25\u0E49\u0E27** | 15,975 / 27,000\u202F\u2248\u202F59.2\u202F% |\n| **\u0E2D\u0E31\u0E15\u0E23\u0E32\u0E01\u0E32\u0E23\u0E0A\u0E33\u0E23\u0E30\u0E23\u0E27\u0E21\u0E41\u0E25\u0E49\u0E27** | 122,877.5 / 207,000\u202F\u2248\u202F59.4\u202F% |\n\n### \u0E04\u0E27\u0E32\u0E21\u0E2B\u0E21\u0E32\u0E22\u0E2A\u0E33\u0E04\u0E31\u0E0D\n- **\u0E2A\u0E16\u0E32\u0E19\u0E30 ACTIVE** \u0E2B\u0E21\u0E32\u0E22\u0E04\u0E27\u0E32\u0E21\u0E27\u0E48\u0E32\u0E02\u0E13\u0E30\u0E19\u0E35\u0E49\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E22\u0E31\u0E07\u0E40\u0E1B\u0E34\u0E14\u0E2D\u0E22\u0E39\u0E48 \u0E41\u0E25\u0E30\u0E22\u0E31\u0E07\u0E21\u0E35\u0E23\u0E30\u0E22\u0E30\u0E40\u0E27\u0E25\u0E32\u0E0A\u0E33\u0E23\u0E30\u0E40\u0E07\u0E34\u0E19\u0E17\u0E35\u0E48\u0E40\u0E2B\u0E25\u0E37\u0E2D\u0E2D\u0E22\u0E39\u0E48\u0E17\u0E31\u0E49\u0E07\u0E2B\u0E21\u0E14 **12\u202F\u0E40\u0E14\u0E37\u0E2D\u0E19** (\u0E08\u0E19\u0E16\u0E36\u0E07 8\u202F\u0E01.\u0E1E.\u202F2026)  \n- **\u0E22\u0E2D\u0E14\u0E17\u0E35\u0E48\u0E04\u0E49\u0E32\u0E07\u0E0A\u0E33\u0E23\u0E30 84,525\u202F\u0E1A\u0E32\u0E17** \u0E1B\u0E23\u0E30\u0E01\u0E2D\u0E1A\u0E14\u0E49\u0E27\u0E22\u0E2A\u0E48\u0E27\u0E19\u0E02\u0E2D\u0E07\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19\u0E41\u0E25\u0E30\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22\u0E15\u0E32\u0E21\u0E15\u0E32\u0E23\u0E32\u0E07\u0E17\u0E35\u0E48\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48\u0E44\u0E14\u0E49\u0E0A\u0E33\u0E23\u0E30  \n- **\u0E1B\u0E23\u0E30\u0E21\u0E32\u0E13\u0E01\u0E32\u0E23\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19\u0E04\u0E07\u0E40\u0E2B\u0E25\u0E37\u0E2D 73,500\u202F\u0E1A\u0E32\u0E17** \u0E40\u0E1B\u0E47\u0E19\u0E2A\u0E48\u0E27\u0E19\u0E02\u0E2D\u0E07\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19\u0E17\u0E35\u0E48\u0E22\u0E31\u0E07\u0E15\u0E49\u0E2D\u0E07\u0E0A\u0E33\u0E23\u0E30 (\u0E2D\u0E32\u0E08\u0E41\u0E15\u0E01\u0E15\u0E48\u0E32\u0E07\u0E08\u0E32\u0E01\u0E22\u0E2D\u0E14\u0E04\u0E49\u0E32\u0E07\u0E0A\u0E33\u0E23\u0E30\u0E17\u0E31\u0E49\u0E07\u0E2B\u0E21\u0E14\u0E40\u0E25\u0E47\u0E01\u0E19\u0E49\u0E2D\u0E22\u0E40\u0E19\u0E37\u0E48\u0E2D\u0E07\u0E08\u0E32\u0E01\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22\u0E41\u0E25\u0E30\u0E04\u0E48\u0E32\u0E1B\u0E23\u0E31\u0E1A\u0E17\u0E35\u0E48\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48\u0E44\u0E14\u0E49\u0E04\u0E33\u0E19\u0E27\u0E13)  \n- **\u0E2D\u0E31\u0E15\u0E23\u0E32\u0E01\u0E32\u0E23\u0E0A\u0E33\u0E23\u0E30\u0E41\u0E25\u0E49\u0E27\u0E1B\u0E23\u0E30\u0E21\u0E32\u0E13 59\u202F%** \u0E41\u0E2A\u0E14\u0E07\u0E27\u0E48\u0E32\u0E21\u0E35\u0E01\u0E32\u0E23\u0E0A\u0E33\u0E23\u0E30\u0E40\u0E07\u0E34\u0E19\u0E44\u0E1B\u0E21\u0E32\u0E01\u0E01\u0E27\u0E48\u0E32\u0E04\u0E23\u0E36\u0E48\u0E07\u0E2B\u0E19\u0E36\u0E48\u0E07\u0E02\u0E2D\u0E07\u0E17\u0E31\u0E49\u0E07\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19\u0E41\u0E25\u0E30\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22\u0E41\u0E25\u0E49\u0E27  \n\n### \u0E2A\u0E23\u0E38\u0E1B\u0E42\u0E14\u0E22\u0E2A\u0E31\u0E07\u0E40\u0E02\u0E1B\n\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49\u0E2B\u0E21\u0E32\u0E22\u0E40\u0E25\u0E02 LO20250208\u20110004 \u0E22\u0E31\u0E07\u0E04\u0E07\u0E2D\u0E22\u0E39\u0E48\u0E43\u0E19\u0E2A\u0E16\u0E32\u0E19\u0E30 **ACTIVE** \u0E21\u0E35\u0E23\u0E30\u0E22\u0E30\u0E40\u0E27\u0E25\u0E32\u0E0A\u0E33\u0E23\u0E30\u0E04\u0E23\u0E1A 12\u202F\u0E40\u0E14\u0E37\u0E2D\u0E19 \u0E42\u0E14\u0E22\u0E16\u0E36\u0E07\u0E27\u0E31\u0E19\u0E19\u0E35\u0E49\u0E44\u0E14\u0E49\u0E0A\u0E33\u0E23\u0E30\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19\u0E41\u0E25\u0E49\u0E27\u0E1B\u0E23\u0E30\u0E21\u0E32\u0E13 **106,500\u202F\u0E1A\u0E32\u0E17** (59\u202F% \u0E02\u0E2D\u0E07\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49) \u0E41\u0E25\u0E30\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22\u0E41\u0E25\u0E49\u0E27\u0E1B\u0E23\u0E30\u0E21\u0E32\u0E13 **15,975\u202F\u0E1A\u0E32\u0E17** (59\u202F% \u0E02\u0E2D\u0E07\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22\u0E17\u0E35\u0E48\u0E01\u0E33\u0E2B\u0E19\u0E14) \u0E2D\u0E35\u0E01\u0E17\u0E31\u0E49\u0E07\u0E21\u0E35\u0E04\u0E48\u0E32\u0E1B\u0E23\u0E31\u0E1A\u0E17\u0E35\u0E48\u0E15\u0E49\u0E2D\u0E07\u0E0A\u0E33\u0E23\u0E30 **402.50\u202F\u0E1A\u0E32\u0E17** \u0E1B\u0E31\u0E08\u0E08\u0E38\u0E1A\u0E31\u0E19\u0E22\u0E2D\u0E14\u0E04\u0E49\u0E32\u0E07\u0E23\u0E27\u0E21\u0E2D\u0E22\u0E39\u0E48\u0E17\u0E35\u0E48 **84,525\u202F\u0E1A\u0E32\u0E17** (\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19\u0E04\u0E07\u0E40\u0E2B\u0E25\u0E37\u0E2D\u0E1B\u0E23\u0E30\u0E21\u0E32\u0E13 **73,500\u202F\u0E1A\u0E32\u0E17**).  \n\n\u003E \u0E2B\u0E32\u0E01\u0E04\u0E38\u0E13\u0E01\u0E33\u0E25\u0E31\u0E07\u0E21\u0E2D\u0E07\u0E2B\u0E32\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E02\u0E2D\u0E07\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E2D\u0E37\u0E48\u0E19 \u0E46 \u0E17\u0E35\u0E48\u0E44\u0E21\u0E48\u0E2D\u0E22\u0E39\u0E48\u0E43\u0E19\u0E2A\u0E16\u0E32\u0E19\u0E30 ACTIVE \u0E43\u0E2B\u0E49\u0E41\u0E08\u0E49\u0E07\u0E40\u0E1E\u0E34\u0E48\u0E21\u0E44\u0E14\u0E49\u0E40\u0E25\u0E22\u0E04\u0E23\u0E31\u0E1A.",
+          "Input": "\u0E2A\u0E23\u0E38\u0E1B\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E01\u0E32\u0E23\u0E40\u0E07\u0E34\u0E19\u0E02\u0E2D\u0E07\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49\u0E08\u0E32\u0E01 [{\u0022loan_id\u0022:4,\u0022interest_method_id\u0022:2,\u0022contract_number\u0022:\u0022LO20250208-0004\u0022,\u0022loan_amount\u0022:180000.00,\u0022loan_term\u0022:12,\u0022start_date\u0022:\u00222025-02-08T00:00:00\u0022,\u0022end_date\u0022:\u00222026-02-08T00:00:00\u0022,\u0022status\u0022:\u0022ACTIVE\u0022,\u0022total_principal_scheduled\u0022:180000.00,\u0022total_interest_scheduled\u0022:27000.00,\u0022total_scheduled\u0022:207000.00,\u0022total_principal_paid\u0022:106500.00,\u0022total_interest_paid\u0022:15975.00,\u0022total_penalty_paid\u0022:402.50,\u0022total_amount_paid\u0022:122877.50,\u0022total_sched_outstanding\u0022:84525.00,\u0022principal_balance_estimate\u0022:73500.00}] \u0E2B\u0E32\u0E01 active_loan_id \u0E40\u0E1B\u0E47\u0E19 null \u0E43\u0E2B\u0E49\u0E2A\u0E23\u0E38\u0E1B\u0E27\u0E48\u0E32\u0E44\u0E21\u0E48\u0E21\u0E35\u0E2A\u0E31\u0E0D\u0E0D\u0E32 ACTIVE \u0E41\u0E25\u0E30\u0E41\u0E2A\u0E14\u0E07\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E2D\u0E37\u0E48\u0E19 \u0E46 \u0E08\u0E32\u0E01  \u0E43\u0E2B\u0E49\u0E40\u0E1B\u0E47\u0E19\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E2D\u0E48\u0E32\u0E19\u0E07\u0E48\u0E32\u0E22"
+        },
+        {
+          "Id": "send-email",
+          "Status": "succeeded",
+          "DurationMs": 53399,
+          "Output": "{success=true}",
+          "Input": "{\u0022Plugin\u0022:\u0022mail_mcp\u0022,\u0022Tool\u0022:\u0022send_email\u0022,\u0022Args\u0022:{\u0022to\u0022:[\u0022accounting@company.com\u0022],\u0022subject\u0022:\u0022\u0E2A\u0E23\u0E38\u0E1B\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 \u0E18\u0E19\u0E14\u0E25 \u0E2D\u0E32\u0E19\u0E19\u0E17\u0E4C\u0022,\u0022body_text\u0022:\u0022**\u0E2A\u0E23\u0E38\u0E1B\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E01\u0E32\u0E23\u0E40\u0E07\u0E34\u0E19\u0E02\u0E2D\u0E07\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49 (Loan ID\\u202F=\\u202F4)**  \\n\\n| \u0E23\u0E32\u0E22\u0E01\u0E32\u0E23 | \u0E04\u0E48\u0E32 |\\n|--------|-----|\\n| **\u0E40\u0E25\u0E02\u0E2A\u0E31\u0E0D\u0E0D\u0E32** | LO20250208\u20110004 |\\n| **\u0E08\u0E33\u0E19\u0E27\u0E19\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49 (Principal)** | 180,000.00\\u202F\u0E1A\u0E32\u0E17 |\\n| **\u0E23\u0E30\u0E22\u0E30\u0E40\u0E27\u0E25\u0E32\u0E01\u0E39\u0E49** | 12\\u202F\u0E40\u0E14\u0E37\u0E2D\u0E19 |\\n| **\u0E27\u0E31\u0E19\u0E17\u0E35\u0E48\u0E40\u0E1B\u0E34\u0E14\u0E2A\u0E31\u0E0D\u0E0D\u0E32** | 8\\u202F\u0E01.\u0E1E.\\u202F2025 |\\n| **\u0E27\u0E31\u0E19\u0E17\u0E35\u0E48\u0E04\u0E23\u0E1A\u0E01\u0E33\u0E2B\u0E19\u0E14** | 8\\u202F\u0E01.\u0E1E.\\u202F2026 |\\n| **\u0E2A\u0E16\u0E32\u0E19\u0E30** | **ACTIVE** (\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E22\u0E31\u0E07\u0E43\u0E0A\u0E49\u0E07\u0E32\u0E19\u0E2D\u0E22\u0E39\u0E48) |\\n| **\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22\u0E17\u0E35\u0E48\u0E04\u0E32\u0E14\u0E01\u0E32\u0E23\u0E13\u0E4C** | 27,000.00\\u202F\u0E1A\u0E32\u0E17 (\u0E27\u0E34\u0E18\u0E35\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22\\u202F=\\u202F2) |\\n| **\u0E08\u0E33\u0E19\u0E27\u0E19\u0E40\u0E07\u0E34\u0E19\u0E23\u0E27\u0E21\u0E17\u0E35\u0E48\u0E15\u0E49\u0E2D\u0E07\u0E0A\u0E33\u0E23\u0E30\u0E15\u0E32\u0E21\u0E15\u0E32\u0E23\u0E32\u0E07** | 207,000.00\\u202F\u0E1A\u0E32\u0E17 (Principal\\u202F\u002B\\u202FInterest) |\\n| **\u0E22\u0E2D\u0E14\u0E0A\u0E33\u0E23\u0E30\u0E41\u0E25\u0E49\u0E27 (\u0E23\u0E27\u0E21)** | 122,877.50\\u202F\u0E1A\u0E32\u0E17 |\\n| \u0026nbsp;\u0026nbsp;\u2013 \u0E0A\u0E33\u0E23\u0E30\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19 | 106,500.00\\u202F\u0E1A\u0E32\u0E17 |\\n| \u0026nbsp;\u0026nbsp;\u2013 \u0E0A\u0E33\u0E23\u0E30\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22 | 15,975.00\\u202F\u0E1A\u0E32\u0E17 |\\n| \u0026nbsp;\u0026nbsp;\u2013 \u0E22\u0E2D\u0E14\u0E04\u0E48\u0E32\u0E1B\u0E23\u0E31\u0E1A | 402.50\\u202F\u0E1A\u0E32\u0E17 |\\n| **\u0E22\u0E2D\u0E14\u0E17\u0E35\u0E48\u0E04\u0E49\u0E32\u0E07\u0E0A\u0E33\u0E23\u0E30 (\u0E15\u0E32\u0E21\u0E15\u0E32\u0E23\u0E32\u0E07)** | 84,525.00\\u202F\u0E1A\u0E32\u0E17 |\\n| **\u0E1B\u0E23\u0E30\u0E21\u0E32\u0E13\u0E01\u0E32\u0E23\u0E22\u0E2D\u0E14\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19\u0E04\u0E07\u0E40\u0E2B\u0E25\u0E37\u0E2D** | 73,500.00\\u202F\u0E1A\u0E32\u0E17 |\\n| **\u0E2D\u0E31\u0E15\u0E23\u0E32\u0E01\u0E32\u0E23\u0E0A\u0E33\u0E23\u0E30\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19\u0E41\u0E25\u0E49\u0E27** | 106,500 / 180,000\\u202F\u2248\\u202F59.2\\u202F% |\\n| **\u0E2D\u0E31\u0E15\u0E23\u0E32\u0E01\u0E32\u0E23\u0E0A\u0E33\u0E23\u0E30\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22\u0E41\u0E25\u0E49\u0E27** | 15,975 / 27,000\\u202F\u2248\\u202F59.2\\u202F% |\\n| **\u0E2D\u0E31\u0E15\u0E23\u0E32\u0E01\u0E32\u0E23\u0E0A\u0E33\u0E23\u0E30\u0E23\u0E27\u0E21\u0E41\u0E25\u0E49\u0E27** | 122,877.5 / 207,000\\u202F\u2248\\u202F59.4\\u202F% |\\n\\n### \u0E04\u0E27\u0E32\u0E21\u0E2B\u0E21\u0E32\u0E22\u0E2A\u0E33\u0E04\u0E31\u0E0D\\n- **\u0E2A\u0E16\u0E32\u0E19\u0E30 ACTIVE** \u0E2B\u0E21\u0E32\u0E22\u0E04\u0E27\u0E32\u0E21\u0E27\u0E48\u0E32\u0E02\u0E13\u0E30\u0E19\u0E35\u0E49\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E22\u0E31\u0E07\u0E40\u0E1B\u0E34\u0E14\u0E2D\u0E22\u0E39\u0E48 \u0E41\u0E25\u0E30\u0E22\u0E31\u0E07\u0E21\u0E35\u0E23\u0E30\u0E22\u0E30\u0E40\u0E27\u0E25\u0E32\u0E0A\u0E33\u0E23\u0E30\u0E40\u0E07\u0E34\u0E19\u0E17\u0E35\u0E48\u0E40\u0E2B\u0E25\u0E37\u0E2D\u0E2D\u0E22\u0E39\u0E48\u0E17\u0E31\u0E49\u0E07\u0E2B\u0E21\u0E14 **12\\u202F\u0E40\u0E14\u0E37\u0E2D\u0E19** (\u0E08\u0E19\u0E16\u0E36\u0E07 8\\u202F\u0E01.\u0E1E.\\u202F2026)  \\n- **\u0E22\u0E2D\u0E14\u0E17\u0E35\u0E48\u0E04\u0E49\u0E32\u0E07\u0E0A\u0E33\u0E23\u0E30 84,525\\u202F\u0E1A\u0E32\u0E17** \u0E1B\u0E23\u0E30\u0E01\u0E2D\u0E1A\u0E14\u0E49\u0E27\u0E22\u0E2A\u0E48\u0E27\u0E19\u0E02\u0E2D\u0E07\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19\u0E41\u0E25\u0E30\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22\u0E15\u0E32\u0E21\u0E15\u0E32\u0E23\u0E32\u0E07\u0E17\u0E35\u0E48\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48\u0E44\u0E14\u0E49\u0E0A\u0E33\u0E23\u0E30  \\n- **\u0E1B\u0E23\u0E30\u0E21\u0E32\u0E13\u0E01\u0E32\u0E23\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19\u0E04\u0E07\u0E40\u0E2B\u0E25\u0E37\u0E2D 73,500\\u202F\u0E1A\u0E32\u0E17** \u0E40\u0E1B\u0E47\u0E19\u0E2A\u0E48\u0E27\u0E19\u0E02\u0E2D\u0E07\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19\u0E17\u0E35\u0E48\u0E22\u0E31\u0E07\u0E15\u0E49\u0E2D\u0E07\u0E0A\u0E33\u0E23\u0E30 (\u0E2D\u0E32\u0E08\u0E41\u0E15\u0E01\u0E15\u0E48\u0E32\u0E07\u0E08\u0E32\u0E01\u0E22\u0E2D\u0E14\u0E04\u0E49\u0E32\u0E07\u0E0A\u0E33\u0E23\u0E30\u0E17\u0E31\u0E49\u0E07\u0E2B\u0E21\u0E14\u0E40\u0E25\u0E47\u0E01\u0E19\u0E49\u0E2D\u0E22\u0E40\u0E19\u0E37\u0E48\u0E2D\u0E07\u0E08\u0E32\u0E01\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22\u0E41\u0E25\u0E30\u0E04\u0E48\u0E32\u0E1B\u0E23\u0E31\u0E1A\u0E17\u0E35\u0E48\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48\u0E44\u0E14\u0E49\u0E04\u0E33\u0E19\u0E27\u0E13)  \\n- **\u0E2D\u0E31\u0E15\u0E23\u0E32\u0E01\u0E32\u0E23\u0E0A\u0E33\u0E23\u0E30\u0E41\u0E25\u0E49\u0E27\u0E1B\u0E23\u0E30\u0E21\u0E32\u0E13 59\\u202F%** \u0E41\u0E2A\u0E14\u0E07\u0E27\u0E48\u0E32\u0E21\u0E35\u0E01\u0E32\u0E23\u0E0A\u0E33\u0E23\u0E30\u0E40\u0E07\u0E34\u0E19\u0E44\u0E1B\u0E21\u0E32\u0E01\u0E01\u0E27\u0E48\u0E32\u0E04\u0E23\u0E36\u0E48\u0E07\u0E2B\u0E19\u0E36\u0E48\u0E07\u0E02\u0E2D\u0E07\u0E17\u0E31\u0E49\u0E07\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19\u0E41\u0E25\u0E30\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22\u0E41\u0E25\u0E49\u0E27  \\n\\n### \u0E2A\u0E23\u0E38\u0E1B\u0E42\u0E14\u0E22\u0E2A\u0E31\u0E07\u0E40\u0E02\u0E1B\\n\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49\u0E2B\u0E21\u0E32\u0E22\u0E40\u0E25\u0E02 LO20250208\u20110004 \u0E22\u0E31\u0E07\u0E04\u0E07\u0E2D\u0E22\u0E39\u0E48\u0E43\u0E19\u0E2A\u0E16\u0E32\u0E19\u0E30 **ACTIVE** \u0E21\u0E35\u0E23\u0E30\u0E22\u0E30\u0E40\u0E27\u0E25\u0E32\u0E0A\u0E33\u0E23\u0E30\u0E04\u0E23\u0E1A 12\\u202F\u0E40\u0E14\u0E37\u0E2D\u0E19 \u0E42\u0E14\u0E22\u0E16\u0E36\u0E07\u0E27\u0E31\u0E19\u0E19\u0E35\u0E49\u0E44\u0E14\u0E49\u0E0A\u0E33\u0E23\u0E30\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19\u0E41\u0E25\u0E49\u0E27\u0E1B\u0E23\u0E30\u0E21\u0E32\u0E13 **106,500\\u202F\u0E1A\u0E32\u0E17** (59\\u202F% \u0E02\u0E2D\u0E07\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49) \u0E41\u0E25\u0E30\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22\u0E41\u0E25\u0E49\u0E27\u0E1B\u0E23\u0E30\u0E21\u0E32\u0E13 **15,975\\u202F\u0E1A\u0E32\u0E17** (59\\u202F% \u0E02\u0E2D\u0E07\u0E14\u0E2D\u0E01\u0E40\u0E1A\u0E35\u0E49\u0E22\u0E17\u0E35\u0E48\u0E01\u0E33\u0E2B\u0E19\u0E14) \u0E2D\u0E35\u0E01\u0E17\u0E31\u0E49\u0E07\u0E21\u0E35\u0E04\u0E48\u0E32\u0E1B\u0E23\u0E31\u0E1A\u0E17\u0E35\u0E48\u0E15\u0E49\u0E2D\u0E07\u0E0A\u0E33\u0E23\u0E30 **402.50\\u202F\u0E1A\u0E32\u0E17** \u0E1B\u0E31\u0E08\u0E08\u0E38\u0E1A\u0E31\u0E19\u0E22\u0E2D\u0E14\u0E04\u0E49\u0E32\u0E07\u0E23\u0E27\u0E21\u0E2D\u0E22\u0E39\u0E48\u0E17\u0E35\u0E48 **84,525\\u202F\u0E1A\u0E32\u0E17** (\u0E40\u0E07\u0E34\u0E19\u0E15\u0E49\u0E19\u0E04\u0E07\u0E40\u0E2B\u0E25\u0E37\u0E2D\u0E1B\u0E23\u0E30\u0E21\u0E32\u0E13 **73,500\\u202F\u0E1A\u0E32\u0E17**).  \\n\\n\u003E \u0E2B\u0E32\u0E01\u0E04\u0E38\u0E13\u0E01\u0E33\u0E25\u0E31\u0E07\u0E21\u0E2D\u0E07\u0E2B\u0E32\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E02\u0E2D\u0E07\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E2D\u0E37\u0E48\u0E19 \u0E46 \u0E17\u0E35\u0E48\u0E44\u0E21\u0E48\u0E2D\u0E22\u0E39\u0E48\u0E43\u0E19\u0E2A\u0E16\u0E32\u0E19\u0E30 ACTIVE \u0E43\u0E2B\u0E49\u0E41\u0E08\u0E49\u0E07\u0E40\u0E1E\u0E34\u0E48\u0E21\u0E44\u0E14\u0E49\u0E40\u0E25\u0E22\u0E04\u0E23\u0E31\u0E1A.\u0022}}"
+        }
+      ]
+    },
+    "RunId": "94c5226d101a402389969dc1a24b9235",
+    "LLMHistory": {
+      "TotalPromptTokens": 99736,
+      "TotalCompletionTokens": 0,
+      "TotalTokens": 99736,
+      "Entries": [
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1385,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:12.8972947Z",
+          "TotalTokens": 1385
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1385,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:15.1353044Z",
+          "TotalTokens": 1385
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1385,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:21.6087995Z",
+          "TotalTokens": 1385
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1385,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:29.5533779Z",
+          "TotalTokens": 1385
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1385,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:40.3488658Z",
+          "TotalTokens": 1385
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1623,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:43.6860423Z",
+          "TotalTokens": 1623
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1420,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:50.9013176Z",
+          "TotalTokens": 1420
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1420,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:36:00.503424Z",
+          "TotalTokens": 1420
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1168,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:36:01.2598799Z",
+          "TotalTokens": 1168
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1841,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:36:04.3744195Z",
+          "TotalTokens": 1841
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1554,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:36:08.0158188Z",
+          "TotalTokens": 1554
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1554,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:36:19.0824138Z",
+          "TotalTokens": 1554
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1268,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:36:28.8536745Z",
+          "TotalTokens": 1268
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1590,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:00.8593067Z",
+          "TotalTokens": 1590
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1554,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:01.6393654Z",
+          "TotalTokens": 1554
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1591,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:05.539767Z",
+          "TotalTokens": 1591
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1554,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:06.7679651Z",
+          "TotalTokens": 1554
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1418,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:13.1695229Z",
+          "TotalTokens": 1418
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1627,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:16.1203349Z",
+          "TotalTokens": 1627
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1624,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:25.6615004Z",
+          "TotalTokens": 1624
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1735,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:28.9854072Z",
+          "TotalTokens": 1735
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1590,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:29.3163351Z",
+          "TotalTokens": 1590
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1627,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:36.466256Z",
+          "TotalTokens": 1627
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1128,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:36.53772Z",
+          "TotalTokens": 1128
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1590,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:37.5807257Z",
+          "TotalTokens": 1590
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1667,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:39.8191417Z",
+          "TotalTokens": 1667
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1554,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:45.0716056Z",
+          "TotalTokens": 1554
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1590,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:49.3521561Z",
+          "TotalTokens": 1590
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1702,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:54.1649887Z",
+          "TotalTokens": 1702
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1587,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:38:13.1506653Z",
+          "TotalTokens": 1587
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1702,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:38:20.7053394Z",
+          "TotalTokens": 1702
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1702,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:38:33.7947649Z",
+          "TotalTokens": 1702
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 2256,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:38:46.8924067Z",
+          "TotalTokens": 2256
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 3205,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:38:57.5716402Z",
+          "TotalTokens": 3205
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 5015,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:04.4481606Z",
+          "TotalTokens": 5015
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1667,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:10.2827702Z",
+          "TotalTokens": 1667
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1667,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:12.2134765Z",
+          "TotalTokens": 1667
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1667,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:21.929576Z",
+          "TotalTokens": 1667
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 4459,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:23.33322Z",
+          "TotalTokens": 4459
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1701,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:26.7016711Z",
+          "TotalTokens": 1701
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1722,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:26.7489697Z",
+          "TotalTokens": 1722
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1702,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:28.7909522Z",
+          "TotalTokens": 1702
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1667,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:34.7011433Z",
+          "TotalTokens": 1667
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 6354,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:36.8997807Z",
+          "TotalTokens": 6354
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1704,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:37.5282827Z",
+          "TotalTokens": 1704
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1702,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:45.0259345Z",
+          "TotalTokens": 1702
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1703,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:40:15.746987Z",
+          "TotalTokens": 1703
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1701,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:40:16.2885268Z",
+          "TotalTokens": 1701
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 4619,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:40:18.4151661Z",
+          "TotalTokens": 4619
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1702,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:40:35.6632984Z",
+          "TotalTokens": 1702
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 4618,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:40:39.6716453Z",
+          "TotalTokens": 4618
+        }
+      ]
+    }
+  },
+  {
+    "Final": "{\n  \u0022screen_markdown\u0022: \u0022**\u0E15\u0E32\u0E23\u0E32\u0E07\u0E2A\u0E23\u0E38\u0E1B\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E01\u0E32\u0E23\u0E1C\u0E48\u0E2D\u0E19\u0E0A\u0E33\u0E23\u0E30 (\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B)**  \\n\\n| \u0E40\u0E25\u0E02\u0E2A\u0E31\u0E0D\u0E0D\u0E32/\u0E23\u0E2B\u0E31\u0E2A\u0E2A\u0E31\u0E0D\u0E0D\u0E32 | \u0E27\u0E31\u0E19\u0E04\u0E23\u0E1A\u0E01\u0E33\u0E2B\u0E19\u0E14\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B | \u0E22\u0E2D\u0E14\u0E17\u0E35\u0E48\u0E15\u0E49\u0E2D\u0E07\u0E08\u0E48\u0E32\u0E22\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B | \u0E22\u0E2D\u0E14\u0E04\u0E49\u0E32\u0E07\u0E02\u0E2D\u0E07\u0E07\u0E27\u0E14\u0E19\u0E31\u0E49\u0E19\u0E15\u0E2D\u0E19\u0E19\u0E35\u0E49 | \u0E08\u0E33\u0E19\u0E27\u0E19\u0E27\u0E31\u0E19\u0E04\u0E49\u0E32\u0E07 | \u0E2A\u0E16\u0E32\u0E19\u0E30 |\\n|---------------------|----------------------|---------------------------|---------------------------|----------------|--------|\\n| 1 (Loan ID) | 2025\u201106\u201110 | 3,998.20\u202FTHB | 1,599.28\u202FTHB | 254\u202F\u0E27\u0E31\u0E19 | \u0E04\u0E49\u0E32\u0E07 |\\n\\n**\u0E27\u0E34\u0E18\u0E35\u0E04\u0E33\u0E19\u0E27\u0E13**  \\n\\n1. **\u0E40\u0E25\u0E37\u0E2D\u0E01 \u201C\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B\u201D** \u2013 \u0E04\u0E49\u0E19\u0E2B\u0E32\u0E07\u0E27\u0E14\u0E17\u0E35\u0E48\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48\u0E44\u0E14\u0E49\u0E2A\u0E16\u0E32\u0E19\u0E30 **Paid** \u0E41\u0E25\u0E30\u0E21\u0E35\u0E27\u0E31\u0E19\u0E04\u0E23\u0E1A\u0E01\u0E33\u0E2B\u0E19\u0E14\u0E40\u0E23\u0E47\u0E27\u0E17\u0E35\u0E48\u0E2A\u0E38\u0E14\u0E08\u0E32\u0E01\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E15\u0E32\u0E23\u0E32\u0E07\u0E1C\u0E48\u0E2D\u0E19\u0E0A\u0E33\u0E23\u0E30\u0E17\u0E31\u0E49\u0E07\u0E2B\u0E21\u0E14.  \\n2. \u0E1E\u0E1A\u0E27\u0E48\u0E32\u0E07\u0E27\u0E14\u0E17\u0E35\u0E48\u0E15\u0E23\u0E07\u0E15\u0E32\u0E21\u0E40\u0E07\u0E37\u0E48\u0E2D\u0E19\u0E44\u0E02\u0E04\u0E37\u0E2D **schedule_id\u202F=\u202F53** (due_date\u202F=\u202F2025\u201106\u201110).  \\n3. **\u0E22\u0E2D\u0E14\u0E17\u0E35\u0E48\u0E15\u0E49\u0E2D\u0E07\u0E08\u0E48\u0E32\u0E22** \u0E04\u0E37\u0E2D \u0060total_due\u0060 \u0E02\u0E2D\u0E07\u0E07\u0E27\u0E14\u0E19\u0E31\u0E49\u0E19 = **3,998.20\u202FTHB**.  \\n4. **\u0E22\u0E2D\u0E14\u0E04\u0E49\u0E32\u0E07** \u0E04\u0E37\u0E2D \u0060outstanding_pi\u0060 \u0E02\u0E2D\u0E07\u0E07\u0E27\u0E14\u0E19\u0E31\u0E49\u0E19 = **1,599.28\u202FTHB**.  \\n5. **\u0E08\u0E33\u0E19\u0E27\u0E19\u0E27\u0E31\u0E19\u0E04\u0E49\u0E32\u0E07** = \u0060days_late\u0060 = **254\u202F\u0E27\u0E31\u0E19**.  \\n6. \u0E40\u0E19\u0E37\u0E48\u0E2D\u0E07\u0E08\u0E32\u0E01 \u0060days_late\u0060\u202F\u003E\u202F0 (\u0E2B\u0E23\u0E37\u0E2D\u0E2A\u0E16\u0E32\u0E19\u0E30\u0E40\u0E1B\u0E47\u0E19 Overdue) \u0E08\u0E36\u0E07\u0E16\u0E37\u0E2D\u0E27\u0E48\u0E32 **\u0E04\u0E49\u0E32\u0E07**.  \\n\\n*\u0E2B\u0E32\u0E01\u0E44\u0E21\u0E48\u0E21\u0E35\u0E07\u0E27\u0E14\u0E17\u0E35\u0E48\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48 Paid \u0E2B\u0E23\u0E37\u0E2D\u0E44\u0E21\u0E48\u0E21\u0E35\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E40\u0E1E\u0E34\u0E48\u0E21\u0E40\u0E15\u0E34\u0E21 \u0E08\u0E30\u0E44\u0E21\u0E48\u0E41\u0E2A\u0E14\u0E07\u0E41\u0E16\u0E27\u0E43\u0E14\u0E43\u0E19\u0E15\u0E32\u0E23\u0E32\u0E07\u0E19\u0E35\u0E49.*\u0022\n}",
+    "Plan": {
+      "Version": "1.0",
+      "Goal": "\u0E2B\u0E32\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E17\u0E35\u0E48\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E35\u0E04\u0E33\u0E27\u0E48\u0E32 \u0022\u0E43\u0E08\u0E14\u0E35\u0022 \u0E1E\u0E23\u0E49\u0E2D\u0E21\u0E2D\u0E35\u0E40\u0E21\u0E25 \u0E41\u0E25\u0E49\u0E27\u0E2A\u0E23\u0E38\u0E1B\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49 ACTIVE \u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E14\u0E31\u0E07\u0E01\u0E25\u0E48\u0E32\u0E27 \u0E1E\u0E23\u0E49\u0E2D\u0E21\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B \u0E41\u0E25\u0E49\u0E27\u0E2A\u0E48\u0E07\u0E2D\u0E35\u0E40\u0E21\u0E25\u0E41\u0E08\u0E49\u0E07\u0E17\u0E35\u0E21\u0E15\u0E34\u0E14\u0E15\u0E32\u0E21\u0E2B\u0E19\u0E35\u0E49",
+      "Constraints": {
+        "MaxSteps": 8,
+        "TimeoutSec": 120
+      },
+      "Steps": [
+        {
+          "Id": "get-customers",
+          "Type": "tool",
+          "Plugin": "mssql_mcp",
+          "Tool": "qry_customers",
+          "Params": {
+            "keyword": "\u0E43\u0E08\u0E14\u0E35",
+            "page": 1,
+            "pageSize": 20
+          },
+          "Output": "customers_raw"
+        },
+        {
+          "Id": "select-customer",
+          "Type": "llm",
+          "Prompt": "\u0E08\u0E32\u0E01\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C [[customers_raw]] \u0E43\u0E2B\u0E49\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E17\u0E35\u0E48\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E35\u0E04\u0E33\u0E27\u0E48\u0E32 \u0022\u0E43\u0E08\u0E14\u0E35\u0022 \u0E41\u0E25\u0E30\u0E21\u0E35\u0E2D\u0E35\u0E40\u0E21\u0E25\u0E15\u0E34\u0E14\u0E15\u0E48\u0E2D\u0E44\u0E14\u0E49 \u0E04\u0E37\u0E19\u0E04\u0E48\u0E32\u0E40\u0E1B\u0E47\u0E19 JSON \u0E21\u0E35\u0E1F\u0E34\u0E25\u0E14\u0E4C: customer_id, customer_name, email",
+          "Output": "selected_customer",
+          "DependsOn": [
+            "get-customers"
+          ]
+        },
+        {
+          "Id": "get-loans",
+          "Type": "tool",
+          "Plugin": "mssql_mcp",
+          "Tool": "qry_customer_with_loans",
+          "Params": {
+            "customer_id": "[[selected_customer.customer_id]]"
+          },
+          "Output": "customer_loans_raw",
+          "DependsOn": [
+            "select-customer"
+          ]
+        },
+        {
+          "Id": "filter-active-loans",
+          "Type": "llm",
+          "Prompt": "\u0E08\u0E32\u0E01 [[customer_loans_raw]] \u0E43\u0E2B\u0E49\u0E41\u0E22\u0E01\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E17\u0E35\u0E48 status \u0E40\u0E1B\u0E47\u0E19 \u0022ACTIVE\u0022 \u0E04\u0E37\u0E19\u0E40\u0E1B\u0E47\u0E19\u0E23\u0E32\u0E22\u0E01\u0E32\u0E23\u0E02\u0E2D\u0E07 loan_id \u0E41\u0E25\u0E30 loan_code",
+          "Output": "active_loans",
+          "DependsOn": [
+            "get-loans"
+          ]
+        },
+        {
+          "Id": "get-schedule",
+          "Type": "tool",
+          "Plugin": "mssql_mcp",
+          "Tool": "qry_payment_schedule_by_loan",
+          "Params": {
+            "loan_id": "[[active_loans[0].loan_id]]"
+          },
+          "Output": "payment_schedule",
+          "DependsOn": [
+            "filter-active-loans"
+          ]
+        },
+        {
+          "Id": "compose-summary",
+          "Type": "llm",
+          "Prompt": "\u0E08\u0E32\u0E01\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E02\u0E2D\u0E07\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D ACTIVE [[active_loans[0]]] \u0E41\u0E25\u0E30\u0E15\u0E32\u0E23\u0E32\u0E07\u0E1C\u0E48\u0E2D\u0E19\u0E0A\u0E33\u0E23\u0E30 [[payment_schedule]] \u0E2A\u0E23\u0E49\u0E32\u0E07\u0E15\u0E32\u0E23\u0E32\u0E07 markdown \u0E21\u0E35\u0E04\u0E2D\u0E25\u0E31\u0E21\u0E19\u0E4C: \n- \u0E40\u0E25\u0E02\u0E2A\u0E31\u0E0D\u0E0D\u0E32/\u0E23\u0E2B\u0E31\u0E2A\u0E2A\u0E31\u0E0D\u0E0D\u0E32\n- \u0E27\u0E31\u0E19\u0E04\u0E23\u0E1A\u0E01\u0E33\u0E2B\u0E19\u0E14\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B\n- \u0E22\u0E2D\u0E14\u0E17\u0E35\u0E48\u0E15\u0E49\u0E2D\u0E07\u0E08\u0E48\u0E32\u0E22\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B\n- \u0E22\u0E2D\u0E14\u0E04\u0E49\u0E32\u0E07\u0E02\u0E2D\u0E07\u0E07\u0E27\u0E14\u0E19\u0E31\u0E49\u0E19\u0E15\u0E2D\u0E19\u0E19\u0E35\u0E49\n- \u0E08\u0E33\u0E19\u0E27\u0E19\u0E27\u0E31\u0E19\u0E04\u0E49\u0E32\u0E07 (\u0E16\u0E49\u0E32\u0E21\u0E35)\n- \u0E2A\u0E16\u0E32\u0E19\u0E30 (\u0E04\u0E49\u0E32\u0E07/\u0E44\u0E21\u0E48\u0E04\u0E49\u0E32\u0E07)\n\u0E42\u0E14\u0E22\u0E43\u0E0A\u0E49\u0E01\u0E0E: \u0022\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B\u0022 \u0E04\u0E37\u0E2D\u0E07\u0E27\u0E14\u0E17\u0E35\u0E48\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48 Paid \u0E41\u0E25\u0E30\u0E27\u0E31\u0E19\u0E04\u0E23\u0E1A\u0E01\u0E33\u0E2B\u0E19\u0E14\u0E40\u0E23\u0E47\u0E27\u0E17\u0E35\u0E48\u0E2A\u0E38\u0E14; \u0E2B\u0E32\u0E01 days_late \u003E 0 \u0E2B\u0E23\u0E37\u0E2D\u0E2A\u0E16\u0E32\u0E19\u0E30\u0E40\u0E1B\u0E47\u0E19 Overdue \u0E43\u0E2B\u0E49\u0E16\u0E37\u0E2D\u0E27\u0E48\u0E32 \u0E04\u0E49\u0E32\u0E07",
+          "Output": "summary_table",
+          "DependsOn": [
+            "get-schedule"
+          ]
+        },
+        {
+          "Id": "send-email",
+          "Type": "tool",
+          "Plugin": "mail_mcp",
+          "Tool": "send_email",
+          "Params": {
+            "to": [
+              "debtteam@example.com"
+            ],
+            "subject": "\u0E2A\u0E23\u0E38\u0E1B\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49 ACTIVE \u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 [[selected_customer.customer_name]] (ID: [[selected_customer.customer_id]])",
+            "body_text": "[[summary_table]]"
+          },
+          "Output": "email_result",
+          "DependsOn": [
+            "compose-summary"
+          ]
+        }
+      ]
+    },
+    "PlanHistories": [
+      {
+        "Version": "1.0",
+        "Goal": "\u0E2A\u0E23\u0E38\u0E1B\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49 ACTIVE \u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E17\u0E35\u0E48\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E35\u0E04\u0E33\u0E27\u0E48\u0E32 \u0022\u0E43\u0E08\u0E14\u0E35\u0022 \u0E41\u0E25\u0E30\u0E2A\u0E48\u0E07\u0E2D\u0E35\u0E40\u0E21\u0E25\u0E17\u0E35\u0E21\u0E15\u0E34\u0E14\u0E15\u0E32\u0E21\u0E2B\u0E19\u0E35\u0E49",
+        "Constraints": {
+          "MaxSteps": 8,
+          "TimeoutSec": 120
+        },
+        "Steps": [
+          {
+            "Id": "search-customers",
+            "Type": "tool",
+            "Plugin": "mssql_mcp",
+            "Tool": "qry_customers",
+            "Params": {
+              "keyword": "\u0E43\u0E08\u0E14\u0E35"
+            },
+            "Output": "customers"
+          },
+          {
+            "Id": "select-customer",
+            "Type": "llm",
+            "Prompt": "\u0E08\u0E32\u0E01\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C [[customers]] \u0E43\u0E2B\u0E49\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E17\u0E35\u0E48\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E35\u0E04\u0E33\u0E27\u0E48\u0E32 \u0022\u0E43\u0E08\u0E14\u0E35\u0022 \u0E17\u0E35\u0E48\u0E14\u0E39\u0E19\u0E48\u0E32\u0E08\u0E30\u0E43\u0E0A\u0E48\u0E41\u0E25\u0E30\u0E21\u0E35\u0E2D\u0E35\u0E40\u0E21\u0E25 \u0E15\u0E34\u0E14\u0E15\u0E48\u0E2D\u0E44\u0E14\u0E49 \u0E41\u0E25\u0E49\u0E27\u0E2A\u0E48\u0E07\u0E01\u0E25\u0E31\u0E1A JSON \u0E17\u0E35\u0E48\u0E21\u0E35\u0E1F\u0E34\u0E25\u0E14\u0E4C customer_id, name, email",
+            "Output": "selected_customer",
+            "DependsOn": [
+              "search-customers"
+            ]
+          },
+          {
+            "Id": "get-customer-loans",
+            "Type": "tool",
+            "Plugin": "mssql_mcp",
+            "Tool": "qry_customer_with_loans",
+            "Params": {
+              "customer_id": "[[selected_customer.customer_id]]"
+            },
+            "Output": "customer_loans",
+            "DependsOn": [
+              "select-customer"
+            ]
+          },
+          {
+            "Id": "filter-active-loans",
+            "Type": "llm",
+            "Prompt": "\u0E08\u0E32\u0E01\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25 [[customer_loans]] \u0E43\u0E2B\u0E49\u0E01\u0E23\u0E2D\u0E07\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E17\u0E35\u0E48 status \u0E40\u0E1B\u0E47\u0E19 \u0027ACTIVE\u0027 \u0E41\u0E25\u0E49\u0E27\u0E2A\u0E48\u0E07\u0E01\u0E25\u0E31\u0E1A\u0E40\u0E1B\u0E47\u0E19\u0E23\u0E32\u0E22\u0E01\u0E32\u0E23\u0E02\u0E2D\u0E07 loan_id \u0E43\u0E19\u0E23\u0E39\u0E1B\u0E41\u0E1A\u0E1A JSON array",
+            "Output": "active_loans",
+            "DependsOn": [
+              "get-customer-loans"
+            ]
+          },
+          {
+            "Id": "get-upcoming-due",
+            "Type": "tool",
+            "Plugin": "mssql_mcp",
+            "Tool": "qry_upcoming_due",
+            "Output": "upcoming_due"
+          },
+          {
+            "Id": "compose-report",
+            "Type": "llm",
+            "Prompt": "\u0E08\u0E32\u0E01\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25 [[active_loans]] \u0E41\u0E25\u0E30 [[upcoming_due]] \u0E2A\u0E23\u0E49\u0E32\u0E07\u0E15\u0E32\u0E23\u0E32\u0E07\u0E2A\u0E23\u0E38\u0E1B\u0E2A\u0E33\u0E2B\u0E23\u0E31\u0E1A\u0E41\u0E15\u0E48\u0E25\u0E30\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E42\u0E14\u0E22\u0E41\u0E2A\u0E14\u0E07: \u0E40\u0E25\u0E02\u0E2A\u0E31\u0E0D\u0E0D\u0E32/\u0E23\u0E2B\u0E31\u0E2A\u0E2A\u0E31\u0E0D\u0E0D\u0E32, \u0E27\u0E31\u0E19\u0E04\u0E23\u0E1A\u0E01\u0E33\u0E2B\u0E19\u0E14\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B, \u0E22\u0E2D\u0E14\u0E17\u0E35\u0E48\u0E15\u0E49\u0E2D\u0E07\u0E08\u0E48\u0E32\u0E22, \u0E22\u0E2D\u0E14\u0E04\u0E49\u0E32\u0E07\u0E02\u0E2D\u0E07\u0E07\u0E27\u0E14\u0E19\u0E31\u0E49\u0E19, \u0E08\u0E33\u0E19\u0E27\u0E19\u0E27\u0E31\u0E19\u0E04\u0E49\u0E32\u0E07 (\u0E16\u0E49\u0E32\u0E21\u0E35), \u0E2A\u0E16\u0E32\u0E19\u0E30: \u0E04\u0E49\u0E32\u0E07/\u0E44\u0E21\u0E48\u0E04\u0E49\u0E32\u0E07 \u0E15\u0E32\u0E21\u0E40\u0E07\u0E37\u0E48\u0E2D\u0E19\u0E44\u0E02\u0E17\u0E35\u0E48\u0E01\u0E33\u0E2B\u0E19\u0E14. \u0E16\u0E49\u0E32\u0E44\u0E21\u0E48\u0E21\u0E35\u0E2A\u0E31\u0E0D\u0E0D\u0E32 ACTIVE \u0E43\u0E2B\u0E49\u0E41\u0E08\u0E49\u0E07\u0E27\u0E48\u0E32\u0E44\u0E21\u0E48\u0E21\u0E35\u0E2A\u0E31\u0E0D\u0E0D\u0E32 ACTIVE \u0E41\u0E25\u0E30\u0E41\u0E2A\u0E14\u0E07\u0E23\u0E32\u0E22\u0E01\u0E32\u0E23\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E17\u0E35\u0E48\u0E1E\u0E1A\u0E17\u0E31\u0E49\u0E07\u0E2B\u0E21\u0E14\u0E08\u0E32\u0E01 [[customer_loans]]. \u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C\u0E40\u0E1B\u0E47\u0E19\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E1E\u0E23\u0E49\u0E2D\u0E21\u0E2A\u0E48\u0E07\u0E2D\u0E35\u0E40\u0E21\u0E25",
+            "Output": "email_body",
+            "DependsOn": [
+              "filter-active-loans",
+              "get-upcoming-due"
+            ]
+          },
+          {
+            "Id": "send-email",
+            "Type": "tool",
+            "Plugin": "mail_mcp",
+            "Tool": "send_email",
+            "Params": {
+              "to": [
+                "debtteam@example.com"
+              ],
+              "subject": "\u0E2A\u0E23\u0E38\u0E1B\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49\u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 [[selected_customer.name]] (ID: [[selected_customer.customer_id]])",
+              "body_text": "[[email_body]]"
+            },
+            "Output": "email_result",
+            "DependsOn": [
+              "compose-report"
+            ]
+          }
+        ]
+      },
+      {
+        "Version": "1.0",
+        "Goal": "\u0E2B\u0E32\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E17\u0E35\u0E48\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E35\u0E04\u0E33\u0E27\u0E48\u0E32 \u0022\u0E43\u0E08\u0E14\u0E35\u0022 \u0E1E\u0E23\u0E49\u0E2D\u0E21\u0E2D\u0E35\u0E40\u0E21\u0E25 \u0E41\u0E25\u0E49\u0E27\u0E2A\u0E23\u0E38\u0E1B\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49 ACTIVE \u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E14\u0E31\u0E07\u0E01\u0E25\u0E48\u0E32\u0E27 \u0E1E\u0E23\u0E49\u0E2D\u0E21\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B \u0E41\u0E25\u0E49\u0E27\u0E2A\u0E48\u0E07\u0E2D\u0E35\u0E40\u0E21\u0E25\u0E41\u0E08\u0E49\u0E07\u0E17\u0E35\u0E21\u0E15\u0E34\u0E14\u0E15\u0E32\u0E21\u0E2B\u0E19\u0E35\u0E49",
+        "Constraints": {
+          "MaxSteps": 8,
+          "TimeoutSec": 120
+        },
+        "Steps": [
+          {
+            "Id": "get-customers",
+            "Type": "tool",
+            "Plugin": "mssql_mcp",
+            "Tool": "qry_customers",
+            "Params": {
+              "keyword": "\u0E43\u0E08\u0E14\u0E35",
+              "page": 1,
+              "pageSize": 20
+            },
+            "Output": "customers_raw"
+          },
+          {
+            "Id": "select-customer",
+            "Type": "llm",
+            "Prompt": "\u0E08\u0E32\u0E01\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C [[customers_raw]] \u0E43\u0E2B\u0E49\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E17\u0E35\u0E48\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E35\u0E04\u0E33\u0E27\u0E48\u0E32 \u0022\u0E43\u0E08\u0E14\u0E35\u0022 \u0E41\u0E25\u0E30\u0E21\u0E35\u0E2D\u0E35\u0E40\u0E21\u0E25\u0E15\u0E34\u0E14\u0E15\u0E48\u0E2D\u0E44\u0E14\u0E49 \u0E04\u0E37\u0E19\u0E04\u0E48\u0E32\u0E40\u0E1B\u0E47\u0E19 JSON \u0E21\u0E35\u0E1F\u0E34\u0E25\u0E14\u0E4C: customer_id, customer_name, email",
+            "Output": "selected_customer",
+            "DependsOn": [
+              "get-customers"
+            ]
+          },
+          {
+            "Id": "get-loans",
+            "Type": "tool",
+            "Plugin": "mssql_mcp",
+            "Tool": "qry_customer_with_loans",
+            "Params": {
+              "customer_id": "[[selected_customer.customer_id]]"
+            },
+            "Output": "customer_loans_raw",
+            "DependsOn": [
+              "select-customer"
+            ]
+          },
+          {
+            "Id": "filter-active-loans",
+            "Type": "llm",
+            "Prompt": "\u0E08\u0E32\u0E01 [[customer_loans_raw]] \u0E43\u0E2B\u0E49\u0E41\u0E22\u0E01\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E17\u0E35\u0E48 status \u0E40\u0E1B\u0E47\u0E19 \u0022ACTIVE\u0022 \u0E04\u0E37\u0E19\u0E40\u0E1B\u0E47\u0E19\u0E23\u0E32\u0E22\u0E01\u0E32\u0E23\u0E02\u0E2D\u0E07 loan_id \u0E41\u0E25\u0E30 loan_code",
+            "Output": "active_loans",
+            "DependsOn": [
+              "get-loans"
+            ]
+          },
+          {
+            "Id": "get-schedule",
+            "Type": "tool",
+            "Plugin": "mssql_mcp",
+            "Tool": "qry_payment_schedule_by_loan",
+            "Params": {
+              "loan_id": "[[active_loans[0].loan_id]]"
+            },
+            "Output": "payment_schedule",
+            "DependsOn": [
+              "filter-active-loans"
+            ]
+          },
+          {
+            "Id": "compose-summary",
+            "Type": "llm",
+            "Prompt": "\u0E08\u0E32\u0E01\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E02\u0E2D\u0E07\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D ACTIVE [[active_loans[0]]] \u0E41\u0E25\u0E30\u0E15\u0E32\u0E23\u0E32\u0E07\u0E1C\u0E48\u0E2D\u0E19\u0E0A\u0E33\u0E23\u0E30 [[payment_schedule]] \u0E2A\u0E23\u0E49\u0E32\u0E07\u0E15\u0E32\u0E23\u0E32\u0E07 markdown \u0E21\u0E35\u0E04\u0E2D\u0E25\u0E31\u0E21\u0E19\u0E4C: \n- \u0E40\u0E25\u0E02\u0E2A\u0E31\u0E0D\u0E0D\u0E32/\u0E23\u0E2B\u0E31\u0E2A\u0E2A\u0E31\u0E0D\u0E0D\u0E32\n- \u0E27\u0E31\u0E19\u0E04\u0E23\u0E1A\u0E01\u0E33\u0E2B\u0E19\u0E14\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B\n- \u0E22\u0E2D\u0E14\u0E17\u0E35\u0E48\u0E15\u0E49\u0E2D\u0E07\u0E08\u0E48\u0E32\u0E22\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B\n- \u0E22\u0E2D\u0E14\u0E04\u0E49\u0E32\u0E07\u0E02\u0E2D\u0E07\u0E07\u0E27\u0E14\u0E19\u0E31\u0E49\u0E19\u0E15\u0E2D\u0E19\u0E19\u0E35\u0E49\n- \u0E08\u0E33\u0E19\u0E27\u0E19\u0E27\u0E31\u0E19\u0E04\u0E49\u0E32\u0E07 (\u0E16\u0E49\u0E32\u0E21\u0E35)\n- \u0E2A\u0E16\u0E32\u0E19\u0E30 (\u0E04\u0E49\u0E32\u0E07/\u0E44\u0E21\u0E48\u0E04\u0E49\u0E32\u0E07)\n\u0E42\u0E14\u0E22\u0E43\u0E0A\u0E49\u0E01\u0E0E: \u0022\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B\u0022 \u0E04\u0E37\u0E2D\u0E07\u0E27\u0E14\u0E17\u0E35\u0E48\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48 Paid \u0E41\u0E25\u0E30\u0E27\u0E31\u0E19\u0E04\u0E23\u0E1A\u0E01\u0E33\u0E2B\u0E19\u0E14\u0E40\u0E23\u0E47\u0E27\u0E17\u0E35\u0E48\u0E2A\u0E38\u0E14; \u0E2B\u0E32\u0E01 days_late \u003E 0 \u0E2B\u0E23\u0E37\u0E2D\u0E2A\u0E16\u0E32\u0E19\u0E30\u0E40\u0E1B\u0E47\u0E19 Overdue \u0E43\u0E2B\u0E49\u0E16\u0E37\u0E2D\u0E27\u0E48\u0E32 \u0E04\u0E49\u0E32\u0E07",
+            "Output": "summary_table",
+            "DependsOn": [
+              "get-schedule"
+            ]
+          },
+          {
+            "Id": "send-email",
+            "Type": "tool",
+            "Plugin": "mail_mcp",
+            "Tool": "send_email",
+            "Params": {
+              "to": [
+                "debtteam@example.com"
+              ],
+              "subject": "\u0E2A\u0E23\u0E38\u0E1B\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49 ACTIVE \u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 [[selected_customer.customer_name]] (ID: [[selected_customer.customer_id]])",
+              "body_text": "[[summary_table]]"
+            },
+            "Output": "email_result",
+            "DependsOn": [
+              "compose-summary"
+            ]
+          }
+        ]
+      }
+    ],
+    "Journal": {
+      "RunId": "fff2f294-e438-41e4-b2a5-73e6744fdef7",
+      "Steps": [
+        {
+          "Id": "get-customers",
+          "Status": "succeeded",
+          "DurationMs": 66,
+          "Output": [
+            {
+              "customer_id": 1,
+              "name": "\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35",
+              "citizen_id": "1103700012345",
+              "phone": "0812345678",
+              "email": "somchai@example.com",
+              "address": "99 \u0E2B\u0E21\u0E39\u0E48 1 \u0E15.\u0E1A\u0E32\u0E07\u0E23\u0E31\u0E01 \u0E2D.\u0E40\u0E21\u0E37\u0E2D\u0E07 \u0E08.\u0E01\u0E23\u0E38\u0E07\u0E40\u0E17\u0E1E\u0E2F 10500",
+              "total_count": 1,
+              "page": 1,
+              "page_size": 20
+            }
+          ],
+          "Input": "{\u0022Plugin\u0022:\u0022mssql_mcp\u0022,\u0022Tool\u0022:\u0022qry_customers\u0022,\u0022Args\u0022:{\u0022keyword\u0022:\u0022\u0E43\u0E08\u0E14\u0E35\u0022,\u0022page\u0022:1,\u0022pageSize\u0022:20}}"
+        },
+        {
+          "Id": "select-customer",
+          "Status": "succeeded",
+          "DurationMs": 4755,
+          "Output": "\u0060\u0060\u0060json\n[\n  {\n    \u0022customer_id\u0022: 1,\n    \u0022customer_name\u0022: \u0022\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\u0022,\n    \u0022email\u0022: \u0022somchai@example.com\u0022\n  }\n]\n\u0060\u0060\u0060",
+          "Input": "\u0E08\u0E32\u0E01\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C [{\u0022customer_id\u0022:1,\u0022name\u0022:\u0022\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\u0022,\u0022citizen_id\u0022:\u00221103700012345\u0022,\u0022phone\u0022:\u00220812345678\u0022,\u0022email\u0022:\u0022somchai@example.com\u0022,\u0022address\u0022:\u002299 \u0E2B\u0E21\u0E39\u0E48 1 \u0E15.\u0E1A\u0E32\u0E07\u0E23\u0E31\u0E01 \u0E2D.\u0E40\u0E21\u0E37\u0E2D\u0E07 \u0E08.\u0E01\u0E23\u0E38\u0E07\u0E40\u0E17\u0E1E\u0E2F 10500\u0022,\u0022total_count\u0022:1,\u0022page\u0022:1,\u0022page_size\u0022:20}] \u0E43\u0E2B\u0E49\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E17\u0E35\u0E48\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E35\u0E04\u0E33\u0E27\u0E48\u0E32 \u0022\u0E43\u0E08\u0E14\u0E35\u0022 \u0E41\u0E25\u0E30\u0E21\u0E35\u0E2D\u0E35\u0E40\u0E21\u0E25\u0E15\u0E34\u0E14\u0E15\u0E48\u0E2D\u0E44\u0E14\u0E49 \u0E04\u0E37\u0E19\u0E04\u0E48\u0E32\u0E40\u0E1B\u0E47\u0E19 JSON \u0E21\u0E35\u0E1F\u0E34\u0E25\u0E14\u0E4C: customer_id, customer_name, email"
+        },
+        {
+          "Id": "get-loans",
+          "Status": "succeeded",
+          "DurationMs": 1811,
+          "Output": [
+            {
+              "loan_id": 1,
+              "contract_number": "LO20250110-0001",
+              "status": "ACTIVE",
+              "loan_amount": 45000.00,
+              "loan_term": 12,
+              "start_date": "2025-01-10T00:00:00",
+              "end_date": "2026-01-10T00:00:00",
+              "interest_method": "DIM",
+              "loan_product_id": 1,
+              "product_name": "\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E2D\u0E40\u0E15\u0E2D\u0E23\u0E4C\u0E44\u0E0B\u0E04\u0E4C",
+              "sub_type": "Motorcycle"
+            }
+          ],
+          "Input": "{\u0022Plugin\u0022:\u0022mssql_mcp\u0022,\u0022Tool\u0022:\u0022qry_customer_with_loans\u0022,\u0022Args\u0022:{\u0022customer_id\u0022:1}}"
+        },
+        {
+          "Id": "filter-active-loans",
+          "Status": "succeeded",
+          "DurationMs": 2650,
+          "Output": "\u0060\u0060\u0060json\n[\n  {\n    \u0022loan_id\u0022: 1,\n    \u0022loan_code\u0022: \u0022LO20250110-0001\u0022\n  }\n]\n\u0060\u0060\u0060",
+          "Input": "\u0E08\u0E32\u0E01 [{\u0022loan_id\u0022:1,\u0022contract_number\u0022:\u0022LO20250110-0001\u0022,\u0022status\u0022:\u0022ACTIVE\u0022,\u0022loan_amount\u0022:45000.00,\u0022loan_term\u0022:12,\u0022start_date\u0022:\u00222025-01-10T00:00:00\u0022,\u0022end_date\u0022:\u00222026-01-10T00:00:00\u0022,\u0022interest_method\u0022:\u0022DIM\u0022,\u0022loan_product_id\u0022:1,\u0022product_name\u0022:\u0022\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E2D\u0E40\u0E15\u0E2D\u0E23\u0E4C\u0E44\u0E0B\u0E04\u0E4C\u0022,\u0022sub_type\u0022:\u0022Motorcycle\u0022}] \u0E43\u0E2B\u0E49\u0E41\u0E22\u0E01\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E17\u0E35\u0E48 status \u0E40\u0E1B\u0E47\u0E19 \u0022ACTIVE\u0022 \u0E04\u0E37\u0E19\u0E40\u0E1B\u0E47\u0E19\u0E23\u0E32\u0E22\u0E01\u0E32\u0E23\u0E02\u0E2D\u0E07 loan_id \u0E41\u0E25\u0E30 loan_code"
+        },
+        {
+          "Id": "get-schedule",
+          "Status": "succeeded",
+          "DurationMs": 1804,
+          "Output": [
+            {
+              "schedule_id": 25,
+              "loan_id": 1,
+              "due_date": "2025-02-10T00:00:00",
+              "principal_due": 3548.20,
+              "interest_due": 450.00,
+              "total_due": 3998.20,
+              "status": "Paid",
+              "principal_paid": 3548.20,
+              "interest_paid": 450.00,
+              "penalty_paid": 0.00,
+              "amount_paid": 3998.20,
+              "outstanding_pi": 0.00,
+              "days_late": 0,
+              "aging_bucket": "Current",
+              "last_payment_date": "2025-02-10T00:00:00"
+            },
+            {
+              "schedule_id": 50,
+              "loan_id": 1,
+              "due_date": "2025-03-10T00:00:00",
+              "principal_due": 3583.68,
+              "interest_due": 414.52,
+              "total_due": 3998.20,
+              "status": "Paid",
+              "principal_paid": 3583.68,
+              "interest_paid": 414.52,
+              "penalty_paid": 0.00,
+              "amount_paid": 3998.20,
+              "outstanding_pi": 0.00,
+              "days_late": 0,
+              "aging_bucket": "Current",
+              "last_payment_date": "2025-03-10T00:00:00"
+            },
+            {
+              "schedule_id": 51,
+              "loan_id": 1,
+              "due_date": "2025-04-10T00:00:00",
+              "principal_due": 3619.51,
+              "interest_due": 378.68,
+              "total_due": 3998.20,
+              "status": "Partial",
+              "principal_paid": 3619.51,
+              "interest_paid": 378.68,
+              "penalty_paid": 0.00,
+              "amount_paid": 3998.20,
+              "outstanding_pi": 0.00,
+              "days_late": 0,
+              "aging_bucket": "Current",
+              "last_payment_date": "2025-04-10T00:00:00"
+            },
+            {
+              "schedule_id": 52,
+              "loan_id": 1,
+              "due_date": "2025-05-10T00:00:00",
+              "principal_due": 3655.71,
+              "interest_due": 342.49,
+              "total_due": 3998.20,
+              "status": "Paid",
+              "principal_paid": 3655.71,
+              "interest_paid": 342.49,
+              "penalty_paid": 0.00,
+              "amount_paid": 3998.20,
+              "outstanding_pi": 0.00,
+              "days_late": 0,
+              "aging_bucket": "Current",
+              "last_payment_date": "2025-05-10T00:00:00"
+            },
+            {
+              "schedule_id": 53,
+              "loan_id": 1,
+              "due_date": "2025-06-10T00:00:00",
+              "principal_due": 3692.27,
+              "interest_due": 305.93,
+              "total_due": 3998.20,
+              "status": "Partial",
+              "principal_paid": 2215.36,
+              "interest_paid": 183.56,
+              "penalty_paid": 0.00,
+              "amount_paid": 2398.92,
+              "outstanding_pi": 1599.28,
+              "days_late": 254,
+              "aging_bucket": "90\u002B",
+              "last_payment_date": "2025-06-10T00:00:00"
+            },
+            {
+              "schedule_id": 54,
+              "loan_id": 1,
+              "due_date": "2025-07-10T00:00:00",
+              "principal_due": 3729.19,
+              "interest_due": 269.01,
+              "total_due": 3998.20,
+              "status": "Paid",
+              "principal_paid": 3729.19,
+              "interest_paid": 269.01,
+              "penalty_paid": 0.00,
+              "amount_paid": 3998.20,
+              "outstanding_pi": 0.00,
+              "days_late": 0,
+              "aging_bucket": "Current",
+              "last_payment_date": "2025-07-15T00:00:00"
+            },
+            {
+              "schedule_id": 55,
+              "loan_id": 1,
+              "due_date": "2025-08-10T00:00:00",
+              "principal_due": 3766.48,
+              "interest_due": 231.71,
+              "total_due": 3998.20,
+              "status": "Partial",
+              "principal_paid": 3766.48,
+              "interest_paid": 231.71,
+              "penalty_paid": 79.96,
+              "amount_paid": 4078.16,
+              "outstanding_pi": 0.00,
+              "days_late": 0,
+              "aging_bucket": "Current",
+              "last_payment_date": "2025-08-27T00:00:00"
+            },
+            {
+              "schedule_id": 56,
+              "loan_id": 1,
+              "due_date": "2025-09-10T00:00:00",
+              "principal_due": 3804.15,
+              "interest_due": 194.05,
+              "total_due": 3998.20,
+              "status": "Overdue",
+              "principal_paid": 0.00,
+              "interest_paid": 0.00,
+              "penalty_paid": 0.00,
+              "amount_paid": 0.00,
+              "outstanding_pi": 3998.20,
+              "days_late": 162,
+              "aging_bucket": "90\u002B",
+              "last_payment_date": null
+            },
+            {
+              "schedule_id": 57,
+              "loan_id": 1,
+              "due_date": "2025-10-10T00:00:00",
+              "principal_due": 3842.19,
+              "interest_due": 156.01,
+              "total_due": 3998.20,
+              "status": "Partial",
+              "principal_paid": 1921.10,
+              "interest_paid": 78.01,
+              "penalty_paid": 13.33,
+              "amount_paid": 2012.43,
+              "outstanding_pi": 1999.09,
+              "days_late": 132,
+              "aging_bucket": "90\u002B",
+              "last_payment_date": "2025-10-22T00:00:00"
+            },
+            {
+              "schedule_id": 58,
+              "loan_id": 1,
+              "due_date": "2025-11-10T00:00:00",
+              "principal_due": 3880.61,
+              "interest_due": 117.59,
+              "total_due": 3998.20,
+              "status": "Pending",
+              "principal_paid": 0.00,
+              "interest_paid": 0.00,
+              "penalty_paid": 0.00,
+              "amount_paid": 0.00,
+              "outstanding_pi": 3998.20,
+              "days_late": 101,
+              "aging_bucket": "90\u002B",
+              "last_payment_date": null
+            },
+            {
+              "schedule_id": 59,
+              "loan_id": 1,
+              "due_date": "2025-12-10T00:00:00",
+              "principal_due": 3919.42,
+              "interest_due": 78.78,
+              "total_due": 3998.20,
+              "status": "Pending",
+              "principal_paid": 0.00,
+              "interest_paid": 0.00,
+              "penalty_paid": 0.00,
+              "amount_paid": 0.00,
+              "outstanding_pi": 3998.20,
+              "days_late": 71,
+              "aging_bucket": "61-90",
+              "last_payment_date": null
+            },
+            {
+              "schedule_id": 60,
+              "loan_id": 1,
+              "due_date": "2026-01-10T00:00:00",
+              "principal_due": 3958.61,
+              "interest_due": 39.59,
+              "total_due": 3998.20,
+              "status": "Pending",
+              "principal_paid": 0.00,
+              "interest_paid": 0.00,
+              "penalty_paid": 0.00,
+              "amount_paid": 0.00,
+              "outstanding_pi": 3998.20,
+              "days_late": 40,
+              "aging_bucket": "31-60",
+              "last_payment_date": null
+            }
+          ],
+          "Input": "{\u0022Plugin\u0022:\u0022mssql_mcp\u0022,\u0022Tool\u0022:\u0022qry_payment_schedule_by_loan\u0022,\u0022Args\u0022:{\u0022loan_id\u0022:1}}"
+        },
+        {
+          "Id": "compose-summary",
+          "Status": "succeeded",
+          "DurationMs": 12147,
+          "Output": "**\u0E15\u0E32\u0E23\u0E32\u0E07\u0E2A\u0E23\u0E38\u0E1B\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E01\u0E32\u0E23\u0E1C\u0E48\u0E2D\u0E19\u0E0A\u0E33\u0E23\u0E30 (\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B)**  \n\n| \u0E40\u0E25\u0E02\u0E2A\u0E31\u0E0D\u0E0D\u0E32/\u0E23\u0E2B\u0E31\u0E2A\u0E2A\u0E31\u0E0D\u0E0D\u0E32 | \u0E27\u0E31\u0E19\u0E04\u0E23\u0E1A\u0E01\u0E33\u0E2B\u0E19\u0E14\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B | \u0E22\u0E2D\u0E14\u0E17\u0E35\u0E48\u0E15\u0E49\u0E2D\u0E07\u0E08\u0E48\u0E32\u0E22\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B | \u0E22\u0E2D\u0E14\u0E04\u0E49\u0E32\u0E07\u0E02\u0E2D\u0E07\u0E07\u0E27\u0E14\u0E19\u0E31\u0E49\u0E19\u0E15\u0E2D\u0E19\u0E19\u0E35\u0E49 | \u0E08\u0E33\u0E19\u0E27\u0E19\u0E27\u0E31\u0E19\u0E04\u0E49\u0E32\u0E07 | \u0E2A\u0E16\u0E32\u0E19\u0E30 |\n|---------------------|----------------------|---------------------------|---------------------------|----------------|--------|\n| 1 (Loan ID) | 2025\u201106\u201110 | 3,998.20\u202FTHB | 1,599.28\u202FTHB | 254\u202F\u0E27\u0E31\u0E19 | \u0E04\u0E49\u0E32\u0E07 |\n\n**\u0E27\u0E34\u0E18\u0E35\u0E04\u0E33\u0E19\u0E27\u0E13**  \n\n1. **\u0E40\u0E25\u0E37\u0E2D\u0E01 \u201C\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B\u201D** \u2013 \u0E04\u0E49\u0E19\u0E2B\u0E32\u0E07\u0E27\u0E14\u0E17\u0E35\u0E48\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48\u0E44\u0E14\u0E49\u0E2A\u0E16\u0E32\u0E19\u0E30 **Paid** \u0E41\u0E25\u0E30\u0E21\u0E35\u0E27\u0E31\u0E19\u0E04\u0E23\u0E1A\u0E01\u0E33\u0E2B\u0E19\u0E14\u0E40\u0E23\u0E47\u0E27\u0E17\u0E35\u0E48\u0E2A\u0E38\u0E14\u0E08\u0E32\u0E01\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E15\u0E32\u0E23\u0E32\u0E07\u0E1C\u0E48\u0E2D\u0E19\u0E0A\u0E33\u0E23\u0E30\u0E17\u0E31\u0E49\u0E07\u0E2B\u0E21\u0E14.  \n2. \u0E1E\u0E1A\u0E27\u0E48\u0E32\u0E07\u0E07\u0E27\u0E14\u0E17\u0E35\u0E48\u0E15\u0E23\u0E07\u0E15\u0E32\u0E21\u0E40\u0E07\u0E37\u0E48\u0E2D\u0E19\u0E44\u0E02\u0E04\u0E37\u0E2D **schedule_id\u202F=\u202F53** (due_date\u202F=\u202F2025\u201106\u201110).  \n3. **\u0E22\u0E2D\u0E14\u0E17\u0E35\u0E48\u0E15\u0E49\u0E2D\u0E07\u0E08\u0E48\u0E32\u0E22** \u0E04\u0E37\u0E2D \u0060total_due\u0060 \u0E02\u0E2D\u0E07\u0E07\u0E27\u0E14\u0E19\u0E31\u0E49\u0E19 = **3,998.20\u202FTHB**.  \n4. **\u0E22\u0E2D\u0E14\u0E04\u0E49\u0E32\u0E07** \u0E04\u0E37\u0E2D \u0060outstanding_pi\u0060 \u0E02\u0E2D\u0E07\u0E07\u0E27\u0E14\u0E19\u0E31\u0E49\u0E19 = **1,599.28\u202FTHB**.  \n5. **\u0E08\u0E33\u0E19\u0E27\u0E19\u0E27\u0E31\u0E19\u0E04\u0E49\u0E32\u0E07** = \u0060days_late\u0060 = **254\u202F\u0E27\u0E31\u0E19**.  \n6. \u0E40\u0E19\u0E37\u0E48\u0E2D\u0E07\u0E08\u0E32\u0E01 \u0060days_late\u0060\u202F\u003E\u202F0 (\u0E2B\u0E23\u0E37\u0E2D\u0E2A\u0E16\u0E32\u0E19\u0E30\u0E40\u0E1B\u0E47\u0E19 Overdue) \u0E08\u0E36\u0E07\u0E16\u0E37\u0E2D\u0E27\u0E48\u0E32 **\u0E04\u0E49\u0E32\u0E07**.  \n\n*\u0E2B\u0E32\u0E01\u0E44\u0E21\u0E48\u0E21\u0E35\u0E07\u0E27\u0E14\u0E17\u0E35\u0E48\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48 Paid \u0E2B\u0E23\u0E37\u0E2D\u0E44\u0E21\u0E48\u0E21\u0E35\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E40\u0E1E\u0E34\u0E48\u0E21\u0E40\u0E15\u0E34\u0E21 \u0E08\u0E30\u0E44\u0E21\u0E48\u0E41\u0E2A\u0E14\u0E07\u0E41\u0E16\u0E27\u0E43\u0E14\u0E43\u0E19\u0E15\u0E32\u0E23\u0E32\u0E07\u0E19\u0E35\u0E49.*",
+          "Input": "\u0E08\u0E32\u0E01\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E02\u0E2D\u0E07\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D ACTIVE [[active_loans[0]]] \u0E41\u0E25\u0E30\u0E15\u0E32\u0E23\u0E32\u0E07\u0E1C\u0E48\u0E2D\u0E19\u0E0A\u0E33\u0E23\u0E30 [{\u0022schedule_id\u0022:25,\u0022loan_id\u0022:1,\u0022due_date\u0022:\u00222025-02-10T00:00:00\u0022,\u0022principal_due\u0022:3548.20,\u0022interest_due\u0022:450.00,\u0022total_due\u0022:3998.20,\u0022status\u0022:\u0022Paid\u0022,\u0022principal_paid\u0022:3548.20,\u0022interest_paid\u0022:450.00,\u0022penalty_paid\u0022:0.00,\u0022amount_paid\u0022:3998.20,\u0022outstanding_pi\u0022:0.00,\u0022days_late\u0022:0,\u0022aging_bucket\u0022:\u0022Current\u0022,\u0022last_payment_date\u0022:\u00222025-02-10T00:00:00\u0022},{\u0022schedule_id\u0022:50,\u0022loan_id\u0022:1,\u0022due_date\u0022:\u00222025-03-10T00:00:00\u0022,\u0022principal_due\u0022:3583.68,\u0022interest_due\u0022:414.52,\u0022total_due\u0022:3998.20,\u0022status\u0022:\u0022Paid\u0022,\u0022principal_paid\u0022:3583.68,\u0022interest_paid\u0022:414.52,\u0022penalty_paid\u0022:0.00,\u0022amount_paid\u0022:3998.20,\u0022outstanding_pi\u0022:0.00,\u0022days_late\u0022:0,\u0022aging_bucket\u0022:\u0022Current\u0022,\u0022last_payment_date\u0022:\u00222025-03-10T00:00:00\u0022},{\u0022schedule_id\u0022:51,\u0022loan_id\u0022:1,\u0022due_date\u0022:\u00222025-04-10T00:00:00\u0022,\u0022principal_due\u0022:3619.51,\u0022interest_due\u0022:378.68,\u0022total_due\u0022:3998.20,\u0022status\u0022:\u0022Partial\u0022,\u0022principal_paid\u0022:3619.51,\u0022interest_paid\u0022:378.68,\u0022penalty_paid\u0022:0.00,\u0022amount_paid\u0022:3998.20,\u0022outstanding_pi\u0022:0.00,\u0022days_late\u0022:0,\u0022aging_bucket\u0022:\u0022Current\u0022,\u0022last_payment_date\u0022:\u00222025-04-10T00:00:00\u0022},{\u0022schedule_id\u0022:52,\u0022loan_id\u0022:1,\u0022due_date\u0022:\u00222025-05-10T00:00:00\u0022,\u0022principal_due\u0022:3655.71,\u0022interest_due\u0022:342.49,\u0022total_due\u0022:3998.20,\u0022status\u0022:\u0022Paid\u0022,\u0022principal_paid\u0022:3655.71,\u0022interest_paid\u0022:342.49,\u0022penalty_paid\u0022:0.00,\u0022amount_paid\u0022:3998.20,\u0022outstanding_pi\u0022:0.00,\u0022days_late\u0022:0,\u0022aging_bucket\u0022:\u0022Current\u0022,\u0022last_payment_date\u0022:\u00222025-05-10T00:00:00\u0022},{\u0022schedule_id\u0022:53,\u0022loan_id\u0022:1,\u0022due_date\u0022:\u00222025-06-10T00:00:00\u0022,\u0022principal_due\u0022:3692.27,\u0022interest_due\u0022:305.93,\u0022total_due\u0022:3998.20,\u0022status\u0022:\u0022Partial\u0022,\u0022principal_paid\u0022:2215.36,\u0022interest_paid\u0022:183.56,\u0022penalty_paid\u0022:0.00,\u0022amount_paid\u0022:2398.92,\u0022outstanding_pi\u0022:1599.28,\u0022days_late\u0022:254,\u0022aging_bucket\u0022:\u002290\u002B\u0022,\u0022last_payment_date\u0022:\u00222025-06-10T00:00:00\u0022},{\u0022schedule_id\u0022:54,\u0022loan_id\u0022:1,\u0022due_date\u0022:\u00222025-07-10T00:00:00\u0022,\u0022principal_due\u0022:3729.19,\u0022interest_due\u0022:269.01,\u0022total_due\u0022:3998.20,\u0022status\u0022:\u0022Paid\u0022,\u0022principal_paid\u0022:3729.19,\u0022interest_paid\u0022:269.01,\u0022penalty_paid\u0022:0.00,\u0022amount_paid\u0022:3998.20,\u0022outstanding_pi\u0022:0.00,\u0022days_late\u0022:0,\u0022aging_bucket\u0022:\u0022Current\u0022,\u0022last_payment_date\u0022:\u00222025-07-15T00:00:00\u0022},{\u0022schedule_id\u0022:55,\u0022loan_id\u0022:1,\u0022due_date\u0022:\u00222025-08-10T00:00:00\u0022,\u0022principal_due\u0022:3766.48,\u0022interest_due\u0022:231.71,\u0022total_due\u0022:3998.20,\u0022status\u0022:\u0022Partial\u0022,\u0022principal_paid\u0022:3766.48,\u0022interest_paid\u0022:231.71,\u0022penalty_paid\u0022:79.96,\u0022amount_paid\u0022:4078.16,\u0022outstanding_pi\u0022:0.00,\u0022days_late\u0022:0,\u0022aging_bucket\u0022:\u0022Current\u0022,\u0022last_payment_date\u0022:\u00222025-08-27T00:00:00\u0022},{\u0022schedule_id\u0022:56,\u0022loan_id\u0022:1,\u0022due_date\u0022:\u00222025-09-10T00:00:00\u0022,\u0022principal_due\u0022:3804.15,\u0022interest_due\u0022:194.05,\u0022total_due\u0022:3998.20,\u0022status\u0022:\u0022Overdue\u0022,\u0022principal_paid\u0022:0.00,\u0022interest_paid\u0022:0.00,\u0022penalty_paid\u0022:0.00,\u0022amount_paid\u0022:0.00,\u0022outstanding_pi\u0022:3998.20,\u0022days_late\u0022:162,\u0022aging_bucket\u0022:\u002290\u002B\u0022,\u0022last_payment_date\u0022:null},{\u0022schedule_id\u0022:57,\u0022loan_id\u0022:1,\u0022due_date\u0022:\u00222025-10-10T00:00:00\u0022,\u0022principal_due\u0022:3842.19,\u0022interest_due\u0022:156.01,\u0022total_due\u0022:3998.20,\u0022status\u0022:\u0022Partial\u0022,\u0022principal_paid\u0022:1921.10,\u0022interest_paid\u0022:78.01,\u0022penalty_paid\u0022:13.33,\u0022amount_paid\u0022:2012.43,\u0022outstanding_pi\u0022:1999.09,\u0022days_late\u0022:132,\u0022aging_bucket\u0022:\u002290\u002B\u0022,\u0022last_payment_date\u0022:\u00222025-10-22T00:00:00\u0022},{\u0022schedule_id\u0022:58,\u0022loan_id\u0022:1,\u0022due_date\u0022:\u00222025-11-10T00:00:00\u0022,\u0022principal_due\u0022:3880.61,\u0022interest_due\u0022:117.59,\u0022total_due\u0022:3998.20,\u0022status\u0022:\u0022Pending\u0022,\u0022principal_paid\u0022:0.00,\u0022interest_paid\u0022:0.00,\u0022penalty_paid\u0022:0.00,\u0022amount_paid\u0022:0.00,\u0022outstanding_pi\u0022:3998.20,\u0022days_late\u0022:101,\u0022aging_bucket\u0022:\u002290\u002B\u0022,\u0022last_payment_date\u0022:null},{\u0022schedule_id\u0022:59,\u0022loan_id\u0022:1,\u0022due_date\u0022:\u00222025-12-10T00:00:00\u0022,\u0022principal_due\u0022:3919.42,\u0022interest_due\u0022:78.78,\u0022total_due\u0022:3998.20,\u0022status\u0022:\u0022Pending\u0022,\u0022principal_paid\u0022:0.00,\u0022interest_paid\u0022:0.00,\u0022penalty_paid\u0022:0.00,\u0022amount_paid\u0022:0.00,\u0022outstanding_pi\u0022:3998.20,\u0022days_late\u0022:71,\u0022aging_bucket\u0022:\u002261-90\u0022,\u0022last_payment_date\u0022:null},{\u0022schedule_id\u0022:60,\u0022loan_id\u0022:1,\u0022due_date\u0022:\u00222026-01-10T00:00:00\u0022,\u0022principal_due\u0022:3958.61,\u0022interest_due\u0022:39.59,\u0022total_due\u0022:3998.20,\u0022status\u0022:\u0022Pending\u0022,\u0022principal_paid\u0022:0.00,\u0022interest_paid\u0022:0.00,\u0022penalty_paid\u0022:0.00,\u0022amount_paid\u0022:0.00,\u0022outstanding_pi\u0022:3998.20,\u0022days_late\u0022:40,\u0022aging_bucket\u0022:\u002231-60\u0022,\u0022last_payment_date\u0022:null}] \u0E2A\u0E23\u0E49\u0E32\u0E07\u0E15\u0E32\u0E23\u0E32\u0E07 markdown \u0E21\u0E35\u0E04\u0E2D\u0E25\u0E31\u0E21\u0E19\u0E4C: \n- \u0E40\u0E25\u0E02\u0E2A\u0E31\u0E0D\u0E0D\u0E32/\u0E23\u0E2B\u0E31\u0E2A\u0E2A\u0E31\u0E0D\u0E0D\u0E32\n- \u0E27\u0E31\u0E19\u0E04\u0E23\u0E1A\u0E01\u0E33\u0E2B\u0E19\u0E14\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B\n- \u0E22\u0E2D\u0E14\u0E17\u0E35\u0E48\u0E15\u0E49\u0E2D\u0E07\u0E08\u0E48\u0E32\u0E22\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B\n- \u0E22\u0E2D\u0E14\u0E04\u0E49\u0E32\u0E07\u0E02\u0E2D\u0E07\u0E07\u0E27\u0E14\u0E19\u0E31\u0E49\u0E19\u0E15\u0E2D\u0E19\u0E19\u0E35\u0E49\n- \u0E08\u0E33\u0E19\u0E27\u0E19\u0E27\u0E31\u0E19\u0E04\u0E49\u0E32\u0E07 (\u0E16\u0E49\u0E32\u0E21\u0E35)\n- \u0E2A\u0E16\u0E32\u0E19\u0E30 (\u0E04\u0E49\u0E32\u0E07/\u0E44\u0E21\u0E48\u0E04\u0E49\u0E32\u0E07)\n\u0E42\u0E14\u0E22\u0E43\u0E0A\u0E49\u0E01\u0E0E: \u0022\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B\u0022 \u0E04\u0E37\u0E2D\u0E07\u0E27\u0E14\u0E17\u0E35\u0E48\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48 Paid \u0E41\u0E25\u0E30\u0E27\u0E31\u0E19\u0E04\u0E23\u0E1A\u0E01\u0E33\u0E2B\u0E19\u0E14\u0E40\u0E23\u0E47\u0E27\u0E17\u0E35\u0E48\u0E2A\u0E38\u0E14; \u0E2B\u0E32\u0E01 days_late \u003E 0 \u0E2B\u0E23\u0E37\u0E2D\u0E2A\u0E16\u0E32\u0E19\u0E30\u0E40\u0E1B\u0E47\u0E19 Overdue \u0E43\u0E2B\u0E49\u0E16\u0E37\u0E2D\u0E27\u0E48\u0E32 \u0E04\u0E49\u0E32\u0E07"
+        },
+        {
+          "Id": "send-email",
+          "Status": "succeeded",
+          "DurationMs": 16113,
+          "Output": "{success=true}",
+          "Input": "{\u0022Plugin\u0022:\u0022mail_mcp\u0022,\u0022Tool\u0022:\u0022send_email\u0022,\u0022Args\u0022:{\u0022to\u0022:[\u0022debtteam@example.com\u0022],\u0022subject\u0022:\u0022\u0E2A\u0E23\u0E38\u0E1B\u0E2A\u0E31\u0E0D\u0E0D\u0E32\u0E40\u0E07\u0E34\u0E19\u0E01\u0E39\u0E49 ACTIVE \u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 [[selected_customer.customer_name]] (ID: [[selected_customer.customer_id]])\u0022,\u0022body_text\u0022:\u0022**\u0E15\u0E32\u0E23\u0E32\u0E07\u0E2A\u0E23\u0E38\u0E1B\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E01\u0E32\u0E23\u0E1C\u0E48\u0E2D\u0E19\u0E0A\u0E33\u0E23\u0E30 (\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B)**  \\n\\n| \u0E40\u0E25\u0E02\u0E2A\u0E31\u0E0D\u0E0D\u0E32/\u0E23\u0E2B\u0E31\u0E2A\u0E2A\u0E31\u0E0D\u0E0D\u0E32 | \u0E27\u0E31\u0E19\u0E04\u0E23\u0E1A\u0E01\u0E33\u0E2B\u0E19\u0E14\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B | \u0E22\u0E2D\u0E14\u0E17\u0E35\u0E48\u0E15\u0E49\u0E2D\u0E07\u0E08\u0E48\u0E32\u0E22\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B | \u0E22\u0E2D\u0E14\u0E04\u0E49\u0E32\u0E07\u0E02\u0E2D\u0E07\u0E07\u0E27\u0E14\u0E19\u0E31\u0E49\u0E19\u0E15\u0E2D\u0E19\u0E19\u0E35\u0E49 | \u0E08\u0E33\u0E19\u0E27\u0E19\u0E27\u0E31\u0E19\u0E04\u0E49\u0E32\u0E07 | \u0E2A\u0E16\u0E32\u0E19\u0E30 |\\n|---------------------|----------------------|---------------------------|---------------------------|----------------|--------|\\n| 1 (Loan ID) | 2025\u201106\u201110 | 3,998.20\\u202FTHB | 1,599.28\\u202FTHB | 254\\u202F\u0E27\u0E31\u0E19 | \u0E04\u0E49\u0E32\u0E07 |\\n\\n**\u0E27\u0E34\u0E18\u0E35\u0E04\u0E33\u0E19\u0E27\u0E13**  \\n\\n1. **\u0E40\u0E25\u0E37\u0E2D\u0E01 \u201C\u0E07\u0E27\u0E14\u0E16\u0E31\u0E14\u0E44\u0E1B\u201D** \u2013 \u0E04\u0E49\u0E19\u0E2B\u0E32\u0E07\u0E27\u0E14\u0E17\u0E35\u0E48\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48\u0E44\u0E14\u0E49\u0E2A\u0E16\u0E32\u0E19\u0E30 **Paid** \u0E41\u0E25\u0E30\u0E21\u0E35\u0E27\u0E31\u0E19\u0E04\u0E23\u0E1A\u0E01\u0E33\u0E2B\u0E19\u0E14\u0E40\u0E23\u0E47\u0E27\u0E17\u0E35\u0E48\u0E2A\u0E38\u0E14\u0E08\u0E32\u0E01\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E15\u0E32\u0E23\u0E32\u0E07\u0E1C\u0E48\u0E2D\u0E19\u0E0A\u0E33\u0E23\u0E30\u0E17\u0E31\u0E49\u0E07\u0E2B\u0E21\u0E14.  \\n2. \u0E1E\u0E1A\u0E27\u0E48\u0E32\u0E07\u0E27\u0E14\u0E17\u0E35\u0E48\u0E15\u0E23\u0E07\u0E15\u0E32\u0E21\u0E40\u0E07\u0E37\u0E48\u0E2D\u0E19\u0E44\u0E02\u0E04\u0E37\u0E2D **schedule_id\\u202F=\\u202F53** (due_date\\u202F=\\u202F2025\u201106\u201110).  \\n3. **\u0E22\u0E2D\u0E14\u0E17\u0E35\u0E48\u0E15\u0E49\u0E2D\u0E07\u0E08\u0E48\u0E32\u0E22** \u0E04\u0E37\u0E2D \u0060total_due\u0060 \u0E02\u0E2D\u0E07\u0E07\u0E27\u0E14\u0E19\u0E31\u0E49\u0E19 = **3,998.20\\u202FTHB**.  \\n4. **\u0E22\u0E2D\u0E14\u0E04\u0E49\u0E32\u0E07** \u0E04\u0E37\u0E2D \u0060outstanding_pi\u0060 \u0E02\u0E2D\u0E07\u0E07\u0E27\u0E14\u0E19\u0E31\u0E49\u0E19 = **1,599.28\\u202FTHB**.  \\n5. **\u0E08\u0E33\u0E19\u0E27\u0E19\u0E27\u0E31\u0E19\u0E04\u0E49\u0E32\u0E07** = \u0060days_late\u0060 = **254\\u202F\u0E27\u0E31\u0E19**.  \\n6. \u0E40\u0E19\u0E37\u0E48\u0E2D\u0E07\u0E08\u0E32\u0E01 \u0060days_late\u0060\\u202F\u003E\\u202F0 (\u0E2B\u0E23\u0E37\u0E2D\u0E2A\u0E16\u0E32\u0E19\u0E30\u0E40\u0E1B\u0E47\u0E19 Overdue) \u0E08\u0E36\u0E07\u0E16\u0E37\u0E2D\u0E27\u0E48\u0E32 **\u0E04\u0E49\u0E32\u0E07**.  \\n\\n*\u0E2B\u0E32\u0E01\u0E44\u0E21\u0E48\u0E21\u0E35\u0E07\u0E27\u0E14\u0E17\u0E35\u0E48\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48 Paid \u0E2B\u0E23\u0E37\u0E2D\u0E44\u0E21\u0E48\u0E21\u0E35\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E40\u0E1E\u0E34\u0E48\u0E21\u0E40\u0E15\u0E34\u0E21 \u0E08\u0E30\u0E44\u0E21\u0E48\u0E41\u0E2A\u0E14\u0E07\u0E41\u0E16\u0E27\u0E43\u0E14\u0E43\u0E19\u0E15\u0E32\u0E23\u0E32\u0E07\u0E19\u0E35\u0E49.*\u0022}}"
+        }
+      ]
+    },
+    "RunId": "ccc26cbaab9646449380d49facd6baff",
+    "LLMHistory": {
+      "TotalPromptTokens": 99736,
+      "TotalCompletionTokens": 0,
+      "TotalTokens": 99736,
+      "Entries": [
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1385,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:12.8972947Z",
+          "TotalTokens": 1385
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1385,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:15.1353044Z",
+          "TotalTokens": 1385
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1385,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:21.6087995Z",
+          "TotalTokens": 1385
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1385,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:29.5533779Z",
+          "TotalTokens": 1385
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1385,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:40.3488658Z",
+          "TotalTokens": 1385
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1623,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:43.6860423Z",
+          "TotalTokens": 1623
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1420,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:35:50.9013176Z",
+          "TotalTokens": 1420
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1420,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:36:00.503424Z",
+          "TotalTokens": 1420
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1168,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:36:01.2598799Z",
+          "TotalTokens": 1168
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1841,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:36:04.3744195Z",
+          "TotalTokens": 1841
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1554,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:36:08.0158188Z",
+          "TotalTokens": 1554
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1554,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:36:19.0824138Z",
+          "TotalTokens": 1554
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1268,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:36:28.8536745Z",
+          "TotalTokens": 1268
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1590,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:00.8593067Z",
+          "TotalTokens": 1590
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1554,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:01.6393654Z",
+          "TotalTokens": 1554
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1591,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:05.539767Z",
+          "TotalTokens": 1591
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1554,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:06.7679651Z",
+          "TotalTokens": 1554
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1418,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:13.1695229Z",
+          "TotalTokens": 1418
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1627,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:16.1203349Z",
+          "TotalTokens": 1627
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1624,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:25.6615004Z",
+          "TotalTokens": 1624
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1735,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:28.9854072Z",
+          "TotalTokens": 1735
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1590,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:29.3163351Z",
+          "TotalTokens": 1590
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1627,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:36.466256Z",
+          "TotalTokens": 1627
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1128,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:36.53772Z",
+          "TotalTokens": 1128
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1590,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:37.5807257Z",
+          "TotalTokens": 1590
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1667,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:39.8191417Z",
+          "TotalTokens": 1667
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1554,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:45.0716056Z",
+          "TotalTokens": 1554
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1590,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:49.3521561Z",
+          "TotalTokens": 1590
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1702,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:37:54.1649887Z",
+          "TotalTokens": 1702
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1587,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:38:13.1506653Z",
+          "TotalTokens": 1587
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1702,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:38:20.7053394Z",
+          "TotalTokens": 1702
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1702,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:38:33.7947649Z",
+          "TotalTokens": 1702
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 2256,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:38:46.8924067Z",
+          "TotalTokens": 2256
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 3205,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:38:57.5716402Z",
+          "TotalTokens": 3205
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 5015,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:04.4481606Z",
+          "TotalTokens": 5015
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1667,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:10.2827702Z",
+          "TotalTokens": 1667
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1667,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:12.2134765Z",
+          "TotalTokens": 1667
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1667,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:21.929576Z",
+          "TotalTokens": 1667
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 4459,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:23.33322Z",
+          "TotalTokens": 4459
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1701,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:26.7016711Z",
+          "TotalTokens": 1701
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1722,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:26.7489697Z",
+          "TotalTokens": 1722
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1702,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:28.7909522Z",
+          "TotalTokens": 1702
+        },
+        {
+          "TaskName": "planner",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 1667,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:34.7011433Z",
+          "TotalTokens": 1667
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 6354,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:36.8997807Z",
+          "TotalTokens": 6354
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1704,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:37.5282827Z",
+          "TotalTokens": 1704
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1702,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:39:45.0259345Z",
+          "TotalTokens": 1702
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1703,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:40:15.746987Z",
+          "TotalTokens": 1703
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1701,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:40:16.2885268Z",
+          "TotalTokens": 1701
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 4619,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:40:18.4151661Z",
+          "TotalTokens": 4619
+        },
+        {
+          "TaskName": "planner",
+          "Model": "gpt-4o-mini",
+          "PromptTokens": 1702,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:40:35.6632984Z",
+          "TotalTokens": 1702
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 4618,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-02-19T13:40:39.6716453Z",
+          "TotalTokens": 4618
+        }
+      ]
+    }
+  }
+]

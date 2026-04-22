@@ -1,0 +1,101 @@
+[
+  {
+    "TestCaseId": "TC-001",
+    "RunComplete": true,
+    "Tools": {
+      "WtrStep": 0,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": true,
+      "ReplanCount": 1,
+      "InvokedCount": 6,
+      "WrongInvocations": 0,
+      "UsedSet": [
+        "mssql_mcp.qry_customers",
+        "mssql_mcp.qry_customer_with_loans",
+        "mail_mcp.send_email"
+      ],
+      "Violations": []
+    },
+    "Replanning": {
+      "PlanHistoryCount": 2,
+      "ReplanCount": 1,
+      "Replanned": true
+    }
+  },
+  {
+    "TestCaseId": "TC-002",
+    "RunComplete": true,
+    "Tools": {
+      "WtrStep": 0.1111111111111111,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": false,
+      "ReplanCount": 1,
+      "InvokedCount": 9,
+      "WrongInvocations": 1,
+      "UsedSet": [
+        "mssql_mcp.qry_customers",
+        "mssql_mcp.qry_customer_with_loans",
+        "mssql_mcp.qry_loan_overview",
+        "mssql_mcp.qry_loan_balance_asof",
+        "mail_mcp.send_email"
+      ],
+      "Violations": [
+        {
+          "StepId": "get-loan-balance",
+          "ToolFullName": "mssql_mcp.qry_loan_balance_asof",
+          "Reason": "tool_not_allowed"
+        }
+      ]
+    },
+    "Replanning": {
+      "PlanHistoryCount": 2,
+      "ReplanCount": 1,
+      "Replanned": true
+    }
+  },
+  {
+    "TestCaseId": "TC-003",
+    "RunComplete": true,
+    "Tools": {
+      "WtrStep": 0.25,
+      "RequiredCoverage": 1,
+      "ForbiddenUsed": false,
+      "FinalCompliance": false,
+      "ReplanCount": 4,
+      "InvokedCount": 20,
+      "WrongInvocations": 3,
+      "UsedSet": [
+        "mssql_mcp.qry_customers",
+        "mssql_mcp.qry_customer_with_loans",
+        "mssql_mcp.qry_upcoming_due",
+        "mail_mcp.send_email",
+        "mssql_mcp.qry_payments_by_loan",
+        "mssql_mcp.qry_payment_schedule_by_loan"
+      ],
+      "Violations": [
+        {
+          "StepId": "upcoming-due",
+          "ToolFullName": "mssql_mcp.qry_upcoming_due",
+          "Reason": "tool_not_allowed"
+        },
+        {
+          "StepId": "get-payment-schedule",
+          "ToolFullName": "mssql_mcp.qry_payments_by_loan",
+          "Reason": "tool_not_allowed"
+        },
+        {
+          "StepId": "upcoming-due",
+          "ToolFullName": "mssql_mcp.qry_upcoming_due",
+          "Reason": "tool_not_allowed"
+        }
+      ]
+    },
+    "Replanning": {
+      "PlanHistoryCount": 5,
+      "ReplanCount": 4,
+      "Replanned": true
+    }
+  }
+]

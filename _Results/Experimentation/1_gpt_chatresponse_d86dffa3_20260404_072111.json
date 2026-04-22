@@ -1,0 +1,237 @@
+[
+  {
+    "Final": "{\n  \u0022email\u0022: {\n    \u0022subject\u0022: \u0022\u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 \u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\u0022,\n    \u0022body\u0022: \u0022Contract: LO20250110-0001, Product: \u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E2D\u0E40\u0E15\u0E2D\u0E23\u0E4C\u0E44\u0E0B\u0E04\u0E4C, Amount: 45000.00, Status: ACTIVE;\u0022\n  },\n  \u0022screen_markdown\u0022: \u0022### \u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\\n\\n- **Contract:** LO20250110-0001\\n- **Product:** \u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E2D\u0E40\u0E15\u0E2D\u0E23\u0E4C\u0E44\u0E0B\u0E04\u0E4C\\n- **Amount:** 45000.00\\n- **Status:** ACTIVE\u0022\n}",
+    "Plan": {
+      "Version": "1.0",
+      "Goal": "\u0E04\u0E49\u0E19\u0E2B\u0E32\u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 \u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\u0E41\u0E25\u0E30\u0E2A\u0E48\u0E07\u0E2D\u0E35\u0E40\u0E21\u0E25\u0E2A\u0E23\u0E38\u0E1B\u0E43\u0E2B\u0E49\u0E17\u0E35\u0E21 finance",
+      "Constraints": {
+        "MaxSteps": 5,
+        "TimeoutSec": 120
+      },
+      "Steps": [
+        {
+          "Id": "search-customer",
+          "Type": "tool",
+          "Plugin": "mssql_mcp",
+          "Tool": "qry_customers",
+          "Params": {
+            "keyword": "\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35",
+            "page": 1,
+            "pageSize": 1
+          },
+          "Output": "customer_search"
+        },
+        {
+          "Id": "extract-customer-id",
+          "Type": "llm",
+          "Prompt": "\u0E08\u0E32\u0E01\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C [[customer_search]] \u0E43\u0E2B\u0E49\u0E14\u0E36\u0E07\u0E04\u0E48\u0E32 customer_id \u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E17\u0E35\u0E48\u0E15\u0E23\u0E07\u0E01\u0E31\u0E1A\u0E0A\u0E37\u0E48\u0E2D \u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35 \u0E41\u0E25\u0E30\u0E40\u0E01\u0E47\u0E1A\u0E40\u0E1B\u0E47\u0E19\u0E15\u0E31\u0E27\u0E41\u0E1B\u0E23 customer_id",
+          "Output": "customer_id",
+          "DependsOn": [
+            "search-customer"
+          ]
+        },
+        {
+          "Id": "get-customer-loans",
+          "Type": "tool",
+          "Plugin": "mssql_mcp",
+          "Tool": "qry_customer_with_loans",
+          "Params": {
+            "customer_id": "[[customer_id]]"
+          },
+          "Output": "customer_loans",
+          "DependsOn": [
+            "extract-customer-id"
+          ]
+        },
+        {
+          "Id": "compose-email-body",
+          "Type": "llm",
+          "Prompt": "\u0E08\u0E32\u0E01\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C [[customer_loans]] (ResultSet[1]) \u0E43\u0E2B\u0E49\u0E2A\u0E23\u0E49\u0E32\u0E07\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E17\u0E35\u0E48\u0E23\u0E27\u0E21 contract_number, product_name, loan_amount, status \u0E02\u0E2D\u0E07\u0E41\u0E15\u0E48\u0E25\u0E30\u0E2A\u0E31\u0E0D\u0E0D\u0E32 \u0E41\u0E22\u0E01\u0E23\u0E32\u0E22\u0E01\u0E32\u0E23\u0E41\u0E15\u0E48\u0E25\u0E30\u0E1A\u0E23\u0E23\u0E17\u0E31\u0E14 \u0E23\u0E39\u0E1B\u0E41\u0E1A\u0E1A: Contract: {contract_number}, Product: {product_name}, Amount: {loan_amount}, Status: {status}",
+          "Output": "email_body",
+          "DependsOn": [
+            "get-customer-loans"
+          ]
+        },
+        {
+          "Id": "send-finance-email",
+          "Type": "tool",
+          "Plugin": "mail_mcp",
+          "Tool": "send_email",
+          "Params": {
+            "to": [
+              "finance_team@gmail.com"
+            ],
+            "subject": "\u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 \u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35",
+            "body_text": "[[email_body]]"
+          },
+          "Output": "email_result",
+          "DependsOn": [
+            "compose-email-body"
+          ]
+        }
+      ]
+    },
+    "PlanHistories": [
+      {
+        "Version": "1.0",
+        "Goal": "\u0E04\u0E49\u0E19\u0E2B\u0E32\u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 \u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\u0E41\u0E25\u0E30\u0E2A\u0E48\u0E07\u0E2D\u0E35\u0E40\u0E21\u0E25\u0E2A\u0E23\u0E38\u0E1B\u0E43\u0E2B\u0E49\u0E17\u0E35\u0E21 finance",
+        "Constraints": {
+          "MaxSteps": 5,
+          "TimeoutSec": 120
+        },
+        "Steps": [
+          {
+            "Id": "search-customer",
+            "Type": "tool",
+            "Plugin": "mssql_mcp",
+            "Tool": "qry_customers",
+            "Params": {
+              "keyword": "\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35",
+              "page": 1,
+              "pageSize": 1
+            },
+            "Output": "customer_search"
+          },
+          {
+            "Id": "extract-customer-id",
+            "Type": "llm",
+            "Prompt": "\u0E08\u0E32\u0E01\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C [[customer_search]] \u0E43\u0E2B\u0E49\u0E14\u0E36\u0E07\u0E04\u0E48\u0E32 customer_id \u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E17\u0E35\u0E48\u0E15\u0E23\u0E07\u0E01\u0E31\u0E1A\u0E0A\u0E37\u0E48\u0E2D \u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35 \u0E41\u0E25\u0E30\u0E40\u0E01\u0E47\u0E1A\u0E40\u0E1B\u0E47\u0E19\u0E15\u0E31\u0E27\u0E41\u0E1B\u0E23 customer_id",
+            "Output": "customer_id",
+            "DependsOn": [
+              "search-customer"
+            ]
+          },
+          {
+            "Id": "get-customer-loans",
+            "Type": "tool",
+            "Plugin": "mssql_mcp",
+            "Tool": "qry_customer_with_loans",
+            "Params": {
+              "customer_id": "[[customer_id]]"
+            },
+            "Output": "customer_loans",
+            "DependsOn": [
+              "extract-customer-id"
+            ]
+          },
+          {
+            "Id": "compose-email-body",
+            "Type": "llm",
+            "Prompt": "\u0E08\u0E32\u0E01\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C [[customer_loans]] (ResultSet[1]) \u0E43\u0E2B\u0E49\u0E2A\u0E23\u0E49\u0E32\u0E07\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E17\u0E35\u0E48\u0E23\u0E27\u0E21 contract_number, product_name, loan_amount, status \u0E02\u0E2D\u0E07\u0E41\u0E15\u0E48\u0E25\u0E30\u0E2A\u0E31\u0E0D\u0E0D\u0E32 \u0E41\u0E22\u0E01\u0E23\u0E32\u0E22\u0E01\u0E32\u0E23\u0E41\u0E15\u0E48\u0E25\u0E30\u0E1A\u0E23\u0E23\u0E17\u0E31\u0E14 \u0E23\u0E39\u0E1B\u0E41\u0E1A\u0E1A: Contract: {contract_number}, Product: {product_name}, Amount: {loan_amount}, Status: {status}",
+            "Output": "email_body",
+            "DependsOn": [
+              "get-customer-loans"
+            ]
+          },
+          {
+            "Id": "send-finance-email",
+            "Type": "tool",
+            "Plugin": "mail_mcp",
+            "Tool": "send_email",
+            "Params": {
+              "to": [
+                "finance_team@gmail.com"
+              ],
+              "subject": "\u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 \u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35",
+              "body_text": "[[email_body]]"
+            },
+            "Output": "email_result",
+            "DependsOn": [
+              "compose-email-body"
+            ]
+          }
+        ]
+      }
+    ],
+    "Journal": {
+      "RunId": "d3a6e364-d4e3-46a3-b371-7bf36724f7d0",
+      "Steps": [
+        {
+          "Id": "search-customer",
+          "Status": "succeeded",
+          "DurationMs": 516,
+          "Output": [
+            {
+              "customer_id": 1,
+              "name": "\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35",
+              "citizen_id": "1103700012345",
+              "phone": "0812345678",
+              "email": "somchai@example.com",
+              "address": "99 \u0E2B\u0E21\u0E39\u0E48 1 \u0E15.\u0E1A\u0E32\u0E07\u0E23\u0E31\u0E01 \u0E2D.\u0E40\u0E21\u0E37\u0E2D\u0E07 \u0E08.\u0E01\u0E23\u0E38\u0E07\u0E40\u0E17\u0E1E\u0E2F 10500",
+              "total_count": 1,
+              "page": 1,
+              "page_size": 1
+            }
+          ],
+          "Input": "{\u0022Plugin\u0022:\u0022mssql_mcp\u0022,\u0022Tool\u0022:\u0022qry_customers\u0022,\u0022Args\u0022:{\u0022keyword\u0022:\u0022\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\u0022,\u0022page\u0022:1,\u0022pageSize\u0022:1}}"
+        },
+        {
+          "Id": "extract-customer-id",
+          "Status": "succeeded",
+          "DurationMs": 22361,
+          "Output": "**\u0E27\u0E34\u0E18\u0E35\u0E14\u0E36\u0E07 \u0060customer_id\u0060 \u0E08\u0E32\u0E01 JSON \u0E17\u0E35\u0E48\u0E43\u0E2B\u0E49\u0E21\u0E32**  \n\n\u0E15\u0E48\u0E2D\u0E44\u0E1B\u0E19\u0E35\u0E49\u0E40\u0E1B\u0E47\u0E19\u0E15\u0E31\u0E27\u0E2D\u0E22\u0E48\u0E32\u0E07\u0E42\u0E04\u0E49\u0E14 **Python** \u0E17\u0E35\u0E48\u0E17\u0E33\u0E15\u0E32\u0E21\u0E40\u0E07\u0E37\u0E48\u0E2D\u0E19\u0E44\u0E02\u0E17\u0E35\u0E48\u0E04\u0E38\u0E13\u0E15\u0E49\u0E2D\u0E07\u0E01\u0E32\u0E23  \n\n1. \u0E16\u0E49\u0E32 JSON \u0E40\u0E1B\u0E47\u0E19\u0E2D\u0E32\u0E23\u0E4C\u0E40\u0E23\u0E22\u0E4C\u0E18\u0E23\u0E23\u0E21\u0E14\u0E32 (\u0E2D\u0E22\u0E48\u0E32\u0E07\u0E17\u0E35\u0E48\u0E04\u0E38\u0E13\u0E2A\u0E48\u0E07\u0E21\u0E32)  \n2. \u0E16\u0E49\u0E32 JSON \u0E21\u0E35\u0E42\u0E04\u0E23\u0E07\u0E2A\u0E23\u0E49\u0E32\u0E07\u0E41\u0E1A\u0E1A  \n   \u0060\u0060\u0060json\n   {\n       \u0022content\u0022: [\n           {\n               \u0022type\u0022: \u0022text\u0022,\n               \u0022text\u0022: \u0022{ \\\u0022rows\\\u0022: [ { ... } ] }\u0022\n           }\n       ]\n   }\n   \u0060\u0060\u0060  \n   \u2013 \u0E08\u0E30\u0E15\u0E49\u0E2D\u0E07\u0E14\u0E36\u0E07 \u0060text\u0060 \u0E01\u0E47\u0E2D\u0E1B\u0E1B\u0E35\u0E49\u0E41\u0E25\u0E49\u0E27 \u0060json.loads()\u0060 \u0E2D\u0E35\u0E01\u0E04\u0E23\u0E31\u0E49\u0E07\u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E43\u0E2B\u0E49\u0E44\u0E14\u0E49\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E08\u0E23\u0E34\u0E07  \n\n\u0060\u0060\u0060python\nimport json\nfrom typing import Any, List, Dict, Union\n\n# -------------------------------------------------\n# 1\uFE0F\u20E3 \u0E1F\u0E31\u0E07\u0E01\u0E4C\u0E0A\u0E31\u0E19\u0E0A\u0E48\u0E27\u0E22: \u0E41\u0E1B\u0E25\u0E07\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E17\u0E35\u0E48\u0E2D\u0E32\u0E08\u0E2D\u0E22\u0E39\u0E48\u0E43\u0E19 content.text \u0E43\u0E2B\u0E49\u0E40\u0E1B\u0E47\u0E19 Python object\n# -------------------------------------------------\ndef _extract_from_content(data: Dict) -\u003E Union[List[Dict], None]:\n    \u0022\u0022\u0022\n    \u0E16\u0E49\u0E32 data \u0E21\u0E35 key \u0027content\u0027 \u0E41\u0E1A\u0E1A\u0E17\u0E35\u0E48\u0E2D\u0E18\u0E34\u0E1A\u0E32\u0E22\u0E44\u0E27\u0E49\n    \u0E08\u0E30\u0E14\u0E36\u0E07\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21 JSON \u0E17\u0E35\u0E48\u0E2D\u0E22\u0E39\u0E48\u0E43\u0E19 content[0][\u0027text\u0027] \u0E41\u0E25\u0E30\u0E41\u0E1B\u0E25\u0E07\u0E40\u0E1B\u0E47\u0E19 Python object\n    \u0E04\u0E37\u0E19\u0E04\u0E48\u0E32\u0E40\u0E1B\u0E47\u0E19 list \u0E02\u0E2D\u0E07 dict (\u0E2B\u0E23\u0E37\u0E2D None \u0E16\u0E49\u0E32\u0E41\u0E1B\u0E25\u0E07\u0E44\u0E21\u0E48\u0E44\u0E14\u0E49)\n    \u0022\u0022\u0022\n    if not isinstance(data, dict):\n        return None\n\n    content = data.get(\u0022content\u0022)\n    if not isinstance(content, list) or not content:\n        return None\n\n    # \u0E40\u0E23\u0E32\u0E04\u0E32\u0E14\u0E27\u0E48\u0E32 element \u0E41\u0E23\u0E01\u0E40\u0E1B\u0E47\u0E19 object \u0E17\u0E35\u0E48\u0E21\u0E35 type=\u0027text\u0027 \u0E41\u0E25\u0E30\u0E21\u0E35 key \u0027text\u0027\n    txt_obj = next((c for c in content if isinstance(c, dict) and c.get(\u0022type\u0022) == \u0022text\u0022), None)\n    if not txt_obj:\n        return None\n\n    raw_text = txt_obj.get(\u0022text\u0022)\n    if not isinstance(raw_text, str):\n        return None\n\n    try:\n        # raw_text \u0E04\u0E37\u0E2D JSON string (\u0E40\u0E0A\u0E48\u0E19 \u0022{ \\\u0022rows\\\u0022: [ {...} ] }\u0022)\n        inner = json.loads(raw_text)\n        # \u0E1B\u0E01\u0E15\u0E34\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E08\u0E30\u0E2D\u0E22\u0E39\u0E48\u0E43\u0E19 key \u0E17\u0E35\u0E48\u0E0A\u0E37\u0E48\u0E2D\u0E27\u0E48\u0E32 \u0022rows\u0022 \u0E2B\u0E23\u0E37\u0E2D \u0022data\u0022 \u2026\n        # \u0E40\u0E23\u0E32\u0E08\u0E30\u0E1E\u0E22\u0E32\u0E22\u0E32\u0E21\u0E14\u0E36\u0E07 list \u0E02\u0E2D\u0E07 rows \u0E17\u0E31\u0E49\u0E07\u0E2B\u0E21\u0E14\n        if isinstance(inner, dict):\n            # \u0E04\u0E49\u0E19\u0E2B\u0E32 key \u0E17\u0E35\u0E48\u0E21\u0E35\u0E04\u0E48\u0E32\u0E40\u0E1B\u0E47\u0E19 list \u0E02\u0E2D\u0E07 dict (\u0E40\u0E0A\u0E48\u0E19 rows, data, items \u2026)\n            for possible_key, value in inner.items():\n                if isinstance(value, list) and all(isinstance(i, dict) for i in value):\n                    return value\n        elif isinstance(inner, list):\n            # \u0E16\u0E49\u0E32\u0E40\u0E1B\u0E47\u0E19 list \u0E15\u0E23\u0E07 \u0E46\n            return inner\n    except json.JSONDecodeError:\n        return None\n\n    return None\n\n\n# -------------------------------------------------\n# 2\uFE0F\u20E3 \u0E1F\u0E31\u0E07\u0E01\u0E4C\u0E0A\u0E31\u0E19\u0E2B\u0E25\u0E31\u0E01: \u0E23\u0E31\u0E1A JSON (\u0E2D\u0E32\u0E08\u0E40\u0E1B\u0E47\u0E19 string \u0E2B\u0E23\u0E37\u0E2D dict) \u2192 \u0E04\u0E37\u0E19\u0E04\u0E48\u0E32 customer_id \u0E17\u0E35\u0E48\u0E15\u0E23\u0E07\u0E01\u0E31\u0E1A\u0E0A\u0E37\u0E48\u0E2D\u0E17\u0E35\u0E48\u0E01\u0E33\u0E2B\u0E19\u0E14\n# -------------------------------------------------\ndef get_customer_id(\n    raw_json: Union[str, dict, list],\n    target_name: str = \u0022\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\u0022\n) -\u003E int | None:\n    \u0022\u0022\u0022\n    \u0E04\u0E37\u0E19\u0E04\u0E48\u0E32 customer_id \u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E17\u0E35\u0E48\u0E21\u0E35 \u0060name\u0060 \u0E15\u0E23\u0E07\u0E01\u0E31\u0E1A \u0060target_name\u0060\n    \u0E2B\u0E32\u0E01\u0E44\u0E21\u0E48\u0E1E\u0E1A\u0E2B\u0E23\u0E37\u0E2D\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E44\u0E21\u0E48\u0E2D\u0E22\u0E39\u0E48\u0E43\u0E19\u0E23\u0E39\u0E1B\u0E41\u0E1A\u0E1A\u0E17\u0E35\u0E48\u0E04\u0E32\u0E14\u0E44\u0E27\u0E49 \u0E08\u0E30\u0E04\u0E37\u0E19\u0E04\u0E48\u0E32 None\n    \u0022\u0022\u0022\n    # 1\uFE0F\u20E3 \u0E41\u0E1B\u0E25\u0E07\u0E40\u0E1B\u0E47\u0E19 Python object \u0E16\u0E49\u0E32\u0E40\u0E1B\u0E47\u0E19 string\n    if isinstance(raw_json, str):\n        try:\n            data = json.loads(raw_json)\n        except json.JSONDecodeError as e:\n            raise ValueError(f\u0022\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25 JSON \u0E17\u0E35\u0E48\u0E43\u0E2B\u0E49\u0E19\u0E31\u0E49\u0E19\u0E44\u0E21\u0E48\u0E2A\u0E32\u0E21\u0E32\u0E23\u0E16\u0E41\u0E1B\u0E25\u0E07\u0E44\u0E14\u0E49: {e}\u0022)\n    else:\n        data = raw_json\n\n    # 2\uFE0F\u20E3 \u0E15\u0E23\u0E27\u0E08\u0E2A\u0E2D\u0E1A\u0E27\u0E48\u0E32 data \u0E40\u0E1B\u0E47\u0E19 list (\u0E01\u0E23\u0E13\u0E35\u0E17\u0E35\u0E48\u0E04\u0E38\u0E13\u0E43\u0E2B\u0E49\u0E21\u0E32\u0E42\u0E14\u0E22\u0E15\u0E23\u0E07)\n    rows: List[Dict] = []\n    if isinstance(data, list):\n        rows = data                     # \u0E15\u0E31\u0E27\u0E2D\u0E22\u0E48\u0E32\u0E07\u0E17\u0E35\u0E48\u0E04\u0E38\u0E13\u0E43\u0E2B\u0E49\u0E04\u0E37\u0E2D list \u0E02\u0E2D\u0E07 dict\n    elif isinstance(data, dict):\n        # 3\uFE0F\u20E3 \u0E15\u0E23\u0E27\u0E08\u0E2A\u0E2D\u0E1A\u0E27\u0E48\u0E32\u0E40\u0E1B\u0E47\u0E19\u0E42\u0E04\u0E23\u0E07\u0E2A\u0E23\u0E49\u0E32\u0E07\u0E41\u0E1A\u0E1A content.text\n        extracted = _extract_from_content(data)\n        if extracted is not None:\n            rows = extracted\n        else:\n            # \u0E1A\u0E32\u0E07\u0E01\u0E23\u0E13\u0E35\u0E2D\u0E32\u0E08\u0E43\u0E0A\u0E49 key \u0E2D\u0E22\u0E48\u0E32\u0E07 \u0022rows\u0022, \u0022data\u0022, \u0022items\u0022, \u2026\n            for possible_key in (\u0022rows\u0022, \u0022data\u0022, \u0022items\u0022):\n                maybe = data.get(possible_key)\n                if isinstance(maybe, list):\n                    rows = maybe\n                    break\n\n    # 4\uFE0F\u20E3 \u0E15\u0E2D\u0E19\u0E19\u0E35\u0E49\u0E21\u0E35 rows (list of dict) \u0E41\u0E25\u0E49\u0E27 \u0E43\u0E2B\u0E49\u0E2B\u0E32\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E17\u0E35\u0E48 name \u0E15\u0E23\u0E07\u0E01\u0E31\u0E1A target_name\n    for record in rows:\n        if isinstance(record, dict) and record.get(\u0022name\u0022) == target_name:\n            # \u0E04\u0E37\u0E19\u0E04\u0E48\u0E32\u0E40\u0E1B\u0E47\u0E19 int (\u0E2B\u0E23\u0E37\u0E2D str \u0E2B\u0E32\u0E01 id \u0E40\u0E1B\u0E47\u0E19 string)\n            return record.get(\u0022customer_id\u0022)\n\n    # \u0E44\u0E21\u0E48\u0E40\u0E08\u0E2D\n    return None\n\n\n# -------------------------------------------------\n# 5\uFE0F\u20E3 \u0E15\u0E31\u0E27\u0E2D\u0E22\u0E48\u0E32\u0E07\u0E01\u0E32\u0E23\u0E43\u0E0A\u0E49\u0E07\u0E32\u0E19\n# -------------------------------------------------\nif __name__ == \u0022__main__\u0022:\n    # \u0E15\u0E31\u0E27\u0E2D\u0E22\u0E48\u0E32\u0E07 1\uFE0F\u20E3 \u0E15\u0E32\u0E21\u0E17\u0E35\u0E48\u0E04\u0E38\u0E13\u0E43\u0E2B\u0E49\u0E21\u0E32 (list \u0E02\u0E2D\u0E07 dict)\n    json_result = [\n        {\n            \u0022customer_id\u0022: 1,\n            \u0022name\u0022: \u0022\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\u0022,\n            \u0022citizen_id\u0022: \u00221103700012345\u0022,\n            \u0022phone\u0022: \u00220812345678\u0022,\n            \u0022email\u0022: \u0022somchai@example.com\u0022,\n            \u0022address\u0022: \u002299 \u0E2B\u0E21\u0E39\u0E48 1 \u0E15.\u0E1A\u0E32\u0E07\u0E23\u0E31\u0E01 \u0E2D.\u0E40\u0E21\u0E37\u0E2D\u0E07 \u0E08.\u0E01\u0E23\u0E38\u0E07\u0E40\u0E17\u0E1E\u0E2F 10500\u0022,\n            \u0022total_count\u0022: 1,\n            \u0022page\u0022: 1,\n            \u0022page_size\u0022: 1\n        }\n    ]\n\n    cid = get_customer_id(json_result)\n    print(f\u0022\uD83D\uDD0D customer_id \u0E17\u0E35\u0E48\u0E40\u0E08\u0E2D: {cid}\u0022)          # output: 1\n\n    # \u0E15\u0E31\u0E27\u0E2D\u0E22\u0E48\u0E32\u0E07 2\uFE0F\u20E3 \u0E42\u0E04\u0E23\u0E07\u0E2A\u0E23\u0E49\u0E32\u0E07\u0E41\u0E1A\u0E1A content.text\n    json_with_content = {\n        \u0022content\u0022: [\n            {\n                \u0022type\u0022: \u0022text\u0022,\n                \u0022text\u0022: json.dumps({\n                    \u0022rows\u0022: [\n                        {\n                            \u0022customer_id\u0022: 42,\n                            \u0022name\u0022: \u0022\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\u0022,\n                            \u0022citizen_id\u0022: \u00221103700099999\u0022\n                        },\n                        {\n                            \u0022customer_id\u0022: 99,\n                            \u0022name\u0022: \u0022\u0E2A\u0E21\u0E19\u0E36\u0E01\u0022,\n                            \u0022citizen_id\u0022: \u00221103700011111\u0022\n                        }\n                    ]\n                })\n            }\n        ]\n    }\n\n    cid2 = get_customer_id(json_with_content)\n    print(f\u0022\uD83D\uDD0D customer_id \u0E08\u0E32\u0E01 content.text: {cid2}\u0022)   # output: 42\n\u0060\u0060\u0060\n\n### \u0E2A\u0E23\u0E38\u0E1B\u0E02\u0E31\u0E49\u0E19\u0E15\u0E2D\u0E19\u0E17\u0E35\u0E48\u0E17\u0E33\n\n| \u0E02\u0E31\u0E49\u0E19\u0E15\u0E2D\u0E19 | \u0E17\u0E33\u0E2D\u0E30\u0E44\u0E23 |\n|--------|--------|\n| **1.** \u0E41\u0E1B\u0E25\u0E07 \u0060raw_json\u0060 \u0E40\u0E1B\u0E47\u0E19 Python object (\u0060dict\u0060/\u0060list\u0060). | \u0E23\u0E2D\u0E07\u0E23\u0E31\u0E1A input \u0E40\u0E1B\u0E47\u0E19 \u0060str\u0060 \u0E2B\u0E23\u0E37\u0E2D object \u0E2D\u0E22\u0E39\u0E48\u0E41\u0E25\u0E49\u0E27 |\n| **2.** \u0E15\u0E23\u0E27\u0E08\u0E2A\u0E2D\u0E1A\u0E27\u0E48\u0E32\u0E40\u0E1B\u0E47\u0E19 **list** (\u0E01\u0E23\u0E13\u0E35\u0E17\u0E35\u0E48\u0E04\u0E38\u0E13\u0E2A\u0E48\u0E07\u0E21\u0E32\u0E42\u0E14\u0E22\u0E15\u0E23\u0E07) \u0E2B\u0E23\u0E37\u0E2D **dict** \u0E17\u0E35\u0E48\u0E21\u0E35 key \u0060content\u0060. | \u0E2B\u0E32\u0E01\u0E40\u0E1B\u0E47\u0E19 \u0060content.text\u0060 \u0E43\u0E2B\u0E49\u0E14\u0E36\u0E07\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21 JSON \u0E20\u0E32\u0E22\u0E43\u0E19\u0E41\u0E25\u0E30\u0E41\u0E1B\u0E25\u0E07\u0E15\u0E48\u0E2D |\n| **3.** \u0E2B\u0E32 **list of rows** (\u0060rows\u0060, \u0060data\u0060, \u0060items\u0060 \u0E2B\u0E23\u0E37\u0E2D\u0E08\u0E32\u0E01 \u0060content.text\u0060). |\n| **4.** \u0E27\u0E19\u0E25\u0E39\u0E1B\u0E15\u0E23\u0E27\u0E08 \u0060record[\u0022name\u0022] == \u0022\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\u0022\u0060 \u2192 \u0E04\u0E37\u0E19 \u0060record[\u0022customer_id\u0022]\u0060. |\n| **5.** \u0E2B\u0E32\u0E01\u0E44\u0E21\u0E48\u0E1E\u0E1A \u2192 \u0E04\u0E37\u0E19 \u0060None\u0060. |\n\n\u0E04\u0E38\u0E13\u0E2A\u0E32\u0E21\u0E32\u0E23\u0E16\u0E19\u0E33\u0E1F\u0E31\u0E07\u0E01\u0E4C\u0E0A\u0E31\u0E19 \u0060get_customer_id\u0060 \u0E44\u0E1B\u0E43\u0E0A\u0E49\u0E43\u0E19\u0E42\u0E04\u0E49\u0E14\u0E2A\u0E48\u0E27\u0E19\u0E2D\u0E37\u0E48\u0E19\u0E44\u0E14\u0E49\u0E40\u0E25\u0E22 \u0E2B\u0E23\u0E37\u0E2D\u0E14\u0E31\u0E14\u0E41\u0E1B\u0E25\u0E07\u0E43\u0E2B\u0E49\u0E23\u0E31\u0E1A\u0E1E\u0E32\u0E23\u0E32\u0E21\u0E34\u0E40\u0E15\u0E2D\u0E23\u0E4C \u0060target_name\u0060 \u0E15\u0E48\u0E32\u0E07 \u0E46 \u0E15\u0E32\u0E21\u0E17\u0E35\u0E48\u0E15\u0E49\u0E2D\u0E07\u0E01\u0E32\u0E23.  \n\n\u0E16\u0E49\u0E32\u0E21\u0E35\u0E23\u0E39\u0E1B\u0E41\u0E1A\u0E1A JSON \u0E17\u0E35\u0E48\u0E41\u0E15\u0E01\u0E15\u0E48\u0E32\u0E07\u0E08\u0E32\u0E01\u0E17\u0E35\u0E48\u0E01\u0E25\u0E48\u0E32\u0E27\u0E21\u0E32 (\u0E40\u0E0A\u0E48\u0E19 \u0E0A\u0E37\u0E48\u0E2D key \u0E40\u0E1B\u0E25\u0E35\u0E48\u0E22\u0E19) \u0E40\u0E1E\u0E35\u0E22\u0E07\u0E40\u0E1E\u0E34\u0E48\u0E21\u0E40\u0E07\u0E37\u0E48\u0E2D\u0E19\u0E44\u0E02\u0E43\u0E19\u0E1F\u0E31\u0E07\u0E01\u0E4C\u0E0A\u0E31\u0E19 \u0060_extract_from_content\u0060 \u0E2B\u0E23\u0E37\u0E2D\u0E43\u0E19\u0E25\u0E39\u0E1B \u0060for possible_key in (\u0022rows\u0022,\u0022data\u0022,\u0022items\u0022)\u0060 \u0E01\u0E47\u0E08\u0E30\u0E08\u0E31\u0E1A\u0E44\u0E14\u0E49\u0E04\u0E23\u0E31\u0E1A.",
+          "Input": "\u0E08\u0E32\u0E01\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C [{\u0022customer_id\u0022:1,\u0022name\u0022:\u0022\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\u0022,\u0022citizen_id\u0022:\u00221103700012345\u0022,\u0022phone\u0022:\u00220812345678\u0022,\u0022email\u0022:\u0022somchai@example.com\u0022,\u0022address\u0022:\u002299 \u0E2B\u0E21\u0E39\u0E48 1 \u0E15.\u0E1A\u0E32\u0E07\u0E23\u0E31\u0E01 \u0E2D.\u0E40\u0E21\u0E37\u0E2D\u0E07 \u0E08.\u0E01\u0E23\u0E38\u0E07\u0E40\u0E17\u0E1E\u0E2F 10500\u0022,\u0022total_count\u0022:1,\u0022page\u0022:1,\u0022page_size\u0022:1}] \u0E43\u0E2B\u0E49\u0E14\u0E36\u0E07\u0E04\u0E48\u0E32 customer_id \u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32\u0E17\u0E35\u0E48\u0E15\u0E23\u0E07\u0E01\u0E31\u0E1A\u0E0A\u0E37\u0E48\u0E2D \u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35 \u0E41\u0E25\u0E30\u0E40\u0E01\u0E47\u0E1A\u0E40\u0E1B\u0E47\u0E19\u0E15\u0E31\u0E27\u0E41\u0E1B\u0E23 customer_id"
+        },
+        {
+          "Id": "get-customer-loans",
+          "Status": "succeeded",
+          "DurationMs": 7226,
+          "Output": [
+            {
+              "loan_id": 1,
+              "contract_number": "LO20250110-0001",
+              "status": "ACTIVE",
+              "loan_amount": 45000.00,
+              "loan_term": 12,
+              "start_date": "2025-01-10T00:00:00",
+              "end_date": "2026-01-10T00:00:00",
+              "interest_method": "DIM",
+              "loan_product_id": 1,
+              "product_name": "\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E2D\u0E40\u0E15\u0E2D\u0E23\u0E4C\u0E44\u0E0B\u0E04\u0E4C",
+              "sub_type": "Motorcycle"
+            }
+          ],
+          "Input": "{\u0022Plugin\u0022:\u0022mssql_mcp\u0022,\u0022Tool\u0022:\u0022qry_customer_with_loans\u0022,\u0022Args\u0022:{\u0022customer_id\u0022:\u00221\u0022}}"
+        },
+        {
+          "Id": "compose-email-body",
+          "Status": "succeeded",
+          "DurationMs": 5854,
+          "Output": "Contract: LO20250110-0001, Product: \u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E2D\u0E40\u0E15\u0E2D\u0E23\u0E4C\u0E44\u0E0B\u0E04\u0E4C, Amount: 45000.00, Status: ACTIVE;",
+          "Input": "\u0E08\u0E32\u0E01\u0E1C\u0E25\u0E25\u0E31\u0E1E\u0E18\u0E4C [{\u0022loan_id\u0022:1,\u0022contract_number\u0022:\u0022LO20250110-0001\u0022,\u0022status\u0022:\u0022ACTIVE\u0022,\u0022loan_amount\u0022:45000.00,\u0022loan_term\u0022:12,\u0022start_date\u0022:\u00222025-01-10T00:00:00\u0022,\u0022end_date\u0022:\u00222026-01-10T00:00:00\u0022,\u0022interest_method\u0022:\u0022DIM\u0022,\u0022loan_product_id\u0022:1,\u0022product_name\u0022:\u0022\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E2D\u0E40\u0E15\u0E2D\u0E23\u0E4C\u0E44\u0E0B\u0E04\u0E4C\u0022,\u0022sub_type\u0022:\u0022Motorcycle\u0022}] (ResultSet[1]) \u0E43\u0E2B\u0E49\u0E2A\u0E23\u0E49\u0E32\u0E07\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E17\u0E35\u0E48\u0E23\u0E27\u0E21 contract_number, product_name, loan_amount, status \u0E02\u0E2D\u0E07\u0E41\u0E15\u0E48\u0E25\u0E30\u0E2A\u0E31\u0E0D\u0E0D\u0E32 \u0E41\u0E22\u0E01\u0E23\u0E32\u0E22\u0E01\u0E32\u0E23\u0E41\u0E15\u0E48\u0E25\u0E30\u0E1A\u0E23\u0E23\u0E17\u0E31\u0E14 \u0E23\u0E39\u0E1B\u0E41\u0E1A\u0E1A: Contract: {contract_number}, Product: {product_name}, Amount: {loan_amount}, Status: {status}"
+        },
+        {
+          "Id": "send-finance-email",
+          "Status": "succeeded",
+          "DurationMs": 6244,
+          "Output": "{success=true}",
+          "Input": "{\u0022Plugin\u0022:\u0022mail_mcp\u0022,\u0022Tool\u0022:\u0022send_email\u0022,\u0022Args\u0022:{\u0022to\u0022:[\u0022finance_team@gmail.com\u0022],\u0022subject\u0022:\u0022\u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14\u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E02\u0E2D\u0E07\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32 \u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E43\u0E08\u0E14\u0E35\u0022,\u0022body_text\u0022:\u0022Contract: LO20250110-0001, Product: \u0E2A\u0E34\u0E19\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E2D\u0E40\u0E15\u0E2D\u0E23\u0E4C\u0E44\u0E0B\u0E04\u0E4C, Amount: 45000.00, Status: ACTIVE;\u0022}}"
+        }
+      ]
+    },
+    "RunId": "ca4b238072794e05a6eb7f23b6d9b080",
+    "LLMHistory": {
+      "TotalPromptTokens": 9054,
+      "TotalCompletionTokens": 0,
+      "TotalTokens": 9054,
+      "Entries": [
+        {
+          "TaskName": "planner",
+          "Model": "gpt",
+          "PromptTokens": 6171,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-04-04T07:20:23.2067479Z",
+          "TotalTokens": 6171
+        },
+        {
+          "TaskName": "composer",
+          "Model": "qwen3-235b-a22b-2507",
+          "PromptTokens": 2883,
+          "CompletionTokens": 0,
+          "Timestamp": "2026-04-04T07:21:11.5945263Z",
+          "TotalTokens": 2883
+        }
+      ]
+    }
+  }
+]

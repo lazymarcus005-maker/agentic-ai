@@ -1,0 +1,604 @@
+﻿[
+    {
+        "id": "TC-001",
+        "request": {
+            "prompt": "ค้นหารายละเอียดสินเชื่อของลูกค้า สมชาย ใจดีและ นำข้อมูล contract_number, product_name, loan_amount, status ส่ง email แจ้งทีม finance",
+            "lang": "th"
+        },
+        "policy": {
+            "tools": {
+                "allowed": [
+                    "mssql_mcp.qry_customers",
+                    "mssql_mcp.qry_customer_with_loans",
+                    "mail_mcp.send_email"
+                ],
+                "required": [
+                    "mssql_mcp.qry_customers",
+                    "mssql_mcp.qry_customer_with_loans",
+                    "mail_mcp.send_email"
+                ],
+                "forbidden": [],
+                "strict": true
+            }
+        },
+        "channels": {
+            "email": {
+                "allowed": true,
+                "required": true,
+                "to": [ "finance_team@gmail.com" ]
+            }
+        }
+    },
+    {
+        "id": "TC-002",
+        "request": {
+            "prompt": "ช่วยดูข้อมูลของลูกค้าชื่อประมาณว่า \"วิภา\" ให้หน่อย\n\nอยากรู้ว่าลูกค้าคนนี้ ตอนนี้มีสัญญาเงินกู้ที่ยังใช้งานอยู่หรือเปล่า ถ้ามีก็ขอเลือกมาดูแค่สัญญาหนึ่งก็พอ\n\nสิ่งที่อยากได้คือภาพรวมทางการเงินของสัญญานั้น ณ ตอนนี้ เช่น วงเงินกู้ ยอดที่จ่ายไปแล้ว ยอดที่ยังตั้งชำระค้างอยู่ และเงินต้นคงเหลือโดยประมาณ\n\nช่วยสรุปข้อมูลให้อ่านง่าย ๆ แล้วส่งแจ้งทีมบัญชีให้ทราบด้วย\n\nถ้าตรวจแล้วไม่พบสัญญาที่ยัง ACTIVE อยู่ ก็ขอให้แจ้งทีมบัญชีเหมือนกันว่ากรณีนี้ไม่เข้าเงื่อนไข พร้อมแนบข้อมูลสัญญาอื่น ๆ ที่พบ (ถ้ามี)",
+            "lang": "th"
+        },
+        "policy": {
+            "tools": {
+                "allowed": [
+                    "mssql_mcp.qry_customers",
+                    "mssql_mcp.qry_customer_with_loans",
+                    "mssql_mcp.qry_loan_overview",
+                    "mail_mcp.send_email"
+                ],
+                "required": [
+                    "mssql_mcp.qry_customers",
+                    "mssql_mcp.qry_customer_with_loans",
+                    "mssql_mcp.qry_loan_overview",
+                    "mail_mcp.send_email"
+                ],
+                "forbidden": [],
+                "strict": true
+            }
+        },
+        "channels": {
+            "email": {
+                "allowed": true,
+                "required": true,
+                "to": [ "accounting_team@gmail.com" ]
+            }
+        }
+    },
+    {
+        "id": "TC-003",
+        "request": {
+            "prompt": "ช่วยหาลูกค้าที่ชื่อมีคำว่า \"ใจดี\" ให้หน่อย (เอาแบบที่ดูน่าจะใช่ และมีอีเมลติดต่อได้)\n\nผมอยากได้ภาพรวมสำหรับ “ทุกสัญญาเงินกู้ที่ยัง ACTIVE” ของลูกค้าคนนี้ ว่า \"งวดถัดไปที่ต้องจ่าย\" คือเมื่อไหร่ ต้องจ่ายเท่าไหร่ และตอนนี้ถือว่าค้างหรือยัง\n\nขอให้สรุปเป็นตารางอ่านง่าย ๆ ต่อ 1 สัญญา โดยมีอย่างน้อย:\n- เลขสัญญา/รหัสสัญญา\n- วันครบกำหนดงวดถัดไป\n- ยอดที่ต้องจ่ายงวดถัดไป\n- ยอดค้างของงวดนั้นตอนนี้\n- จำนวนวันค้าง (ถ้ามี)\n- สถานะ: ค้าง / ไม่ค้าง\n\nนิยามช่วยยึดตามนี้:\n- \"งวดถัดไป\" = งวดที่ยังไม่ Paid และวันครบกำหนดเร็วที่สุด\n- ถ้า days_late > 0 หรือสถานะงวดเป็น Overdue ให้ถือว่า \"ค้าง\" ไม่งั้น \"ไม่ค้าง\"\n\nทำเสร็จแล้วส่งอีเมลแจ้งทีมติดตามหนี้ให้หน่อย โดยระบุชื่อ+รหัสลูกค้าที่เลือกไว้ด้วย\n\nถ้าไม่เจอสัญญา ACTIVE เลย ก็ขอให้แจ้งทีมเหมือนกัน พร้อมแนบรายการสัญญาที่เจอทั้งหมดแทน",
+            "lang": "th"
+        },
+        "policy": {
+            "tools": {
+                "allowed": [
+                    "mssql_mcp.qry_customers",
+                    "mssql_mcp.qry_customer_with_loans",
+                    "mssql_mcp.qry_payment_schedule_by_loan",
+                    "mail_mcp.send_email"
+                ],
+                "required": [
+                    "mssql_mcp.qry_customers",
+                    "mssql_mcp.qry_customer_with_loans",
+                    "mssql_mcp.qry_payment_schedule_by_loan",
+                    "mail_mcp.send_email"
+                ],
+                "forbidden": [],
+                "strict": true
+            }
+        },
+        "channels": {
+            "email": {
+                "allowed": true,
+                "required": true,
+                "to": [ "debt_collection_team@gmail.com" ]
+            }
+        }
+    },
+    {
+        "id": "TC-004",
+        "request": {
+            "prompt": "ช่วยสรุปภาพรวมพอร์ตสินเชื่อแยกตาม “ผลิตภัณฑ์” ให้หน่อย แบบที่ผู้ตรวจสอบอ่านแล้วเข้าใจเร็ว\n\nอยากได้ Top 3 ผลิตภัณฑ์ที่มีจำนวนสัญญามากที่สุด แล้วสรุปแต่ละตัวประมาณนี้:\n- ชื่อผลิตภัณฑ์ / กลุ่มย่อย\n- จำนวนสัญญา\n- ยอดปล่อยรวม\n- ยอดคงค้าง PI โดยประมาณ\n\nสรุปให้กระชับ ๆ แล้วส่งอีเมลแจ้งทีม auditor ด้วยนะ\n\nถ้าดึงแล้วไม่เจอข้อมูลพอร์ตเลย ก็ขอให้แจ้งว่าไม่มีข้อมูลแทน",
+            "lang": "th"
+        },
+        "policy": {
+            "tools": {
+                "allowed": [
+                    "mssql_mcp.qry_product_portfolio_summary",
+                    "mail_mcp.send_email"
+                ],
+                "required": [
+                    "mssql_mcp.qry_product_portfolio_summary",
+                    "mail_mcp.send_email"
+                ],
+                "forbidden": [],
+                "strict": true
+            }
+        },
+        "channels": {
+            "email": {
+                "allowed": true,
+                "required": true,
+                "to": [ "auditor_team@gmail.com" ]
+            }
+        }
+    },
+    {
+        "id": "TC-005",
+        "request": {
+            "prompt": "ช่วยดูรายงานการชำระเงินช่วงวันที่ 2025-11-01 ถึง 2025-11-30 ให้หน่อย (ไม่ต้องกรองช่องทางการจ่าย)\n\nอยากได้ 2 อย่าง:\n1) ภาพรวมทั้งช่วง: มีรายการชำระทั้งหมดกี่รายการ และยอดรวมที่จ่ายทั้งหมดเท่าไหร่\n2) หา “รายการที่จ่ายสูงสุด” ในช่วงนี้ แล้วช่วยเจาะดูภาพรวมของสัญญาที่เกี่ยวข้อง ว่าวงเงินเท่าไหร่ จ่ายไปแล้วเท่าไหร่ และเงินต้นคงเหลือโดยประมาณตอนนี้เท่าไหร่\n\nช่วยสรุปให้อ่านง่าย แล้วส่งอีเมลแจ้งทีม finance ให้หน่อย\n\nถ้าช่วงนั้นไม่มีรายการชำระเลย ก็ส่งอีเมลแจ้งว่าไม่มีข้อมูล และไม่ต้องไปเจาะดูสัญญาต่อ",
+            "lang": "th"
+        },
+        "policy": {
+            "tools": {
+                "allowed": [
+                    "mssql_mcp.qry_payments_by_date",
+                    "mssql_mcp.qry_loan_overview",
+                    "mail_mcp.send_email"
+                ],
+                "required": [
+                    "mssql_mcp.qry_payments_by_date",
+                    "mssql_mcp.qry_loan_overview",
+                    "mail_mcp.send_email"
+                ],
+                "forbidden": [],
+                "strict": true
+            }
+        },
+        "channels": {
+            "email": {
+                "allowed": true,
+                "required": true,
+                "to": [ "finance_team@gmail.com" ]
+            }
+        }
+    },
+    {
+        "id": "TC-006",
+        "request": {
+            "prompt": "ช่วยทำสรุปให้ทีมบัญชีหน่อย ผมอยากได้ snapshot “ยอดเงินต้นคงเหลือ” ณ วันที่ 2025-11-15 สำหรับสัญญาเงินกู้ที่ยัง ACTIVE และเริ่มสัญญาอยู่ในช่วง 2025-10-01 ถึง 2025-10-31\n\nขอเอาแค่ไม่เกิน 3 สัญญาแรกที่หาเจอ (ตามลำดับที่ระบบดึงมา) ก็พอ\n\nขอให้สรุปเป็นตารางอ่านง่าย ๆ โดยมีอย่างน้อย:\n- เลขที่สัญญา\n- รหัสสัญญา\n- วงเงินกู้\n- เงินต้นที่จ่ายสะสมถึงวันอ้างอิง\n- เงินต้นคงเหลือ ณ วันอ้างอิง\n- สถานะสัญญา\n- วันที่อ้างอิงที่ใช้คำนวณ\n\nทำเสร็จแล้วส่งอีเมลให้ทีมบัญชี พร้อมบอกด้วยว่าเราเลือกเคสจากเงื่อนไข: ACTIVE + start date อยู่ในช่วงดังกล่าว + เลือกมา 3 รายการแรก\n\nถ้าหาไม่เจอสัญญาที่เข้าเงื่อนไขเลย ก็ส่งอีเมลแจ้งว่าไม่พบข้อมูล และไม่ต้องไปคำนวณ snapshot ต่อ",
+            "lang": "th"
+        },
+        "policy": {
+            "tools": {
+                "allowed": [
+                    "mssql_mcp.qry_loans",
+                    "mssql_mcp.qry_loan_balance_asof",
+                    "mail_mcp.send_email"
+                ],
+                "required": [
+                    "mssql_mcp.qry_loans",
+                    "mssql_mcp.qry_loan_balance_asof",
+                    "mail_mcp.send_email"
+                ],
+                "forbidden": [],
+                "strict": true
+            }
+        },
+        "channels": {
+            "email": {
+                "allowed": true,
+                "required": true,
+                "to": [ "accounting_team@gmail.com" ]
+            }
+        }
+    },
+    {
+        "id": "TC-007",
+        "request": {
+            "prompt": "ช่วยเช็ครายการงวดที่กำลังจะถึงกำหนดชำระในอีก 14 วันข้างหน้าให้หน่อย\n\nอยากได้สรุปแบบลิสต์อ่านเร็ว ๆ (ถ้ามีเยอะ ขอดูอย่างน้อย 10 รายการแรก) โดยต่อรายการขอมี:\n- เลขที่สัญญา\n- ชื่อลูกค้า\n- วันครบกำหนด\n- ยอดที่ต้องจ่ายตามงวด\n- ยอดค้าง PI ตอนนี้\n\nเสร็จแล้วส่งอีเมลแจ้งทีมติดตามหนี้ให้หน่อย\n\nถ้าไม่มีงวดที่เข้าเงื่อนไขเลย ก็ขอให้ส่งอีเมลบอกว่าไม่มีรายการครบกำหนดใน 14 วัน",
+            "lang": "th"
+        },
+        "policy": {
+            "tools": {
+                "allowed": [
+                    "mssql_mcp.qry_upcoming_due",
+                    "mail_mcp.send_email"
+                ],
+                "required": [
+                    "mssql_mcp.qry_upcoming_due",
+                    "mail_mcp.send_email"
+                ],
+                "forbidden": [],
+                "strict": true
+            }
+        },
+        "channels": {
+            "email": {
+                "allowed": true,
+                "required": true,
+                "to": [ "debt_collection_team@gmail.com" ]
+            }
+        }
+    },
+    {
+        "id": "TC-008",
+        "request": {
+            "prompt": "ช่วยหยิบเคส “ค้างเกิน 30 วัน” มาให้ทีมติดตามหนี้ดูสัก 1 เคสหน่อย\n\nอยากได้เคสตัวอย่าง 1 รายการ แล้วขอรายละเอียดงวดค้างของสัญญานั้นแบบเจาะลงไปว่า งวดไหนค้างอยู่บ้าง และค้างเท่าไหร่\n\nขอให้สรุปเฉพาะงวดที่ยังค้างจริง ๆ (เช่น สถานะ Overdue หรือมีวันค้างมากกว่า 0) โดยแสดง:\n- วันครบกำหนด\n- ยอดที่ต้องจ่ายงวดนั้น\n- ยอดค้าง PI ของงวดนั้น\n- จำนวนวันค้าง\n- กลุ่มอายุหนี้ (aging)\n- วันที่จ่ายล่าสุด (ถ้ามี)\n\nแล้วส่งอีเมลให้ทีมติดตามหนี้ พร้อมแนบข้อมูลลูกค้าของเคสนั้นด้วย เช่น ชื่อลูกค้า เบอร์โทร และเลขที่สัญญา\n\nถ้าไม่เจอเคสที่เข้าเกณฑ์ 30+ วันเลย ก็ส่งอีเมลแจ้งว่าไม่มีรายการเข้าเงื่อนไข และไม่ต้องไปดึงรายละเอียดงวดต่อ",
+            "lang": "th"
+        },
+        "policy": {
+            "tools": {
+                "allowed": [
+                    "mssql_mcp.qry_collector_queue",
+                    "mssql_mcp.qry_payment_schedule_by_loan",
+                    "mail_mcp.send_email"
+                ],
+                "required": [
+                    "mssql_mcp.qry_collector_queue",
+                    "mssql_mcp.qry_payment_schedule_by_loan",
+                    "mail_mcp.send_email"
+                ],
+                "forbidden": [],
+                "strict": true
+            }
+        },
+        "channels": {
+            "email": {
+                "allowed": true,
+                "required": true,
+                "to": [ "debt_collection_team@gmail.com" ]
+            }
+        }
+    },
+    {
+        "id": "TC-009",
+        "request": {
+            "prompt": "ช่วยหากรณีที่ “จ่ายเกิน/overpay” ที่หนักที่สุดในระบบให้หน่อย (ดูทุกสัญญาได้เลย)\n\nผมอยากให้เลือกเคสที่ยอดจ่ายเกิน (overpay) สูงที่สุด 1 เคส แล้วช่วยทำความเข้าใจมันแบบครบ ๆ ว่า:\n- งวดไหนที่เกิด overpay (วันครบกำหนด / ยอดที่ควรจ่าย / ยอดที่จ่ายจริง / จ่ายเกินเท่าไหร่)\n- วันจ่ายล่าสุดของงวดนั้นคือวันไหน\n\nจากนั้นช่วยเจาะดู “ภาพรวมของสัญญา” ที่เกี่ยวข้องด้วย ว่าวงเงินเท่าไหร่ จ่ายไปแล้วเท่าไหร่ ยอดตั้งชำระค้างอยู่เท่าไหร่ และเงินต้นคงเหลือโดยประมาณตอนนี้เท่าไหร่\n\nแล้วช่วยไล่ดู “ประวัติการชำระ” ของสัญญานี้ โดยหยิบรายการที่เกี่ยวข้องกับวันจ่ายล่าสุดของงวด overpay (ถ้ามีรายการตรงวันนั้นให้ใช้เลย ถ้าไม่มีให้เลือกวันที่ใกล้ที่สุด) เพื่อสรุปว่าเป็นการจ่ายแบบไหน และเงินเข้าไปถูกกระจายเป็นต้น/ดอก/ค่าปรับเท่าไหร่\n\nสรุปทั้งหมดให้อ่านง่าย แล้วส่งอีเมลแจ้งทีม auditor ด้วย\n\nถ้าตรวจแล้วไม่พบรายการจ่ายเกินเลย ก็ส่งอีเมลบอกว่าไม่พบเคส overpay และไม่ต้องไปเจาะภาพรวม/ประวัติชำระต่อ",
+            "lang": "th"
+        },
+        "policy": {
+            "tools": {
+                "allowed": [
+                    "mssql_mcp.qry_prepayment_history",
+                    "mssql_mcp.qry_loan_overview",
+                    "mssql_mcp.qry_payments_by_loan",
+                    "mail_mcp.send_email"
+                ],
+                "required": [
+                    "mssql_mcp.qry_prepayment_history",
+                    "mssql_mcp.qry_loan_overview",
+                    "mssql_mcp.qry_payments_by_loan",
+                    "mail_mcp.send_email"
+                ],
+                "forbidden": [],
+                "strict": true
+            }
+        },
+        "channels": {
+            "email": {
+                "allowed": true,
+                "required": true,
+                "to": [ "auditor_team@gmail.com" ]
+            }
+        }
+    },
+    {
+        "id": "TC-010",
+        "request": {
+            "prompt": "ช่วยสรุปสถานะหนี้ค้างทั้งพอร์ตแบบแบ่งช่วงอายุหนี้ (aging) ให้หน่อย\n\nอยากเห็นแต่ละ bucket ว่ามีจำนวนงวดค้างกี่งวด และยอดคงค้าง PI รวมเท่าไหร่ แล้วช่วยรวมยอดคงค้างทั้งหมดของทุก bucket ให้ด้วย (เอาไว้ใส่ท้ายรายงาน)\n\nจัดรูปแบบให้เป็นตารางสั้น ๆ อ่านง่าย แล้วส่งอีเมลให้ทีม finance\n\nถ้าไม่มีข้อมูลให้สรุป ก็ขอให้ส่งอีเมลแจ้งว่าไม่มีข้อมูล delinquency aging",
+            "lang": "th"
+        },
+        "policy": {
+            "tools": {
+                "allowed": [
+                    "mssql_mcp.qry_delinquency_aging",
+                    "mail_mcp.send_email"
+                ],
+                "required": [
+                    "mssql_mcp.qry_delinquency_aging",
+                    "mail_mcp.send_email"
+                ],
+                "forbidden": [],
+                "strict": true
+            }
+        },
+        "channels": {
+            "email": {
+                "allowed": true,
+                "required": true,
+                "to": [ "finance_team@gmail.com" ]
+            }
+        }
+    },
+    {
+        "id": "TC-011",
+        "request": {
+            "prompt": "ช่วยดูพอร์ตสินเชื่อแล้วบอกหน่อยว่า “ผลิตภัณฑ์ไหน” เป็นตัวหลักสุด (จำนวนสัญญามากที่สุด)\n\nจากนั้นอยากได้รายชื่อ “สัญญาที่กำลัง ACTIVE” ของผลิตภัณฑ์นั้น พร้อมสรุปให้ทีม finance แบบอ่านเร็ว ๆ ว่า:\n- ชื่อผลิตภัณฑ์ / กลุ่มย่อย\n- มีสัญญา ACTIVE ทั้งหมดกี่สัญญา\n- ยกตัวอย่าง 5 สัญญาแรก: เลขที่สัญญา, ชื่อลูกค้า, วงเงิน, วันเริ่ม, วันสิ้นสุด\n\nสรุปแล้วส่งอีเมลให้ทีม finance ด้วย\n\nถ้าหา Top product ไม่ได้ (ไม่มีข้อมูลพอร์ต) ก็ส่งอีเมลแจ้งว่าไม่มีข้อมูล\nถ้าหาได้แต่ไม่มีสัญญา ACTIVE ของผลิตภัณฑ์นั้น ก็ส่งอีเมลแจ้งว่า Top product ไม่มีสัญญา ACTIVE",
+            "lang": "th"
+        },
+        "policy": {
+            "tools": {
+                "allowed": [
+                    "mssql_mcp.qry_product_portfolio_summary",
+                    "mssql_mcp.qry_loans",
+                    "mail_mcp.send_email"
+                ],
+                "required": [
+                    "mssql_mcp.qry_product_portfolio_summary",
+                    "mssql_mcp.qry_loans",
+                    "mail_mcp.send_email"
+                ],
+                "forbidden": [],
+                "strict": true
+            }
+        },
+        "channels": {
+            "email": {
+                "allowed": true,
+                "required": true,
+                "to": [ "finance_team@gmail.com" ]
+            }
+        }
+    },
+    {
+        "id": "TC-012",
+        "request": {
+            "prompt": "ช่วยดูคิวติดตามหนี้ที่ค้างเกินประมาณ 7 วันขึ้นไปให้หน่อย\n\nอยากได้ภาพรวมสำหรับทีมติดตามหนี้ โดยขอเลือกมาไม่เกิน 3 สัญญา (ขอไม่ซ้ำกัน) ที่ดูน่ากังวลที่สุดจากคิวนี้\n\nสำหรับแต่ละสัญญา อยากให้ช่วยดู 2 มุม:\n- ภาพรวมของสัญญา ว่าตอนนี้ยอดค้างรวมและเงินต้นคงเหลือประมาณเท่าไหร่\n- งวดที่ค้างหนักที่สุดของสัญญานั้น ว่างวดไหนค้างนานสุด หรือถ้าค้างพอ ๆ กัน ให้ดูว่างวดไหนมียอดค้างสูงกว่า\n\nขอให้สรุปเป็นตารางเดียวต่อเนื่อง อ่านแล้วรู้เลยว่า:\n- เป็นสัญญาของใคร (ชื่อลูกค้า + เบอร์โทร)\n- เลขที่สัญญา\n- ยอดค้างรวม / เงินต้นคงเหลือ\n- รายละเอียดงวดที่ค้างหนักสุด (วันครบกำหนด, ยอดค้าง, วันค้าง, aging, วันที่จ่ายล่าสุดถ้ามี)\n\nทำเสร็จแล้วส่งอีเมลให้ทีมติดตามหนี้\n\nถ้าเช็คแล้วไม่เจอเคสค้างเกิน 7 วันเลย ก็ขอให้ส่งอีเมลแจ้งว่าไม่มีเคสเข้าเกณฑ์ และไม่ต้องเจาะรายละเอียดต่อ",
+            "lang": "th"
+        },
+        "policy": {
+            "tools": {
+                "allowed": [
+                    "mssql_mcp.qry_collector_queue",
+                    "mssql_mcp.qry_loan_overview",
+                    "mssql_mcp.qry_payment_schedule_by_loan",
+                    "mail_mcp.send_email"
+                ],
+                "required": [
+                    "mssql_mcp.qry_collector_queue",
+                    "mssql_mcp.qry_loan_overview",
+                    "mssql_mcp.qry_payment_schedule_by_loan",
+                    "mail_mcp.send_email"
+                ],
+                "forbidden": [],
+                "strict": true
+            }
+        },
+        "channels": {
+            "email": {
+                "allowed": true,
+                "required": true,
+                "to": [ "debt_collection_team@gmail.com" ]
+            }
+        }
+    },
+    {
+        "id": "TC-013",
+        "request": {
+            "prompt": "ช่วยสรุปรายชื่อคำขอสินเชื่อที่ “อนุมัติแล้ว” ในช่วงวันที่ 2025-10-01 ถึง 2025-10-31 ให้หน่อย\n\nอยากได้ลิสต์แบบตรงไปตรงมา สำหรับทีมบัญชี โดยต่อรายการขอรู้ว่า:\n- รหัสคำขอ\n- วันที่ยื่นและวันที่อนุมัติ\n- ชื่อลูกค้า\n- วงเงินที่ขอ / วงเงินที่อนุมัติจริง\n- เป็นสินเชื่อประเภทอะไร\n\nช่วยนับจำนวนรายการทั้งหมดให้ด้วย แล้วส่งอีเมลแจ้งทีมบัญชี\n\nถ้าไม่มีคำขอที่เข้าเงื่อนไขเลย ก็ส่งอีเมลแจ้งว่าไม่มี Approved application ในช่วงนี้",
+            "lang": "th"
+        },
+        "policy": {
+            "tools": {
+                "allowed": [
+                    "mssql_mcp.qry_loan_applications",
+                    "mail_mcp.send_email"
+                ],
+                "required": [
+                    "mssql_mcp.qry_loan_applications",
+                    "mail_mcp.send_email"
+                ],
+                "forbidden": [],
+                "strict": true
+            }
+        },
+        "channels": {
+            "email": {
+                "allowed": true,
+                "required": true,
+                "to": [ "accounting_team@gmail.com" ]
+            }
+        }
+    },
+    {
+        "id": "TC-014",
+        "request": {
+            "prompt": "ช่วยหยิบสัญญาเงินกู้ที่ยัง ACTIVE มาให้ตรวจสอบสัก 1 ฉบับหน่อย\n\nอยากให้เลือกจากรายการที่มีอยู่ แล้วช่วยยืนยันยอดเงินต้นคงเหลือของสัญญานั้น ณ วันที่ 2025-12-01 ว่าตัวเลขเป็นเท่าไหร่\n\nสรุปให้ทีม auditor แบบสั้น ๆ ว่า:\n- เลขที่สัญญา\n- วงเงินกู้\n- เงินต้นที่จ่ายสะสมถึงวันอ้างอิง\n- เงินต้นคงเหลือ ณ วันอ้างอิง\n- วันที่ใช้เป็นวันอ้างอิง\n\nแล้วส่งอีเมลแจ้งทีม auditor\n\nถ้าไม่พบสัญญาที่ ACTIVE เลย ก็ส่งอีเมลแจ้งว่าไม่พบข้อมูล และไม่ต้องไปคำนวณยอดต่อ",
+            "lang": "th"
+        },
+        "policy": {
+            "tools": {
+                "allowed": [
+                    "mssql_mcp.qry_loans",
+                    "mssql_mcp.qry_loan_balance_asof",
+                    "mail_mcp.send_email"
+                ],
+                "required": [
+                    "mssql_mcp.qry_loans",
+                    "mssql_mcp.qry_loan_balance_asof",
+                    "mail_mcp.send_email"
+                ],
+                "forbidden": [],
+                "strict": true
+            }
+        },
+        "channels": {
+            "email": {
+                "allowed": true,
+                "required": true,
+                "to": [ "auditor_team@gmail.com" ]
+            }
+        }
+    },
+    {
+        "id": "TC-015",
+        "request": {
+            "prompt": "ช่วยดูข้อมูลของลูกค้าชื่อประมาณว่า \"กมล\" ให้หน่อย\n\nผมอยากตรวจสอบสัญญาเงินกู้ที่ยัง ACTIVE ของลูกค้าคนนี้สัก 1 สัญญา ว่าข้อมูลระหว่าง “ตารางงวด” กับ “ประวัติการชำระเงิน” มันสอดคล้องกันหรือเปล่า\n\nสิ่งที่อยากให้ช่วยดูคือ:\n- งวดล่าสุดที่มีการจ่ายเงินจริง ๆ (ดูจากวันที่จ่ายล่าสุด)\n- รายละเอียดการจ่ายในงวดนั้น ว่าเงินถูกตัดเป็นต้น/ดอก/ค่าปรับยังไง และจ่ายผ่านช่องทางอะไร\n- งวดถัดไปที่ต้องจ่าย ว่ากำหนดวันไหน ต้องจ่ายเท่าไหร่ และตอนนี้ถือว่าค้างหรือยัง\n\nขอสรุปออกมาให้ทีม finance เข้าใจง่าย ๆ โดยผูกข้อมูลทุกอย่างกับสัญญาเดียวกัน\n\nถ้าเช็คแล้วลูกค้าคนนี้ไม่มีสัญญาที่ ACTIVE อยู่เลย ก็ขอให้ส่งอีเมลแจ้งทีม finance ว่าไม่เข้าเงื่อนไข และไม่ต้องไปไล่ดูงวดหรือ payment ต่อ",
+            "lang": "th"
+        },
+        "policy": {
+            "tools": {
+                "allowed": [
+                    "mssql_mcp.qry_customers",
+                    "mssql_mcp.qry_customer_with_loans",
+                    "mssql_mcp.qry_payment_schedule_by_loan",
+                    "mssql_mcp.qry_payments_by_loan"
+                ],
+                "required": [
+                    "mssql_mcp.qry_customers",
+                    "mssql_mcp.qry_customer_with_loans",
+                    "mssql_mcp.qry_payment_schedule_by_loan",
+                    "mssql_mcp.qry_payments_by_loan"
+                ],
+                "forbidden": [
+                    "mail_mcp.send_email"
+                ],
+                "strict": true
+            }
+        },
+        "channels": {
+            "email": {
+                "allowed": true,
+                "required": true,
+                "to": [ "finance_team@gmail.com" ]
+            }
+        }
+    },
+    {
+        "id": "TC-016",
+        "request": {
+            "prompt": "ช่วยดึง “รายการวิธีคิดดอกเบี้ย” ทั้งหมดที่ระบบมีให้หน่อย ผมจะเอาไปให้ทีม auditor เช็คว่า config/logic มันครบและถูกต้อง\n\nขอให้สรุปแบบอ่านเร็ว ๆ ต่อรายการ โดยเน้น:\n- รหัสวิธีคิดดอกเบี้ย\n- ชื่อวิธีคิดดอกเบี้ย\n- อ้างอิงสูตร/สูตรที่ใช้\n\nถ้ารายละเอียดคำอธิบายมันยาวมาก ให้ตัดให้เหลือประมาณ 1 บรรทัดพอ (แค่พอรู้ว่าเป็นอะไร)\n\nเสร็จแล้วส่งอีเมลให้ทีม auditor พร้อมบอกด้วยว่ามีทั้งหมดกี่วิธี\n\nถ้าดึงแล้วไม่เจอข้อมูลเลย ก็ส่งอีเมลแจ้งว่าไม่มีข้อมูลวิธีคิดดอกเบี้ย",
+            "lang": "th"
+        },
+        "policy": {
+            "tools": {
+                "allowed": [
+                    "mssql_mcp.qry_interest_methods",
+                    "mail_mcp.send_email"
+                ],
+                "required": [
+                    "mssql_mcp.qry_interest_methods",
+                    "mail_mcp.send_email"
+                ],
+                "forbidden": [],
+                "strict": true
+            }
+        },
+        "channels": {
+            "email": {
+                "allowed": true,
+                "required": true,
+                "to": [ "auditor_team@gmail.com" ]
+            }
+        }
+    },
+    {
+        "id": "TC-017",
+        "request": {
+            "prompt": "ช่วยดูรายการชำระเงิน “แบบโอน (TRANSFER)” ในช่วง 2025-12-01 ถึง 2025-12-15 ให้หน่อย\n\nอยากได้ภาพรวมก่อนว่าในช่วงนี้มีรายการชำระทั้งหมดกี่รายการ และยอดรวมที่โอนเข้ามาทั้งหมดเท่าไหร่\n\nแล้วช่วยหา “ลูกค้าที่มียอดโอนรวมสูงสุด” ในช่วงนี้ด้วย (รวมยอดจากหลายรายการได้)\nจากนั้นช่วยไปหาโปรไฟล์/ข้อมูลติดต่อของลูกค้าคนนั้นให้หน่อย เช่น เบอร์โทร อีเมล และที่อยู่ (ใช้ชื่อที่ได้เป็นคำค้นได้เลย)\n\nสุดท้ายสรุปทั้งหมดให้อ่านง่าย แล้วส่งอีเมลแจ้งทีม finance\n\nถ้าช่วงนั้นไม่มีรายการโอนเลย ก็ส่งอีเมลแจ้งว่าไม่มีข้อมูล TRANSFER ในช่วงดังกล่าว และไม่ต้องไปหาข้อมูลติดต่อของลูกค้าต่อ",
+            "lang": "th"
+        },
+        "policy": {
+            "tools": {
+                "allowed": [
+                    "mssql_mcp.qry_payments_by_date",
+                    "mssql_mcp.qry_customers",
+                    "mail_mcp.send_email"
+                ],
+                "required": [
+                    "mssql_mcp.qry_payments_by_date",
+                    "mssql_mcp.qry_customers",
+                    "mail_mcp.send_email"
+                ],
+                "forbidden": [],
+                "strict": true
+            }
+        },
+        "channels": {
+            "email": {
+                "allowed": true,
+                "required": true,
+                "to": [ "finance_team@gmail.com" ]
+            }
+        }
+    },
+    {
+        "id": "TC-018",
+        "request": {
+            "prompt": "ช่วยเช็ครายการงวดที่จะถึงกำหนดชำระภายใน 30 วันข้างหน้าให้หน่อย แล้วขอโฟกัสเคสที่ “ยอดค้าง (outstanding)” สูงสุด\n\nอยากได้สรุปแบบเลือกมา 2 สัญญา (ขอไม่ซ้ำกัน) ที่มียอด outstanding_pi สูงที่สุดจากรายการ upcoming\n\nสำหรับแต่ละสัญญา ช่วยดูเพิ่มอีกนิดว่า:\n- ภาพรวมสัญญาตอนนี้ (ยอดค้างรวม และเงินต้นคงเหลือโดยประมาณ)\n- งวดถัดไปที่ต้องจ่ายจริง ๆ จากตารางงวด (งวดที่ยังไม่ Paid และวันครบกำหนดเร็วที่สุด)\n\nแล้วช่วยเทียบวันครบกำหนด 2 แหล่งให้ด้วย:\n- วันครบกำหนดที่ได้จากรายการ upcoming\n- วันครบกำหนดของงวดถัดไปจากตารางงวด\nถ้าตรงกันให้บอกว่า MATCH ถ้าไม่ตรงให้บอกว่า MISMATCH พร้อมโชว์วันทั้งสองค่า\n\nสรุปต่อสัญญาให้อ่านง่าย แล้วส่งอีเมลให้ทีมติดตามหนี้\n\nถ้าไม่มี upcoming ใน 30 วันเลย ก็ส่งอีเมลแจ้งว่าไม่มีงวดครบกำหนดในช่วงนี้ และไม่ต้องไปเจาะรายละเอียดสัญญาต่อ",
+            "lang": "th"
+        },
+        "policy": {
+            "tools": {
+                "allowed": [
+                    "mssql_mcp.qry_upcoming_due",
+                    "mssql_mcp.qry_loan_overview",
+                    "mssql_mcp.qry_payment_schedule_by_loan",
+                    "mail_mcp.send_email"
+                ],
+                "required": [
+                    "mssql_mcp.qry_upcoming_due",
+                    "mssql_mcp.qry_loan_overview",
+                    "mssql_mcp.qry_payment_schedule_by_loan",
+                    "mail_mcp.send_email"
+                ],
+                "forbidden": [],
+                "strict": true
+            }
+        },
+        "channels": {
+            "email": {
+                "allowed": true,
+                "required": true,
+                "to": [ "debt_collection_team@gmail.com" ]
+            }
+        }
+    },
+    {
+        "id": "TC-019",
+        "request": {
+            "prompt": "ช่วยสรุปภาพรวม delinquency aging ให้ทีมบัญชีหน่อย\n\nอยากเห็นตารางแบบแบ่ง bucket ว่าแต่ละช่วงอายุหนี้มีจำนวนงวดเท่าไหร่ และยอดคงค้าง PI รวมเท่าไหร่\nแล้วช่วยไฮไลต์ให้ด้วยว่า bucket ไหนมียอดคงค้าง (total_outstanding_pi) สูงที่สุด พร้อมใส่ตัวเลข schedule_count ของ bucket นั้นด้วย\n\nสรุปให้อ่านง่าย แล้วส่งอีเมลให้ทีมบัญชี\n\nถ้าไม่มีข้อมูลให้สรุป ก็ส่งอีเมลแจ้งว่าไม่มีข้อมูล delinquency aging",
+            "lang": "th"
+        },
+        "policy": {
+            "tools": {
+                "allowed": [
+                    "mssql_mcp.qry_delinquency_aging",
+                    "mail_mcp.send_email"
+                ],
+                "required": [
+                    "mssql_mcp.qry_delinquency_aging",
+                    "mail_mcp.send_email"
+                ],
+                "forbidden": [],
+                "strict": true
+            }
+        },
+        "channels": {
+            "email": {
+                "allowed": true,
+                "required": true,
+                "to": [ "accounting_team@gmail.com" ]
+            }
+        }
+    },
+    {
+        "id": "TC-020",
+        "request": {
+            "prompt": "ช่วยเช็คคำขอสินเชื่อที่สถานะยัง Pending ในช่วง 2025-11-01 ถึง 2025-12-15 ให้หน่อย\n\nอยากให้หยิบมา 1 เคสตัวอย่าง (รายการแรกที่เจอ) แล้วสรุปให้ทีม finance ว่า:\n- คำขอนั้นเป็นของใคร ขอวงเงินเท่าไหร่ และขอสินเชื่อประเภทอะไร\n- ลูกค้าคนนี้ “มีสินเชื่ออยู่แล้วไหม” ถ้ามี ช่วยสรุปรายการสัญญาที่มีทั้งหมดด้วย (เลขสัญญา/สถานะ/วงเงิน/วันเริ่ม-สิ้นสุด)\n\nสรุปให้อ่านง่าย แล้วส่งอีเมลให้ทีม finance\n\nถ้าไม่มี Pending application ในช่วงนี้เลย ก็ส่งอีเมลแจ้งว่าไม่มีข้อมูล และไม่ต้องไปไล่ดูสินเชื่อเดิมของลูกค้าต่อ",
+            "lang": "th"
+        },
+        "policy": {
+            "tools": {
+                "allowed": [
+                    "mssql_mcp.qry_loan_applications",
+                    "mssql_mcp.qry_customer_with_loans",
+                    "mail_mcp.send_email"
+                ],
+                "required": [
+                    "mssql_mcp.qry_loan_applications",
+                    "mssql_mcp.qry_customer_with_loans",
+                    "mail_mcp.send_email"
+                ],
+                "forbidden": [],
+                "strict": true
+            }
+        },
+        "channels": {
+            "email": {
+                "allowed": true,
+                "required": true,
+                "to": [ "finance_team@gmail.com" ]
+            }
+        }
+    }
+]
