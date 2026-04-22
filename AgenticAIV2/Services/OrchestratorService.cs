@@ -78,7 +78,7 @@ public class OrchestratorService
         var (screen, email) = await _composer.ComposeAsync(req.Message, journal, ct);
         var runId = _store.Put(new { plan, journal, screen, email });
         var llmHistory = _llm.Current;
-        return new ChatResponse(screen, email, plan, planHistories, journal, runId, llmHistory);
+        return new ChatResponse(req.TestId, screen, email, plan, planHistories, journal, runId, llmHistory);
     }
 
     public async Task<ChatResponse> ExecWithProgress(ChatRequest req, CancellationToken ct, Func<string, Task> progress, PolicyBlock policy = null)
@@ -146,7 +146,7 @@ public class OrchestratorService
         var llmHistory = _llm.Current;
         await progress("เสร็จสิ้น");
 
-        var response = new ChatResponse(screen, null, plan, planHistories, journal, runId, llmHistory);
+        var response = new ChatResponse(req.TestId, screen, null, plan, planHistories, journal, runId, llmHistory);
         var json = JsonSerializer.Serialize(
             response,
             new JsonSerializerOptions
@@ -158,47 +158,5 @@ public class OrchestratorService
         await progress($"FINAL: {json}\n\n");
 
         return response;
-        //var findEmailStep = plan.Steps.FirstOrDefault(_ => _.Plugin == "mail_mcp");
-        //if (findEmailStep is not null)
-        //{
-        //    var emailPreview = journal.Steps.FirstOrDefault(_ => _.Id == findEmailStep.Id);
-
-        //    var emailSend = JsonSerializer.Serialize(emailPreview?.Input,
-        //        new JsonSerializerOptions
-        //        {
-        //            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-        //        });
-        //    var response = new ChatResponse(screen, emailPreview?.Input, plan, planHistories, journal, runId, llmHistory);
-        //    var json = JsonSerializer.Serialize(
-        //        response,
-        //        new JsonSerializerOptions
-        //        {
-        //            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-        //        }
-        //    );
-
-        //    await progress($"FINAL: {json}\n\n");
-
-        //    return response;
-        //}
-        //else
-        //{
-
-        //    var response = new ChatResponse(screen, null, plan, planHistories, journal, runId, llmHistory);
-        //    var json = JsonSerializer.Serialize(
-        //        response,
-        //        new JsonSerializerOptions
-        //        {
-        //            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-        //        }
-        //    );
-
-        //    await progress($"FINAL: {json}\n\n");
-
-        //    return response;
-        //}
-        //var response = new ChatResponse(screen, email, plan, planHistories, journal, runId, llmHistory);
-        // ส่งผลลัพธ์สุดท้าย (serialize เป็น JSON)
-        //await progress("FINAL: " + System.Text.Json.JsonSerializer.Serialize(response));
     }
 }

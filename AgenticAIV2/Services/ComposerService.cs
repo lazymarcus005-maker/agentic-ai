@@ -46,7 +46,7 @@ public class ComposerService
         var res = await _kernel.InvokePromptAsync(prompt);
 
         var estimate = _est.Estimate(prompt);
-        _llm.Current.Add("composer", estimate.Tokens, 0, "qwen3-235b-a22b-2507");
+        _llm.Current.Add("composer", estimate.Tokens, 0, "gpt-oss-120b");
 
         var json = res.ToString().CleanJsonString();
         return (json, null);

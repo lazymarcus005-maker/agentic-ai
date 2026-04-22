@@ -108,12 +108,12 @@ public class EvalRunner
 
         StabilityExporter.SaveAsJson(
             newReports2.ToList(),
-            $"1_gpt_report_{idRun}_{ts}.json"
+            $"2_gpt_report_{idRun}_{ts}.json"
         );
 
         StabilityExporter.SaveAsJson(
             evd.ToList(),
-            $"1_gpt_chatresponse_{idRun}_{ts}.json"
+            $"2_gpt_chatresponse_{idRun}_{ts}.json"
         );
 
         // 4️⃣ สรุปรวม
@@ -257,7 +257,8 @@ public static class StabilityExporter
         var options = new JsonSerializerOptions
         {
             WriteIndented = true,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
 
         var json = JsonSerializer.Serialize(stability, options);
@@ -299,7 +300,8 @@ public static class StabilityExporter
         var options = new JsonSerializerOptions
         {
             WriteIndented = true,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
 
         var json = JsonSerializer.Serialize(stability, options);

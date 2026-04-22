@@ -3,7 +3,7 @@ using AgenticAI.Services;
 namespace AgenticAI.Models;
 
 public record ChatRequest(string Message, string TestId, string? SessionId);
-public record ChatResponse(string Final, object? Email
+public record ChatResponse(string TestId, string Final, object? Email
     , Plan Plan, List<Plan> PlanHistories, Journal Journal, string RunId, LLMCounter LLMHistory);
 public record PlanRequest(string Message);
 public record PlanResponse(Plan Plan, ValidationResult Validation);

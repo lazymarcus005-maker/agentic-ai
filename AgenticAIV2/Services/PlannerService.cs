@@ -54,7 +54,7 @@ public class PlannerService
         var result = await _kernel.InvokePromptAsync(sys, new KernelArguments(), cancellationToken: ct);
 
         var estimate = _est.Estimate(sys);
-        _llm.Current.Add("planner", estimate.Tokens, 0, "gpt");
+        _llm.Current.Add("planner", estimate.Tokens, 0, "gpt-oss-120b");
 
         var json = result.ToString();
         _logger.LogInformation("Planner raw: {json}", json);
@@ -68,7 +68,7 @@ public class PlannerService
         var result = await _kernel.InvokePromptAsync(sys, new KernelArguments(), cancellationToken: ct);
 
         var estimate = _est.Estimate(sys);
-        _llm.Current.Add("planner", estimate.Tokens, 0, "gpt-4o-mini");
+        _llm.Current.Add("planner", estimate.Tokens, 0, "gpt-oss-120b");
 
         var json = result.ToString();
         _logger.LogInformation("Re-Plan raw: {json}", json);
